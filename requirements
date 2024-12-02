@@ -1,7 +1,0 @@
-requests
-psutil
-pre-commit
-PyQt5
-black
-Matplotlib
-pyinstaller
