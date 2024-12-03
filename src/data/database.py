@@ -85,6 +85,10 @@ def initialize_fuel_type_database():
         return 0
 
 
-initialize_emissions_database()
-initialize_fuel_type_database()
-initialize_user_data_database()
+def database_initialization():
+    initialize_emissions_database()
+    initialize_fuel_type_database()
+    initialize_user_data_database()
+
+
+database_initialization()
