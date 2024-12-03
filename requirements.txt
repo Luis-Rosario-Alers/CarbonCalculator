@@ -5,3 +5,7 @@ PyQt5
 black
 Matplotlib
 pyinstaller
+python-dotenv
+pytest
+pytest-mock
+python-dotenv
