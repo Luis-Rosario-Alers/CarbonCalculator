@@ -126,4 +126,6 @@ dmypy.json
 cython_debug/
 
 databases/
-.bandit.yaml
+
+!.github/
+!.github/**
