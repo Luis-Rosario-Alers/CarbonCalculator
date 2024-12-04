@@ -1,0 +1,25 @@
+[   {
+      "fuel_type": "gasoline",
+      "emissions_factor": 2.31
+    },
+    {
+      "fuel_type": "diesel",
+      "emissions_factor": 2.68
+    },
+    {
+      "fuel_type": "natural_gas",
+      "emissions_factor": 2.75
+         },
+         {
+             "fuel_type": "propane",
+             "emissions_factor": 1.55
+         },
+         {
+             "fuel_type": "ethanol",
+             "emissions_factor": 1.94
+         },
+         {
+             "fuel_type": "biodiesel",
+             "emissions_factor": 2.45
+         }
+     ]
