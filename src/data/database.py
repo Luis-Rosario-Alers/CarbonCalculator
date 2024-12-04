@@ -91,13 +91,17 @@ def initialize_fuel_type_database():
         print(f"Database error: {e}")
         print("Fuel type database not initialized")
         return 0
+    except (json.JSONDecodeError, KeyError, TypeError) as e:
+        print(f"JSON error: {e}")
+        print("Fuel type data not loaded correctly")
+        return 0
 
 
 # function to bundle initialization of all databases
 def database_initialization():
     initialize_emissions_database()
-    initialize_fuel_type_database()
     initialize_user_data_database()
+    initialize_fuel_type_database()
 
 
 # function to test initialization of all databases
