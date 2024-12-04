@@ -1,58 +1,64 @@
+import os
 import sqlite3
 
 # EDIT THIS FILE IF YOU NEED TO ADD EXTRA
 # FUNCTIONALITY TO THE EMISSIONS CALCULATOR.
 
 
-class EmissionsData:
-    def __init__(self, data):
-        self.data = data
-
-    def get_emissions_factor(fuel_type: str):
-        try:
-            # connects to fuel_type_conversions database.
-            conn = sqlite3.connect("fuel_type_conversions.db")
-            cursor = conn.cursor()
-            # finds conversion for specified fuel type
-            cursor.execute(
-                "SELECT emissions_factor FROM fuel_types WHERE fuel_type = ?",
-                (fuel_type,),
-            )
-            result = cursor.fetchone()
-            conn.close()
-            # ends query and returns result
-            if result:
-                return result[0]
-            # else it will raise a ValueError
-            else:
-                raise ValueError(f"Invalid fuel type: {fuel_type}")
-        except sqlite3.Error as e:
-            print(f"Database error: {e}")
-            return 0
-        except ValueError as e:
-            print(e)
-            return 0
-
-
 # class to make Emissions calculating easier.
 class EmissionsCalculator:
     # EmissionsData is a class that holds the data for the emissions.
-    def __init__(self, emissions_data, db_path="databases/emissions.db"):
-        self.emissions_data = EmissionsData(emissions_data)
+    def __init__(
+        self,
+        emissions_conversions=os.path.abspath(
+            os.path.join(
+                os.path.dirname(__file__),
+                "..",
+                "..",
+                "databases",
+                "fuel_type_conversions.db",
+            )
+        ),
+        db_path=os.path.abspath(
+            os.path.join(
+                os.path.dirname(__file__), "..", "..", "databases", "emissions.db"
+            )
+        ),
+    ):
+        self.emissions_conversions = emissions_conversions
         self.db_path = db_path
 
         # calculates the emissions based on the fuel type and fuel used.
+        """
+         TODO: add functionality to able to change
+         fuel_used to tonnes, gallons, etc.
+        """
 
     def calculate_emissions(self, user_id, fuel_type, fuel_used: float):
-        emissions_factor = self.emissions_data.get_emissions_factor(fuel_type)
+        # connecting to the conversion database
+        conn = sqlite3.connect(self.emissions_conversions)
+        cursor = conn.cursor()
+        # executing sql query to get the emissions factor for the fuel type.
+        cursor.execute(
+            "SELECT emissions_factor FROM fuel_types WHERE fuel_type = ?",
+            (fuel_type,),
+        )
+        # fetching the emissions factor from the database.
+        # TODO add error handling for when the fuel type is not found.
+        emissions_factor = cursor.fetchone()[0]
+        """
+            emissions: calculating the emissions based
+            on the fuel used and emissions factor.
+        """
         emissions = fuel_used * emissions_factor
         print(
+            # outputs emissions in kg units of CO2
             f"Carbon dioxide emissions for {fuel_used} units "
             f"of {fuel_type}: {emissions} kg"
         )
         self.log_calculation(user_id, fuel_type, fuel_used, emissions)
+        # We are returning the emissions value
         return emissions
-
         # logs the calculation into the database.
 
     def log_calculation(self, user_id, fuel_type, fuel_used, emissions):

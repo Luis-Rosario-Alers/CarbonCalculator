@@ -13,6 +13,7 @@ repos:
     rev: 7.1.1
     hooks:
       - id: flake8
+        args: ["--config", ".flake8.ini"]
   - repo: https://github.com/PyCQA/isort
     rev: 5.13.2
     hooks:
