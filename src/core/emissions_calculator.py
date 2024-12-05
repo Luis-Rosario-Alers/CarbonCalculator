@@ -51,6 +51,7 @@ class EmissionsCalculator:
             on the fuel used and emissions factor.
         """
         emissions = fuel_used * emissions_factor
+        emissions = round(emissions, 1)
         print(
             # outputs emissions in kg units of CO2
             f"Carbon dioxide emissions for {fuel_used} units "
