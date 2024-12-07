@@ -1,6 +1,15 @@
+import os
+
 from src.core.emissions_calculator import EmissionsCalculator
 from src.core.input_handler import inputhandler
 from src.data.database import database_initialization
+
+# Get the absolute path of the current file
+current_file_path = os.path.abspath(__file__)
+
+# Navigate up the directory tree to reach the root CarbonCalculator folder
+root_dir = os.path.dirname(os.path.dirname(current_file_path))
+
 
 # introduction phase
 print("Welcome to the Emissions Calculator!")

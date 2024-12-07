@@ -9,10 +9,12 @@ repos:
     rev: 24.10.0
     hooks:
       - id: black
+        exclude: 'tests/'
   - repo: https://github.com/pycqa/flake8
     rev: 7.1.1
     hooks:
       - id: flake8
+        exclude: 'tests/'
         args: ["--config", ".flake8.ini"]
   - repo: https://github.com/PyCQA/isort
     rev: 5.13.2
