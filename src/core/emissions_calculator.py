@@ -51,6 +51,7 @@ class EmissionsCalculator:
             on the fuel used and emissions factor.
         """
         emissions = fuel_used * emissions_factor
+        emissions = round(emissions, 1)
         print(
             # outputs emissions in kg units of CO2
             f"Carbon dioxide emissions for {fuel_used} units "
@@ -71,7 +72,22 @@ class EmissionsCalculator:
                 VALUES (?, ?, ?, ?)""",
                 (user_id, fuel_type, fuel_used, emissions),
             )
+            # return the log for testing purposes
+            cursor.execute(
+                "SELECT fuel_type, "
+                "fuel_used, "
+                "emissions FROM "
+                "emissions WHERE "
+                "user_id = ? AND "
+                "fuel_type = ? AND "
+                "fuel_used = ? AND emissions = ?",
+                (user_id, fuel_type, fuel_used, emissions),
+            )
+            # used for testing purposes to assert accuracy of log
+            log = cursor.fetchall()
+            # commit and close database
             conn.commit()
             conn.close()
+            return log
         except sqlite3.Error as e:
             print(f"Database error: {e}")
