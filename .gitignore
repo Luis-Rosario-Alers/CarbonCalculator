@@ -1,6 +1,8 @@
 # created by virtualenv automatically
-*
-!.gitignore
+
+.vscode/
+
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -129,3 +131,13 @@ databases/
 
 !.github/
 !.github/**
+!src/
+!resources/
+!tests/
+!docs/CODE_OF_CONDUCT.md
+!docs/CONTRIBUTING.md
+!docs/README.md
+!docs/SECURITY.md
+!docs/api_documentation.md
+!docs/user_manual.md
+!config/

@@ -23,10 +23,9 @@ def initialize_emissions_database():
         emissions REAL, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY(user_id) REFERENCES users(username))"""
         )
-        """
-        TODO user_id in the future should be
-        a non changing unique identifier for each user
-        """
+
+        # TODO: user_id in the future should be a non changing unique identifier for each user
+
         conn.commit()
         conn.close()
     except sqlite3.Error as e:

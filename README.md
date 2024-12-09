@@ -1,27 +1,13 @@
 # Agricultural Carbon Calculator
 
-## Version
-Current version: 0.1.0
+## Version - (2024-12-09)
 
-## Description
-Carbon footprint calculator for agricultural businesses.
+Current version: 0.2.0
 
-## Installation
-```bash
-git clone https://github.com/Luis-Rosario-Alers/CarbonCalculator
-cd CarbonCalculator
-python -m venv venv
-source venv/bin/activate  # or `venv\Scripts\activate` on Windows
-pip install -r requirements.txt
-````
+## **Description**
 
-## Setting up Pre-commit Hooks
+The Agricultural Carbon Calculator is a specialized tool designed to help agricultural businesses measure and track their carbon footprint. This calculator takes into account various farming operations, equipment usage, and agricultural practices to provide accurate carbon emission estimates.
 
-To ensure code quality and consistency, we use pre-commit hooks in this project. Follow the steps below to set up pre-commit hooks:
-```bash
-1. **Install the required dependencies**:
-    pip install -r requirements.txt
+## **Contributing**
 
-2. **Install pre-commit hooks**:
-    pre-commit install
-````
+If you would like to contribute to this project, we are very glad and are happy to accept your help. Please refer to the [CONTRIBUTORS](CONTRIBUTORS.md) to be able to contribute to this project.
