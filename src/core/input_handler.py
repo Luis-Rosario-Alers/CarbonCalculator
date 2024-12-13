@@ -5,7 +5,7 @@ from src.data.data_validator import DataValidator
 class inputhandler:
     @staticmethod
     def get_user_input() -> tuple[int, str, float]:
-        """ Get user input for the emissions' calculator.
+        """Get user input for the emissions' calculator.
         Returns:
             Tuple[int, str, float]: A tuple containing the user input.
         """
