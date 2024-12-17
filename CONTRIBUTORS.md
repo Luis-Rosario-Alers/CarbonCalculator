@@ -48,8 +48,12 @@ If you find any bugs or have any suggestions, please open an issue on GitHub. Pr
 
 ## Getting Help🤚
 
-If you need any help, feel free to reach out by opening an issue or opening a discussion.
+Make an issue or create a discussion. We are glad to help anyone that needs it.
+
+If you need inspiration on what to add we will have a couple anticipated features that you could help us work on.
+
+TODO: make development.md to document design of program.
 
 ## Acknowledgements👋
 
-Me and my partner appreciate all contributions made to this project as it makes our lifes so much easier. So thank you💖
+Me and my partner appreciate all contributions made to this project as it makes our lives so much easier. So thank you💖

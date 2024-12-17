@@ -1,5 +1,7 @@
-import sqlite3
-from src.data.data_validator import DataValidator
+from data.data_validator import DataValidator
+
+# ! DEPRECATED - This class is no longer used in the emissions calculator.
+# It has been replaced by the InputForms class.
 
 
 class inputhandler:

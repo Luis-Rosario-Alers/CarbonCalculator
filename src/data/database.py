@@ -19,9 +19,9 @@ def initialize_emissions_database():
         cursor = conn.cursor()
         cursor.execute(
             """CREATE TABLE IF NOT EXISTS emissions
-        (user_id INTEGER PRIMARY KEY, fuel_type TEXT, fuel_used REAL,
-        emissions REAL, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY(user_id) REFERENCES users(username))"""
+            (id INTEGER PRIMARY KEY, user_id INTEGER, fuel_type TEXT, fuel_used REAL,
+            emissions REAL, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(user_id) REFERENCES users(username))"""
         )
 
         # TODO: user_id in the future should be a non changing unique identifier for each user

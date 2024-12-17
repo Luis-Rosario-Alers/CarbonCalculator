@@ -1,6 +1,7 @@
 import os
 import sqlite3
-from src.data.data_validator import DataValidator
+
+from data.data_validator import DataValidator
 
 # * EDIT THIS FILE IF YOU NEED TO ADD EXTRA FUNCTIONALITY TO THE EMISSIONS CALCULATOR.
 
@@ -35,12 +36,13 @@ class EmissionsCalculator:
         # TODO: add functionality to able to change fuel_used to tonnes, gallons, etc.
 
     def calculate_emissions(self, user_id, fuel_type, fuel_used: float):
+        datavalidator = DataValidator()
         # validate inputs
-        if not DataValidator.validate_fuel_type(fuel_type):
+        if not datavalidator.validate_fuel_type(fuel_type):
             raise ValueError("Invalid fuel type")
-        if not DataValidator.validate_fuel_used(fuel_used):
+        if not datavalidator.validate_fuel_used(fuel_used):
             raise ValueError("Invalid fuel used")
-        if not DataValidator.validate_user_id(user_id):
+        if not datavalidator.validate_user_id(user_id):
             raise ValueError("Invalid user ID")
         # connecting to the conversion database
         conn = sqlite3.connect(self.emissions_conversions)
@@ -58,10 +60,10 @@ class EmissionsCalculator:
             on the fuel used and emissions factor.
         """
         # * Check This ⬇️ if emissions tests have failed
-        emissions = fuel_used * emissions_factor
+        emissions = emissions_factor * fuel_used
         emissions = round(emissions, 1)
         # checks if emissions data is valid
-        if not DataValidator.validate_emissions(emissions):
+        if not datavalidator.validate_emissions(emissions):
             raise ValueError("Invalid emissions data")
         print(
             # outputs emissions in kg units of CO2
@@ -75,7 +77,8 @@ class EmissionsCalculator:
     # logs the calculation into the database.
     def log_calculation(self, user_id, fuel_type, fuel_used, emissions):
         try:
-            # ? I would validate inputs here but im not sure. What do you think I should do?
+            # ? I would validate inputs here but im not sure.
+            # What do you think I should do?
 
             # connect to the database
             with sqlite3.connect(self.db_path, timeout=30) as conn:

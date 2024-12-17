@@ -1,8 +1,10 @@
-from src.data.import_manager import importmanager
 import os
-import pytest
 import sqlite3
 from datetime import datetime
+
+import pytest
+
+from data.import_manager import ImportManager
 
 
 @pytest.fixture(autouse=True)
@@ -22,7 +24,7 @@ def test_import_json_with_missing_header(tmp_path):
     json_content = '[{"user_id": 1, "fuel_type": "gas", "emissions": 25.3, "timestamp": "2023-01-01"}]'
     json_file = tmp_path / "test.json"
     json_file.write_text(json_content)
-    import_manager = importmanager(str(json_file))
+    import_manager = ImportManager(str(json_file))
     # When/Then
     with pytest.raises(ValueError) as exc_info:
         import_manager.import_from_json()
@@ -35,7 +37,7 @@ def test_import_json_with_extra_columns(tmp_path):
     json_content = '[{"user_id": 123, "fuel_type": "gas", "fuel_used": 50, "emissions": 150, "timestamp": "2024-01-01", "extra_column": "extra_value"}]'
     json_file = tmp_path / "test.json"
     json_file.write_text(json_content)
-    import_manager = importmanager(str(json_file))
+    import_manager = ImportManager(str(json_file))
     # When
     imported_data = import_manager.import_from_json()
     # Then
@@ -51,7 +53,7 @@ def test_import_json_data_types(tmp_path):
     json_content = '[{"user_id": 123, "fuel_type": "gas", "fuel_used": 50.5, "emissions": 150.3, "timestamp": "2024-01-01"}]'
     json_file = tmp_path / "test.json"
     json_file.write_text(json_content)
-    import_manager = importmanager(str(json_file))
+    import_manager = ImportManager(str(json_file))
     # When
     imported_data = import_manager.import_from_json()
     # Then
@@ -73,7 +75,7 @@ def test_import_csv_with_missing_headers(tmp_path):
     csv_content = "user_id,fuel_type,emissions,timestamp\n1,gas,25.3,2023-01-01"
     csv_file = tmp_path / "test.csv"
     csv_file.write_text(csv_content)
-    import_manager = importmanager(str(csv_file))
+    import_manager = ImportManager(str(csv_file))
     # When/Then
     with pytest.raises(ValueError) as exc_info:
         import_manager.import_from_csv()
@@ -86,7 +88,7 @@ def test_import_csv_with_extra_columns(tmp_path):
     csv_content = "user_id,fuel_type,fuel_used,emissions,timestamp,extra_column\n123,gas,50,150,2024-01-01,extra_value"
     csv_file = tmp_path / "test.csv"
     csv_file.write_text(csv_content)
-    import_manager = importmanager(str(csv_file))
+    import_manager = ImportManager(str(csv_file))
 
     # When
     imported_data = import_manager.import_from_csv()
@@ -106,7 +108,7 @@ def test_import_csv_data_types(tmp_path):
     )
     csv_file = tmp_path / "test.csv"
     csv_file.write_text(csv_content)
-    import_manager = importmanager(str(csv_file))
+    import_manager = ImportManager(str(csv_file))
 
     # When
     imported_data = import_manager.import_from_csv()

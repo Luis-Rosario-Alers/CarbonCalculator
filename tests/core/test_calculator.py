@@ -5,11 +5,8 @@ import time
 
 import pytest
 
-from src.core.emissions_calculator import EmissionsCalculator
-from src.data.database import (
-    initialize_emissions_database,
-    initialize_fuel_type_database,
-)
+from core.emissions_calculator import EmissionsCalculator
+from data.database import initialize_emissions_database, initialize_fuel_type_database
 
 # ! BEWARE THAT RUNNING THESE TESTS WILL DELETE THE DATABASES FOLDER AND ALL ITS CONTENTS.
 # ! MAKE SURE TO BACKUP ANY IMPORTANT DATA BEFORE RUNNING THESE TESTS.

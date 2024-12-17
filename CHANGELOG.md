@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.3.0
+
+### Added
+
+- **User Interface:**
+  - Implemented a new graphical user interface (GUI) using PyQt5
+  - Added input fields for user ID, fuel type, and fuel used in the GUI
+  - Created a submit button to trigger emissions calculation from the GUI
+
 ## v0.2.0
 
 ### Added
@@ -55,4 +64,3 @@
   - Refactored tests to ensure database connections are properly managed and to handle database locking issues
   - Modified `import_from_csv` in `ImportManager` to improve data validation and error handling
   - Improved error messages and exception handling throughout the application
-
