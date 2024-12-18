@@ -1,3 +1,4 @@
+import asyncio
 import os
 import shutil
 import sqlite3
@@ -5,11 +6,8 @@ import time
 
 import pytest
 
-from src.core.emissions_calculator import EmissionsCalculator
-from src.data.database import (
-    initialize_emissions_database,
-    initialize_fuel_type_database,
-)
+from core.emissions_calculator import EmissionsCalculator
+from data.database import initialize_emissions_database, initialize_fuel_type_database
 
 # ! BEWARE THAT RUNNING THESE TESTS WILL DELETE THE DATABASES FOLDER AND ALL ITS CONTENTS.
 # ! MAKE SURE TO BACKUP ANY IMPORTANT DATA BEFORE RUNNING THESE TESTS.
@@ -41,14 +39,14 @@ def cleanup_database():
     except PermissionError as e:
         print(f"Warning: Could not delete database folder: {e}")
 
-
+@pytest.mark.asyncio
 # * If this test fails, check the calculate_emissions module for logic changes such as math operator changing
-def test_calculate_emissions(
+async def test_calculate_emissions(
     emissions_calculator, fuel_type="gasoline", fuel_used: float = 10.0
 ):
     try:
         # initializes fuel type databases necessary for test
-        initialize_fuel_type_database()
+        await initialize_fuel_type_database()
 
         # absolute path to databases
         db_path = os.path.join(
@@ -70,11 +68,12 @@ def test_calculate_emissions(
         # simulate expected function logic
         emissions_factor = cursor.fetchone()[0]
         emissions = fuel_used * emissions_factor
+        expected_emissions = emissions_calculator.calculate_emissions(
+                1, fuel_type, fuel_used
+            )
 
         # assert that expected function logic is equal to actual function logic
-        assert emissions == emissions_calculator.calculate_emissions(
-            1, fuel_type, fuel_used
-        )
+        assert emissions == expected_emissions[3]
     finally:
         # Ensure the connection is closed
         if conn:
@@ -86,13 +85,14 @@ def test_calculate_emissions(
 
 # if this test fails, most likely conversion rates have changed
 # or sql execution has had an error
-def test_log_calculation(
+@pytest.mark.asyncio
+async def test_log_calculation(
     emissions_calculator, fuel_type="gasoline", fuel_used: float = 10.0
 ):
     try:
         # Initialize databases
-        initialize_fuel_type_database()
-        initialize_emissions_database()
+        await initialize_fuel_type_database()
+        await initialize_emissions_database()
 
         # paths to databases
         emissions_db_path = os.path.join(
