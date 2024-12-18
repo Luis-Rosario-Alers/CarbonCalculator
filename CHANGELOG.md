@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.3.1
+
+### Added
+
+- Display results after calculation on GUI
+- Added more information to the README
+
+
+### Fixed
+
+- Issue where `DataValidator` class was not being imported properly in multiple files.
+
 ## v0.3.0
 
 ### Added

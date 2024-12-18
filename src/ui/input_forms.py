@@ -30,6 +30,7 @@ class InputForms(QWidget):
 
         self.submit_button = QPushButton("Submit")
         self.submit_button.clicked.connect(self.submit)
+        self.results = ""
 
         layout = QVBoxLayout()
         layout.addWidget(self.user_id_label)
@@ -58,8 +59,8 @@ class InputForms(QWidget):
         fuel_used = self.fuel_used_entry.text()
         user_id = int(user_id) if user_id else None
         fuel_used = float(fuel_used) if fuel_used else None
+        data_validator = DataValidator()
         try:
-            data_validator = DataValidator()
             # user_id, fuel_type and fuel_used are NOT valid, it will raise a ValueError and QMessageBox will show the error message
             if (
                 not data_validator.validate_user_id(user_id)
@@ -75,15 +76,13 @@ class InputForms(QWidget):
                 and data_validator.validate_fuel_type(fuel_type)
                 and data_validator.validate_fuel_used(fuel_used)
             ):
-                print(
-                    f"User ID: {user_id}, Fuel Type: {fuel_type}, Fuel Used: {fuel_used}"
-                )
                 # Send the validated data to EmissionsCalculator
                 emissions_calculator = EmissionsCalculator()
                 emissions = emissions_calculator.calculate_emissions(
                     user_id, fuel_type, fuel_used
                 )
-                print(f"Emissions: {emissions}")
+                self.results = f"User ID: {user_id}, Fuel Type: {fuel_type}, Fuel Used: {fuel_used}, Emissions: {emissions[3]}"
+                QMessageBox.information(self, "Info", self.results)
 
             # Create a custom message box for import/export options
             msg_box = QMessageBox(self)

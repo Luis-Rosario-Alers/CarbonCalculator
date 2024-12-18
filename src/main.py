@@ -1,3 +1,4 @@
+import asyncio
 import os
 
 from PyQt5.QtWidgets import QApplication
@@ -6,9 +7,9 @@ import data.database as db
 from ui.main_window import MainWindow
 
 
-def main():
+async def Start():
     if not os.path.exists("databases"):
-        db.database_initialization()
+        await db.database_initialization()
     RunMainWindow()
 
 
@@ -21,5 +22,5 @@ def RunMainWindow():
     app.exec_()
 
 
-if __name__ == "__main__":
-    main()
+def main():
+    asyncio.run(Start())

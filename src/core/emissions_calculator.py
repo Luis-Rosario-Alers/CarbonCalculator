@@ -1,5 +1,6 @@
 import os
 import sqlite3
+import asyncio
 
 from data.data_validator import DataValidator
 
@@ -36,13 +37,13 @@ class EmissionsCalculator:
         # TODO: add functionality to able to change fuel_used to tonnes, gallons, etc.
 
     def calculate_emissions(self, user_id, fuel_type, fuel_used: float):
-        datavalidator = DataValidator()
+        data_validator = DataValidator()
         # validate inputs
-        if not datavalidator.validate_fuel_type(fuel_type):
+        if not data_validator.validate_fuel_type(fuel_type):
             raise ValueError("Invalid fuel type")
-        if not datavalidator.validate_fuel_used(fuel_used):
+        if not data_validator.validate_fuel_used(fuel_used):
             raise ValueError("Invalid fuel used")
-        if not datavalidator.validate_user_id(user_id):
+        if not data_validator.validate_user_id(user_id):
             raise ValueError("Invalid user ID")
         # connecting to the conversion database
         conn = sqlite3.connect(self.emissions_conversions)
@@ -63,7 +64,7 @@ class EmissionsCalculator:
         emissions = emissions_factor * fuel_used
         emissions = round(emissions, 1)
         # checks if emissions data is valid
-        if not datavalidator.validate_emissions(emissions):
+        if not data_validator.validate_emissions(emissions):
             raise ValueError("Invalid emissions data")
         print(
             # outputs emissions in kg units of CO2
@@ -72,7 +73,7 @@ class EmissionsCalculator:
         )
         self.log_calculation(user_id, fuel_type, fuel_used, emissions)
         # We are returning the emissions value
-        return emissions
+        return user_id, fuel_type, fuel_used, emissions
 
     # logs the calculation into the database.
     def log_calculation(self, user_id, fuel_type, fuel_used, emissions):
