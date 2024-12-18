@@ -1,9 +1,9 @@
-import sqlite3
-import json
 import csv
+import json
+import sqlite3
 
 
-class importmanager:
+class ImportManager:
     def __init__(self, input_path):
         self.input_path = input_path
 
@@ -21,7 +21,8 @@ class importmanager:
 
         required_keys = {"user_id", "fuel_type", "fuel_used", "emissions", "timestamp"}
         for entry in data_dicts:
-            # Checks for missing keys by subtracting required keys: 5 and entry.keys: 5 and then
+            # Checks for missing keys by subtracting required
+            # keys: 5 and entry.keys: 5 and then
             # assigns the difference of those 2 values to missing keys.
             missing_keys = required_keys - entry.keys()
             if (
@@ -65,12 +66,12 @@ class importmanager:
             }
             for row in data_dicts:
                 print(f"Processing row: {row}")
-                # Checks for missing keys by subtracting required keys: 5 and entry.keys: 5 and then
+                # Checks for missing keys by subtracting
+                # required keys: 5 and entry.keys: 5 and then
                 # assigns the difference of those 2 values to missing keys.
                 missing_keys = required_keys - row.keys()
-                if (
-                    missing_keys
-                ):  # if there are missing keys, it raises a value error with the amount missing.
+                if missing_keys:  # if there are missing keys,
+                    # it raises a value error with the amount missing.
                     raise ValueError(f"Missing required keys: {missing_keys}")
                 for key in required_keys:
                     # iterates through each key and checks if they are null or empty.
@@ -92,3 +93,34 @@ class importmanager:
         print(f"Data to be inserted: {data}")
         self.insert_data(data)
         return data
+
+    def export_to_csv(self, file_path):
+        conn = sqlite3.connect("databases/emissions.db")
+        cursor = conn.cursor()
+        with open(file_path, "w", newline="") as file:
+            writer = csv.writer(file)
+            writer.writerow(["user_id", "fuel_type", "fuel_used", "emissions"])
+            for row in cursor.execute(
+                "SELECT user_id, fuel_type, fuel_used, emissions FROM emissions"
+            ):
+                writer.writerow(row)
+        conn.close()
+
+    def export_to_json(self, file_path):
+        conn = sqlite3.connect("databases/emissions.db")
+        cursor = conn.cursor()
+        with open(file_path, "w") as file:
+            data = []
+            for row in cursor.execute(
+                "SELECT user_id, fuel_type, fuel_used, emissions FROM emissions"
+            ):
+                data.append(
+                    {
+                        "user_id": row[0],
+                        "fuel_type": row[1],
+                        "fuel_used": row[2],
+                        "emissions": row[3],
+                    }
+                )
+            json.dump(data, file, indent=4)
+        conn.close()

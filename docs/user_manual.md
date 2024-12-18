@@ -60,7 +60,7 @@ Welcome to the Agricultural Carbon Calculator! This tool is designed to help agr
 
 - **Export to CSV**:
   - You can also export the data to a CSV file.
-  
+
   - Follow the prompt to enter the path where you want to save the CSV file.
 
 ### Importing Data
@@ -91,12 +91,11 @@ Welcome to the Agricultural Carbon Calculator! This tool is designed to help agr
 ]
 ```
 
-
 - **Import from CSV**:
   - You can import data from a CSV file.
 
   - Follow the prompt to enter the path of the CSV file you want to import.
-  
+
 **CSV Format:**
 
 ```csv

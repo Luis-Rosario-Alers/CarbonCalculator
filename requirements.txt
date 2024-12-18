@@ -9,3 +9,8 @@ python-dotenv
 pytest
 pytest-mock
 python-dotenv
+aiosqlite
+aiofiles
+asyncio
+aiohttp
+pytest-asyncio
