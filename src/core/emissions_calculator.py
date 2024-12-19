@@ -1,6 +1,5 @@
 import os
 import sqlite3
-import asyncio
 
 from data.data_validator import DataValidator
 

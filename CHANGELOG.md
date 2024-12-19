@@ -1,12 +1,21 @@
 # Changelog
 
+## v0.3.2
+
+### Added
+
+- Added Asyncio functionality with GUI
+
+### Fixed
+
+- Issue where the event loop would never end and cause the program to run indefinitely
+
 ## v0.3.1
 
 ### Added
 
 - Display results after calculation on GUI
 - Added more information to the README
-
 
 ### Fixed
 
