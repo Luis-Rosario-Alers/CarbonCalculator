@@ -5,7 +5,6 @@ import os
 import aiofiles
 import aiosqlite
 
-
 root_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 

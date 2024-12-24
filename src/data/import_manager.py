@@ -1,6 +1,9 @@
 import csv
 import json
+import logging
 import sqlite3
+
+logger = logging.getLogger("data")
 
 
 class ImportManager:
@@ -13,7 +16,6 @@ class ImportManager:
         cursor.executemany("INSERT INTO emissions VALUES (?,?,?,?,?)", data)
         conn.commit()
         conn.close()
-        print(f"Data imported successfully from {self.input_path}")
 
     def import_from_json(self):
         with open(self.input_path, "r") as f:
@@ -29,6 +31,7 @@ class ImportManager:
                 missing_keys
             ):  # if there are missing keys, it raises a value error with the amount missing.
                 raise ValueError(f"Missing required keys: {missing_keys}")
+                logger.error(f"Missing required keys: {missing_keys}")
             for (
                 key
             ) in (
@@ -36,6 +39,7 @@ class ImportManager:
             ):  # iterates through each key and checks if they are null or empty.
                 if entry[key] is None or entry[key] == "":
                     raise ValueError(f"Missing value for key: {key}")
+                    logger.error(f"Missing value for key: {key}")
 
         # Convert data to a list of tuples
         data = [
@@ -50,6 +54,7 @@ class ImportManager:
         ]
 
         self.insert_data(data)
+        logger.info(f"Data imported successfully from {self.input_path}")
         return data
 
     def import_from_csv(self):
@@ -73,10 +78,12 @@ class ImportManager:
                 if missing_keys:  # if there are missing keys,
                     # it raises a value error with the amount missing.
                     raise ValueError(f"Missing required keys: {missing_keys}")
+                    logger.error(f"Missing required keys: {missing_keys}")
                 for key in required_keys:
                     # iterates through each key and checks if they are null or empty.
                     if row[key] is None or row[key] == "":
                         raise ValueError(f"Missing value for key: {key}")
+                        logger.error(f"Missing value for key: {key}")
 
             # Convert data to a list of tuples
         data = [
@@ -92,35 +99,5 @@ class ImportManager:
 
         print(f"Data to be inserted: {data}")
         self.insert_data(data)
+        logger.info(f"Data imported successfully from {self.input_path}")
         return data
-
-    def export_to_csv(self, file_path):
-        conn = sqlite3.connect("databases/emissions.db")
-        cursor = conn.cursor()
-        with open(file_path, "w", newline="") as file:
-            writer = csv.writer(file)
-            writer.writerow(["user_id", "fuel_type", "fuel_used", "emissions"])
-            for row in cursor.execute(
-                "SELECT user_id, fuel_type, fuel_used, emissions FROM emissions"
-            ):
-                writer.writerow(row)
-        conn.close()
-
-    def export_to_json(self, file_path):
-        conn = sqlite3.connect("databases/emissions.db")
-        cursor = conn.cursor()
-        with open(file_path, "w") as file:
-            data = []
-            for row in cursor.execute(
-                "SELECT user_id, fuel_type, fuel_used, emissions FROM emissions"
-            ):
-                data.append(
-                    {
-                        "user_id": row[0],
-                        "fuel_type": row[1],
-                        "fuel_used": row[2],
-                        "emissions": row[3],
-                    }
-                )
-            json.dump(data, file, indent=4)
-        conn.close()

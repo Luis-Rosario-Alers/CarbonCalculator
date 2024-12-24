@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.3.3
+
+### Added
+
+- Added logging functionality to debug faster
+- added qasync to integrate asyncio eventloop with Qt eventloop
+
+### Changed
+
+- Changed Python Qt bindings from PyQt5 to PySide6
+
 ## v0.3.2
 
 ### Added
