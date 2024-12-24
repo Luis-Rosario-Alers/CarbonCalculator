@@ -4,7 +4,7 @@
 
 <p align="center"><img src="https://img.shields.io/github/stars/Luis-Rosario-Alers/CarbonCalculator" alt="shields"><img src="https://img.shields.io/github/contributors/Luis-Rosario-Alers/CarbonCalculator" alt="shields"><img src="https://img.shields.io/github/issues/Luis-Rosario-Alers/CarbonCalculator" alt="shields"><img src="https://img.shields.io/github/license/Luis-Rosario-Alers/CarbonCalculator" alt="shields"></p>
 
-[Getting Started👋](docs/GETTING_STARTED.md) | [FAQ❓](docs/FAQ.md)| [Contributing🤝](CONTRIBUTORS.md)
+[Getting Started👋](docs/GETTING_STARTED.md) | [FAQ❓](FAQ.md)| [Contributing🤝](CONTRIBUTORS.md)
 
 ## **Description**
 

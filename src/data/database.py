@@ -88,6 +88,16 @@ async def initialize_fuel_type_database():
         return 0
 
 
+async def get_fuel_types():
+    db_path = os.path.join(root_dir, "databases", "fuel_type_conversions.db")
+    conn = aiosqlite.connect(db_path)
+    async with conn:
+        async with conn.cursor() as cursor:
+            await cursor.execute("SELECT fuel_type FROM fuel_types")
+            fuel_types = await cursor.fetchall()
+        return [fuel_type[0] for fuel_type in fuel_types]
+
+
 # function to bundle initialization of all databases
 async def database_initialization():
     await asyncio.gather(

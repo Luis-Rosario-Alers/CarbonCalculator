@@ -1,10 +1,12 @@
+import logging
 import os
 import sqlite3
-import asyncio
 
 from data.data_validator import DataValidator
 
 # * EDIT THIS FILE IF YOU NEED TO ADD EXTRA FUNCTIONALITY TO THE EMISSIONS CALCULATOR.
+
+logger = logging.getLogger("core")
 
 
 # class to make Emissions calculating easier.
@@ -66,13 +68,7 @@ class EmissionsCalculator:
         # checks if emissions data is valid
         if not data_validator.validate_emissions(emissions):
             raise ValueError("Invalid emissions data")
-        print(
-            # outputs emissions in kg units of CO2
-            f"Carbon dioxide emissions for {fuel_used} units "
-            f"of {fuel_type}: {emissions} kg"
-        )
         self.log_calculation(user_id, fuel_type, fuel_used, emissions)
-        # We are returning the emissions value
         return user_id, fuel_type, fuel_used, emissions
 
     # logs the calculation into the database.
@@ -80,6 +76,11 @@ class EmissionsCalculator:
         try:
             # ? I would validate inputs here but im not sure.
             # What do you think I should do?
+
+            logger.info("Logging calculation")
+            logger.info(
+                f"User ID: {user_id}, Fuel Type: {fuel_type}, Fuel Used: {fuel_used}, Emissions: {emissions}"
+            )
 
             # connect to the database
             with sqlite3.connect(self.db_path, timeout=30) as conn:
@@ -106,5 +107,5 @@ class EmissionsCalculator:
             # commit and close database
             conn.commit()
             return log
-        except sqlite3.Error as e:
-            print(f"Database error: {e}")
+        except sqlite3.Error or OverflowError as e:
+            logging.getLogger("data").error(f"Database error: {e}")

@@ -1,6 +1,9 @@
 import csv
 import json
+import logging
 import sqlite3
+
+logger = logging.getLogger("data")
 
 
 class ExportManager:
@@ -33,6 +36,7 @@ class ExportManager:
         # Write data to JSON file
         with open(output_path, "w") as f:
             json.dump(data_dicts, f, indent=2)
+        logger.info(f"Data exported to {output_path}")
 
     def export_to_csv(self, output_path):
         data = self.fetch_data()
@@ -43,3 +47,4 @@ class ExportManager:
                 ["user_id", "fuel_type", "fuel_used", "emissions", "timestamp"]
             )
             writer.writerows(data)
+        logger.info(f"Data exported to {output_path}")
