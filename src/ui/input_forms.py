@@ -11,7 +11,6 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
-from qasync import QEventLoop
 
 from core.emissions_calculator import EmissionsCalculator
 from data.data_validator import DataValidator
@@ -28,13 +27,10 @@ class InputForms(QWidget):
         super().__init__(parent)
         self.user_id_label = QLabel("User ID:")
         self.user_id_entry = QLineEdit()
-
         self.fuel_type_label = QLabel("Fuel Type:")
         self.fuel_type_entry = QComboBox()
-
         self.fuel_used_label = QLabel("Fuel Used:")
         self.fuel_used_entry = QLineEdit()
-
         self.submit_button = QPushButton("Submit")
         self.submit_button.clicked.connect(self.submit)
         self.results = None
@@ -47,11 +43,8 @@ class InputForms(QWidget):
         layout.addWidget(self.fuel_used_label)
         layout.addWidget(self.fuel_used_entry)
         layout.addWidget(self.submit_button)
-
         self.setLayout(layout)
 
-        loop = QEventLoop()
-        asyncio.set_event_loop(loop)
         asyncio.ensure_future(self.populate_fuel_types())
 
     async def populate_fuel_types(self):
@@ -117,7 +110,8 @@ class InputForms(QWidget):
                 self.results = f"User ID: {user_id}, Fuel Type: {fuel_type}, Fuel Used: {fuel_used}, Emissions: {emissions}"
                 QMessageBox.information(self, "Info", self.results)
                 self.import_export_data()
-        except ValueError as e:
+        except Exception as e:
+            logger.error(f"Error submitting data: {e}")
             QMessageBox.critical(self, "Error", str(e))
 
     def import_export_data(self):

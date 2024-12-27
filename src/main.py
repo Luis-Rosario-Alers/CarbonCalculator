@@ -2,9 +2,9 @@ import asyncio
 import logging
 import logging.config
 import os
-import sys
 
 from PySide6.QtWidgets import QApplication
+from qasync import QEventLoop
 
 import data.database as db
 from ui.main_window import MainWindow
@@ -27,10 +27,16 @@ def run_main_window():
     # * this is used to run the event loop for the main window
     logger.info("Running main window")
 
+    # Create application instance
     app = QApplication([])
+    loop = QEventLoop(app)
+    asyncio.set_event_loop(loop)
+
     main_window = MainWindow()
     main_window.show()
-    sys.exit(app.exec_())
+
+    with loop:
+        loop.run_forever()
 
 
 def main():
