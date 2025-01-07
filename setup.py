@@ -23,6 +23,7 @@ setup(
         "asyncio",
         "aiohttp",
         "pytest-asyncio",
+        "ipinfo",
     ],
     entry_points={
         "console_scripts": [

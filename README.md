@@ -16,9 +16,9 @@ Here are some of the project's best features:
 
 * Import/Export data 📄
 
-* Data visualization📊
+* Weather API integration⛈️
 
-* Weather API integration⛈️ (to be added)
+* Data visualization📊 (to be added)
 
 * User Authentication👤 (to be added)
 
