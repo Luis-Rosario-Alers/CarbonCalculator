@@ -38,7 +38,30 @@ class EmissionsCalculator:
 
         # TODO: add functionality to able to change fuel_used to tonnes, gallons, etc.
 
-    def calculate_emissions(self, user_id, fuel_type, fuel_used: float):
+    def calculate_emissions(
+        self,
+        user_id,
+        fuel_type,
+        fuel_used: float,
+        temperature=None,
+        temperature_type=None,
+    ):
+        """
+        Calculate the emissions based on the fuel type, fuel used, and optional temperature data.
+
+        Parameters:
+        user_id (str): The ID of the user.
+        fuel_type (str): The type of fuel used.
+        fuel_used (float): The amount of fuel used.
+        temperature (float, optional): The temperature at which the fuel is used. Defaults to None.
+        temperature_type (int, optional): The type of temperature provided (0 for Celsius, 1 for Fahrenheit, 2 for Kelvin). Defaults to None.
+
+        Returns:
+        tuple: A tuple containing user_id, fuel_type, fuel_used, and calculated emissions.
+
+        Raises:
+        ValueError: If any of the inputs are invalid or if the calculated emissions data is invalid.
+        """
         data_validator = DataValidator()
         # validate inputs
         if not data_validator.validate_fuel_type(fuel_type):
@@ -55,21 +78,34 @@ class EmissionsCalculator:
             "SELECT emissions_factor FROM fuel_types WHERE fuel_type = ?",
             (fuel_type,),
         )
-        # fetching the emissions factor from the database.
-        # TODO add error handling for when the fuel type is not found.
         emissions_factor = cursor.fetchone()[0]
-        """
-            emissions: calculating the emissions based
-            on the fuel used and emissions factor.
-        """
+        conn.close()
         # * Check This ⬇️ if emissions tests have failed
-        emissions = emissions_factor * fuel_used
-        emissions = round(emissions, 1)
-        # checks if emissions data is valid
-        if not data_validator.validate_emissions(emissions):
-            raise ValueError("Invalid emissions data")
-        self.log_calculation(user_id, fuel_type, fuel_used, emissions)
-        return user_id, fuel_type, fuel_used, emissions
+        if temperature is not None and temperature_type is not None:
+            logger.info("Temperature data available, adjusting emissions factor")
+            baseline_temperature = [
+                15,
+                59,
+                288.15,
+            ]  # Baseline temperatures in Celsius, Fahrenheit, and Kelvin
+            temp_deviation = (
+                temperature - baseline_temperature[temperature_type]
+            ) / baseline_temperature[temperature_type]
+            adjusted_emissions_factor = emissions_factor * (1 + temp_deviation**2)
+            emissions = fuel_used * adjusted_emissions_factor
+            if not data_validator.validate_emissions(emissions):
+                raise ValueError("Invalid emissions data")
+            self.log_calculation(user_id, fuel_type, fuel_used, emissions)
+            return user_id, fuel_type, fuel_used, emissions
+        else:
+            logger.info(
+                "Temperature data not available, using standard emissions factor"
+            )
+            emissions = fuel_used * emissions_factor
+            if not data_validator.validate_emissions(emissions):
+                raise ValueError("Invalid emissions data")
+            self.log_calculation(user_id, fuel_type, fuel_used, emissions)
+            return user_id, fuel_type, fuel_used, emissions
 
     # logs the calculation into the database.
     def log_calculation(self, user_id, fuel_type, fuel_used, emissions):

@@ -11,7 +11,6 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
-from qasync import QEventLoop
 
 from core.emissions_calculator import EmissionsCalculator
 from data.data_validator import DataValidator
@@ -28,13 +27,10 @@ class InputForms(QWidget):
         super().__init__(parent)
         self.user_id_label = QLabel("User ID:")
         self.user_id_entry = QLineEdit()
-
         self.fuel_type_label = QLabel("Fuel Type:")
         self.fuel_type_entry = QComboBox()
-
         self.fuel_used_label = QLabel("Fuel Used:")
         self.fuel_used_entry = QLineEdit()
-
         self.submit_button = QPushButton("Submit")
         self.submit_button.clicked.connect(self.submit)
         self.results = None
@@ -47,11 +43,8 @@ class InputForms(QWidget):
         layout.addWidget(self.fuel_used_label)
         layout.addWidget(self.fuel_used_entry)
         layout.addWidget(self.submit_button)
-
         self.setLayout(layout)
 
-        loop = QEventLoop()
-        asyncio.set_event_loop(loop)
         asyncio.ensure_future(self.populate_fuel_types())
 
     async def populate_fuel_types(self):
@@ -103,7 +96,7 @@ class InputForms(QWidget):
                 QMessageBox.critical(self, "Error", str(error))
                 return
             # checking if the user_id, fuel_type and fuel_used are valid
-            if (
+            elif (
                 data_validator.validate_user_id(user_id)
                 and data_validator.validate_fuel_type(fuel_type)
                 and data_validator.validate_fuel_used(fuel_used)
@@ -111,13 +104,32 @@ class InputForms(QWidget):
                 logger.info("Valid input: sending data to EmissionsCalculator")
                 # Send the validated data to EmissionsCalculator
                 emissions_calculator = EmissionsCalculator()
-                emissions = emissions_calculator.calculate_emissions(
-                    user_id, fuel_type, fuel_used
-                )
-                self.results = f"User ID: {user_id}, Fuel Type: {fuel_type}, Fuel Used: {fuel_used}, Emissions: {emissions}"
-                QMessageBox.information(self, "Info", self.results)
-                self.import_export_data()
-        except ValueError as e:
+                from main import user_local_temps
+
+                logger.info(f"User Local Temps: {user_local_temps}")
+                if user_local_temps is not None:
+                    logger.info("Temperature data not available")
+                    emissions = emissions_calculator.calculate_emissions(
+                        user_id, fuel_type, fuel_used
+                    )
+                    self.results = f"User ID: {user_id}, Fuel Type: {fuel_type}, Fuel Used: {fuel_used}, Emissions: {emissions}"
+                    QMessageBox.information(self, "Results", self.results)
+                    self.import_export_data()
+                elif user_local_temps is not None:
+                    logger.info("Temperature data available")
+                    temperature_type = self.temperature_type()
+                    emissions = emissions_calculator.calculate_emissions(
+                        user_id,
+                        fuel_type,
+                        fuel_used,
+                        user_local_temps[temperature_type],
+                        temperature_type,
+                    )
+                    self.results = f"User ID: {user_id}, Fuel Type: {fuel_type}, Fuel Used: {fuel_used}, Emissions: {emissions}, Temperature: {user_local_temps[temperature_type]}"
+                    QMessageBox.information(self, "Results", self.results)
+                    self.import_export_data()
+        except Exception as e:
+            logger.error(f"Error submitting data: {e}")
             QMessageBox.critical(self, "Error", str(e))
 
     def import_export_data(self):
@@ -167,3 +179,27 @@ class InputForms(QWidget):
                 else:
                     logger.error("Unsupported file format")
                     QMessageBox.critical(self, "Error", "Unsupported file format")
+
+    def temperature_type(self):
+        temperature_dialogue = QMessageBox(self)
+        temperature_dialogue.setWindowTitle("Temperature Type")
+        temperature_dialogue.setText("Which temperature type would you like to use?")
+        celsius_button = QPushButton("Celsius")
+        fahrenheit_button = QPushButton("Fahrenheit")
+        kelvin_button = QPushButton("Kelvin")
+        temperature_dialogue.addButton(celsius_button, QMessageBox.AcceptRole)
+        temperature_dialogue.addButton(fahrenheit_button, QMessageBox.AcceptRole)
+        temperature_dialogue.addButton(kelvin_button, QMessageBox.AcceptRole)
+        temperature_dialogue.exec_()
+        if temperature_dialogue.clickedButton() == celsius_button:
+            logger.info("Celsius temperature type selected")
+            temperature_type = 0
+            return temperature_type
+        elif temperature_dialogue.clickedButton() == fahrenheit_button:
+            logger.info("Fahrenheit temperature type selected")
+            temperature_type = 1
+            return temperature_type
+        elif temperature_dialogue.clickedButton() == kelvin_button:
+            logger.info("Kelvin temperature type selected")
+            temperature_type = 2
+            return temperature_type

@@ -61,3 +61,18 @@ def test_validate_emissions_valid(data_validator):
 def test_validate_emissions_invalid(data_validator):
     assert data_validator.validate_emissions(-1) is False
     assert data_validator.validate_emissions("ten") is False
+
+
+def test_validate_integer_valid(data_validator):
+    assert data_validator.validate_integer(0) is True
+    assert data_validator.validate_integer(123456) is True
+    assert data_validator.validate_integer(-123456) is True
+    assert data_validator.validate_integer(9223372036854775807) is True
+    assert data_validator.validate_integer(-9223372036854775808) is True
+
+
+def test_validate_integer_invalid(data_validator):
+    with pytest.raises(ValueError):
+        data_validator.validate_integer(9223372036854775808)
+    with pytest.raises(ValueError):
+        data_validator.validate_integer(-9223372036854775809)

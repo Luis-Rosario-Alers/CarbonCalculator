@@ -18,14 +18,25 @@ class DataValidator:
     def validate_fuel_used(self, fuel_used):
         if not isinstance(fuel_used, (int, float)) or fuel_used <= 0:
             return False
+        if not self.validate_integer(fuel_used):
+            return False
         return True
 
     def validate_user_id(self, user_id):
         if not isinstance(user_id, int) or user_id <= 0:
+            return False
+        if not self.validate_integer(user_id):
             return False
         return True
 
     def validate_emissions(self, emissions):
         if not isinstance(emissions, (int, float)) or emissions < 0:
             return False
+        return True
+
+    def validate_integer(self, integer):
+        min_value = -9223372036854775808
+        max_value = 9223372036854775807
+        if not (min_value <= integer <= max_value):
+            raise ValueError(f"{integer} is not a valid integer")
         return True

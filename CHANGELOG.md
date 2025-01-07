@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.4.0
+
+### Added
+
+- Added ipinfo and openweathermap API's to provide temperature deviation for `EmissionsCalculator` Class
+
+### Changed
+
+- Updated `requirements.txt` to reflect new dependencies
+
 ## v0.3.3
 
 ### Added
