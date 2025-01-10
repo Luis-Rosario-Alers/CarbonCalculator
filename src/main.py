@@ -39,6 +39,7 @@ async def start():
         or IP_API_TOKEN is None
         or internet_connection_status is False
     ):
+        logger.warning("Continuing program without local temperatures")
         user_coords = None
         user_local_temps = None
         return internet_connection_status
@@ -49,6 +50,7 @@ async def start():
 
         if user_coords is None:
             logger.error("Failed to retrieve user coordinates")
+            logger.warning("Continuing program without local temperatures")
             user_local_temps = None
         else:
             user_local_temps = await weather_service.get_weather(

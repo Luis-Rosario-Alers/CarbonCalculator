@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.4.1
+
+### Fixed
+
+- Fixed bug where the application would not continue to temperature type sequence because of incorrect if statement condition
+
 ## v0.4.0
 
 ### Added

@@ -60,6 +60,16 @@ class InputForms(QWidget):
             )
 
     def submit(self):
+        def handle_emissions_result(future):
+            try:
+                emissions = future.result()
+                self.results = f"User ID: {user_id}, Fuel Type: {fuel_type}, Fuel Used: {fuel_used}, Emissions: {emissions}"
+                QMessageBox.information(self, "Results", self.results)
+                self.import_export_data()
+            except Exception as e:
+                logger.error(f"Error submitting data: {e}")
+                QMessageBox.critical(self, "Error", str(e))
+        
         """
         Submits the user input, validates it, and calculates emissions.
         This method retrieves the user ID, fuel type, and fuel used from the input fields.
@@ -89,8 +99,8 @@ class InputForms(QWidget):
             # user_id, fuel_type and fuel_used are NOT valid, it will raise a ValueError and QMessageBox will show the error message
             if (
                 not data_validator.validate_user_id(user_id)
-                or not data_validator.validate_fuel_type(fuel_type)
                 or not data_validator.validate_fuel_used(fuel_used)
+                or not data_validator.validate_fuel_type(fuel_type)
             ):
                 error = ValueError("Invalid input")
                 QMessageBox.critical(self, "Error", str(error))
@@ -98,38 +108,38 @@ class InputForms(QWidget):
             # checking if the user_id, fuel_type and fuel_used are valid
             elif (
                 data_validator.validate_user_id(user_id)
-                and data_validator.validate_fuel_type(fuel_type)
                 and data_validator.validate_fuel_used(fuel_used)
+                and data_validator.validate_fuel_type(fuel_type)
             ):
                 logger.info("Valid input: sending data to EmissionsCalculator")
                 # Send the validated data to EmissionsCalculator
                 emissions_calculator = EmissionsCalculator()
                 from main import user_local_temps
-
+                
                 logger.info(f"User Local Temps: {user_local_temps}")
-                if user_local_temps is not None:
+
+
+                if user_local_temps is None:
                     logger.info("Temperature data not available")
-                    emissions = emissions_calculator.calculate_emissions(
-                        user_id, fuel_type, fuel_used
-                    )
-                    self.results = f"User ID: {user_id}, Fuel Type: {fuel_type}, Fuel Used: {fuel_used}, Emissions: {emissions}"
-                    QMessageBox.information(self, "Results", self.results)
-                    self.import_export_data()
+                    future = asyncio.ensure_future(emissions_calculator.calculate_emissions(user_id, fuel_type, fuel_used))
+                    future.add_done_callback(handle_emissions_result)
                 elif user_local_temps is not None:
                     logger.info("Temperature data available")
                     temperature_type = self.temperature_type()
-                    emissions = emissions_calculator.calculate_emissions(
+                    future = asyncio.ensure_future(emissions_calculator.calculate_emissions(
                         user_id,
                         fuel_type,
                         fuel_used,
                         user_local_temps[temperature_type],
                         temperature_type,
-                    )
-                    self.results = f"User ID: {user_id}, Fuel Type: {fuel_type}, Fuel Used: {fuel_used}, Emissions: {emissions}, Temperature: {user_local_temps[temperature_type]}"
-                    QMessageBox.information(self, "Results", self.results)
-                    self.import_export_data()
-        except Exception as e:
+                    ))
+                    future.add_done_callback(handle_emissions_result)
+                    
+        except ValueError as e:
             logger.error(f"Error submitting data: {e}")
+            logger.info(f"user_id type: {type(user_id)}, value: {user_id}") 
+            logger.info(f"fuel_type type: {type(fuel_type)}, value: {fuel_type}")
+            logger.info(f"fuel_used type: {type(fuel_used)}, value: {fuel_used}")
             QMessageBox.critical(self, "Error", str(e))
 
     def import_export_data(self):
@@ -203,3 +213,5 @@ class InputForms(QWidget):
             logger.info("Kelvin temperature type selected")
             temperature_type = 2
             return temperature_type
+    
+    

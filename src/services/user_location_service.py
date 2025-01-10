@@ -19,7 +19,7 @@ class UserLocationService:
             details = await handler.getDetails()
             latitude = details.latitude
             longitude = details.longitude
-            logger.info(f"User location: {latitude}, {longitude}")
+            logger.info("User location retrieved")
 
             return latitude, longitude
         except Exception as e:

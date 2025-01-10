@@ -1,36 +1,51 @@
 import sqlite3
-
+import os
+import logging
+from data.database import application_path
 # validates user input and database data
+
+logger = logging.getLogger("data")
 
 
 class DataValidator:
     def validate_fuel_type(self, fuel_type: str) -> bool:
-        conn = sqlite3.connect("databases/fuel_type_conversions.db")
+        logger.info("validating fuel_type")
+        db_path = os.path.join(application_path, "databases", "fuel_type_conversions.db")
+        conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
         cursor.execute("SELECT fuel_type FROM fuel_types")
-        fuel_types = cursor.fetchall()
+        fuel_types = cursor.fetchone()[0]
+        logger.info("fuel_type_conversions.db accessed")
+        logger.info(f"fuel_type accessed: {fuel_type}")
         conn.close()
-        if (fuel_type,) in fuel_types:
+        if fuel_type in fuel_types:
+            logger.info("fuel_type validated")
             return True
         else:
+            logger.error("fuel_type invalid")
             return False
 
     def validate_fuel_used(self, fuel_used):
         if not isinstance(fuel_used, (int, float)) or fuel_used <= 0:
+            logger.error("fuel_used is not an int or float data type")
             return False
         if not self.validate_integer(fuel_used):
             return False
+        logger.info("fuel_used validated")
         return True
 
     def validate_user_id(self, user_id):
         if not isinstance(user_id, int) or user_id <= 0:
+            logger.error("user_id is not an int data type")
             return False
         if not self.validate_integer(user_id):
             return False
+        logger.info("user_id validated")
         return True
 
     def validate_emissions(self, emissions):
         if not isinstance(emissions, (int, float)) or emissions < 0:
+            logger.error("emissions is not int or float")
             return False
         return True
 
