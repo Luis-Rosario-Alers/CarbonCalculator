@@ -21,7 +21,7 @@ class WeatherService:
         timeout = aiohttp.ClientTimeout(total=5)
         try:
             async with aiohttp.ClientSession() as session:
-                response = session.get(url, timeout=timeout)
+                response = await session.get(url, timeout=timeout)
                 weather_data = await response.json()
                 if weather_data.get("cod") != 200:
                     logger.error(

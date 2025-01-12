@@ -88,16 +88,12 @@ class InputForms(QWidget):
         try:
             # user_id, fuel_type and fuel_used are NOT valid, it will raise a ValueError and QMessageBox will show
             # the error message
-            if not data_validator.validate_user_id(
-                user_id
-            ) or not data_validator.validate_fuel_used(fuel_used):
+            if not data_validator.validate_user_id(user_id) or not data_validator.validate_fuel_used(fuel_used):
                 error = ValueError("Invalid input")
                 QMessageBox.critical(self, "Error", str(error))
                 return
             # checking if the user_id, fuel_type and fuel_used are valid
-            elif data_validator.validate_user_id(
-                user_id
-            ) and data_validator.validate_fuel_used(fuel_used):
+            elif data_validator.validate_user_id(user_id) and data_validator.validate_fuel_used(fuel_used):
                 logger.info("Valid input: sending data to EmissionsCalculator")
                 # Send the validated data to EmissionsCalculator
                 from main import user_local_temps

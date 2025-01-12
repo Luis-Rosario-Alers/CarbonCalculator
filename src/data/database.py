@@ -17,11 +17,12 @@ else:
     # If the application is run as a script
     application_path = os.path.dirname(__file__)
 
+databases_folder = os.path.join(application_path, "databases")
+
 
 # function creates a emissions database during initialization of the program
 async def initialize_emissions_database():
     try:
-        databases_folder = os.path.join(application_path, "databases")
         os.makedirs(databases_folder, exist_ok=True)
         db_path = os.path.join(databases_folder, "emissions.db")
 

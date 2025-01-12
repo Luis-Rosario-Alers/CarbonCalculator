@@ -17,19 +17,18 @@ class DataValidator:
         db_path = os.path.join(
             application_path, "databases", "fuel_type_conversions.db"
         )
-        async with aiosqlite.connect(db_path) as conn:
-            cursor = await conn.execute("SELECT fuel_type FROM fuel_types")
-            fuel_types = await cursor.fetchone()
-            logger.info("fuel_type_conversions.db accessed")
-            logger.info(f"fuel_type accessed: {fuel_type}")
-            if fuel_type in fuel_types:
-                logger.info("fuel_type validated")
-                await conn.close()
-                return True
-            else:
-                logger.error("fuel_type invalid")
-                await conn.close()
-                return False
+        conn = await aiosqlite.connect(db_path)
+        cursor = await conn.execute("SELECT fuel_type FROM fuel_types")
+        fuel_types = await cursor.fetchone()
+        logger.info("fuel_type_conversions.db accessed")
+        logger.info(f"fuel_type accessed: {fuel_type}")
+
+        if fuel_type in fuel_types:
+            logger.info("fuel_type validated")
+            return True
+        else:
+            logger.error("fuel_type invalid")
+            return False
 
     def validate_fuel_used(self, fuel_used):
         if not isinstance(fuel_used, (int, float)) or fuel_used <= 0:
@@ -50,14 +49,15 @@ class DataValidator:
         return True
 
     @staticmethod
-    def validate_emissions(self, emissions):
+    def validate_emissions(emissions):
         if not isinstance(emissions, (int, float)) or emissions < 0:
             logger.error("emissions is not int or float")
             return False
         return True
 
     @staticmethod
-    def validate_integer(self, integer):
+    def validate_integer(integer):
+
         min_value = -9223372036854775808
         max_value = 9223372036854775807
         if not (min_value <= integer <= max_value):

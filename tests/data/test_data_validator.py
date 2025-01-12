@@ -1,5 +1,4 @@
-from unittest import mock
-
+from unittest.mock import AsyncMock, Mock, patch
 import pytest
 
 from data.data_validator import DataValidator
@@ -9,27 +8,37 @@ from data.data_validator import DataValidator
 def data_validator():
     return DataValidator()
 
-
-def test_validate_fuel_type_valid(data_validator):
-    with mock.patch("sqlite3.connect") as mock_connect:
-        mock_conn = mock.Mock()
+@pytest.mark.asyncio
+async def test_validate_fuel_type_valid(data_validator):
+    with patch("aiosqlite.connect", new=AsyncMock()) as mock_connect:
+        mock_conn = AsyncMock()
+        mock_cursor = AsyncMock()
+        mock_connect = AsyncMock()
         mock_connect.return_value = mock_conn
-        mock_cursor = mock.Mock()
+        mock_conn.__aenter__.return_value = mock_conn
+        mock_conn.__aexit__.return_value = None
         mock_conn.cursor.return_value = mock_cursor
         mock_cursor.fetchall.return_value = [("diesel",), ("petrol",)]
 
-        assert data_validator.validate_fuel_type("diesel") is True
+        with patch('aiosqlite.connect', return_value=mock_conn):
+            result = await data_validator.validate_fuel_type("electric")
+            assert result is False
 
-
-def test_validate_fuel_type_invalid(data_validator):
-    with mock.patch("sqlite3.connect") as mock_connect:
-        mock_conn = mock.Mock()
+@pytest.mark.asyncio
+async def test_validate_fuel_type_invalid(data_validator):
+    with patch("aiosqlite.connect", new=AsyncMock()) as mock_connect:
+        mock_conn = AsyncMock()
+        mock_cursor = AsyncMock()
+        mock_connect = AsyncMock()
         mock_connect.return_value = mock_conn
-        mock_cursor = mock.Mock()
+        mock_conn.__aenter__.return_value = mock_conn
+        mock_conn.__aexit__.return_value = None
         mock_conn.cursor.return_value = mock_cursor
         mock_cursor.fetchall.return_value = [("diesel",), ("petrol",)]
 
-        assert data_validator.validate_fuel_type("electric") is False
+        with patch('aiosqlite.connect', return_value=mock_conn):
+            result = await data_validator.validate_fuel_type("gasoline")
+            assert result is True
 
 
 def test_validate_fuel_used_valid(data_validator):

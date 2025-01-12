@@ -2,6 +2,8 @@ import csv
 import json
 import logging
 import sqlite3
+import os
+from data.database import databases_folder
 
 logger = logging.getLogger("data")
 
@@ -11,8 +13,9 @@ class ImportManager:
         self.input_path = input_path
 
     @staticmethod
-    def insert_data(self, data):
-        conn = sqlite3.connect("databases/emissions.db")
+    def insert_data(data):
+        db_path = os.path.join(databases_folder, "emissions.db")
+        conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
         cursor.executemany("INSERT INTO emissions VALUES (?,?,?,?,?)", data)
         conn.commit()
@@ -32,13 +35,15 @@ class ImportManager:
                 missing_keys
             ):  # if there are missing keys, it raises a value error with the amount missing.
                 logger.error(f"Missing required keys: {missing_keys}")
+                raise ValueError(f"Missing required keys: {missing_keys}")
             for (
                 key
             ) in (
                 required_keys
             ):  # iterates through each key and checks if they are null or empty.
-                if entry[key] is None or entry[key] == "":
+                if key not in entry or entry[key] is None or entry[key] == "":
                     logger.error(f"Missing value for key: {key}")
+                    raise ValueError(f"Missing value for key: {key}")
 
         # Convert data to a list of tuples
         data = [
@@ -77,10 +82,12 @@ class ImportManager:
                 if missing_keys:  # if there are missing keys,
                     # it raises a value error with the amount missing.
                     logger.error(f"Missing required keys: {missing_keys}")
+                    raise ValueError(f"Missing required keys: {missing_keys}")
                 for key in required_keys:
                     # iterates through each key and checks if they are null or empty.
-                    if row[key] is None or row[key] == "":
+                    if key not in row or row[key] is None or row[key] == "":
                         logger.error(f"Missing value for key: {key}")
+                        raise ValueError(f"Missing value for key: {key}")
 
             # Convert data to a list of tuples
         data = [
