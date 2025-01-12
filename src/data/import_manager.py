@@ -10,6 +10,7 @@ class ImportManager:
     def __init__(self, input_path):
         self.input_path = input_path
 
+    @staticmethod
     def insert_data(self, data):
         conn = sqlite3.connect("databases/emissions.db")
         cursor = conn.cursor()
@@ -30,7 +31,6 @@ class ImportManager:
             if (
                 missing_keys
             ):  # if there are missing keys, it raises a value error with the amount missing.
-                raise ValueError(f"Missing required keys: {missing_keys}")
                 logger.error(f"Missing required keys: {missing_keys}")
             for (
                 key
@@ -38,7 +38,6 @@ class ImportManager:
                 required_keys
             ):  # iterates through each key and checks if they are null or empty.
                 if entry[key] is None or entry[key] == "":
-                    raise ValueError(f"Missing value for key: {key}")
                     logger.error(f"Missing value for key: {key}")
 
         # Convert data to a list of tuples
@@ -77,12 +76,10 @@ class ImportManager:
                 missing_keys = required_keys - row.keys()
                 if missing_keys:  # if there are missing keys,
                     # it raises a value error with the amount missing.
-                    raise ValueError(f"Missing required keys: {missing_keys}")
                     logger.error(f"Missing required keys: {missing_keys}")
                 for key in required_keys:
                     # iterates through each key and checks if they are null or empty.
                     if row[key] is None or row[key] == "":
-                        raise ValueError(f"Missing value for key: {key}")
                         logger.error(f"Missing value for key: {key}")
 
             # Convert data to a list of tuples

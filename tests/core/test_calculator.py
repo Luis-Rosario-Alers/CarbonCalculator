@@ -4,9 +4,11 @@ import shutil
 import sqlite3
 import time
 
+import aiosqlite
 import pytest
 
-from core.emissions_calculator import EmissionsCalculator
+from core.emissions_calculator import calculate_emissions
+from data.database import log_calculation
 from data.database import initialize_emissions_database, initialize_fuel_type_database
 
 # ! BEWARE THAT RUNNING THESE TESTS WILL DELETE THE DATABASES FOLDER AND ALL ITS CONTENTS.
@@ -15,12 +17,9 @@ from data.database import initialize_emissions_database, initialize_fuel_type_da
 
 
 # path to database folder
-db_folder = os.path.join(os.path.dirname(__file__), "..", "databases")
+db_folder = os.path.join(os.path.dirname(__file__), "..", "data", "databases")
 
 
-@pytest.fixture
-def emissions_calculator():
-    return EmissionsCalculator()
 
 
 @pytest.fixture(autouse=True)
@@ -39,46 +38,40 @@ def cleanup_database():
     except PermissionError as e:
         print(f"Warning: Could not delete database folder: {e}")
 
+
+# * If this test fails, check the calculate_emissions module for logic changes such as math operator changing\
 @pytest.mark.asyncio
-# * If this test fails, check the calculate_emissions module for logic changes such as math operator changing
 async def test_calculate_emissions(
-    emissions_calculator, fuel_type="gasoline", fuel_used: float = 10.0
+        fuel_type="gasoline", fuel_used: float = 10.0
 ):
     try:
         # initializes fuel type databases necessary for test
         await initialize_fuel_type_database()
 
         # absolute path to databases
-        db_path = os.path.join(
-            os.path.dirname(__file__),
-            "..",
-            "..",
-            "databases",
-            "fuel_type_conversions.db",
-        )
-        conn = sqlite3.connect(db_path)
-        cursor = conn.cursor()
+        db_path = os.path.join(db_folder, "fuel_type_conversions.db")
+        async with aiosqlite.connect(db_path) as conn:
+            async with conn.cursor() as cursor:
+                # find fuel_type emissions factor
+                await cursor.execute(
+                    "SELECT emissions_factor FROM fuel_types WHERE fuel_type = ?",
+                    (fuel_type,),
+                )
 
-        # find fuel_type emissions factor
-        cursor.execute(
-            "SELECT emissions_factor FROM fuel_types WHERE fuel_type = ?",
-            (fuel_type,),
-        )
-
-        # simulate expected function logic
-        emissions_factor = cursor.fetchone()[0]
-        emissions = fuel_used * emissions_factor
-        expected_emissions = emissions_calculator.calculate_emissions(
-                1, fuel_type, fuel_used
-            )
+                # simulate expected function logic
+                emissions_factor = (await cursor.fetchone())[0]
+                emissions = fuel_used * emissions_factor
+                expected_emissions = await calculate_emissions(
+                    1, fuel_type, fuel_used
+                )
 
         # assert that expected function logic is equal to actual function logic
         assert emissions == expected_emissions[3]
     finally:
         # Ensure the connection is closed
         if conn:
-            conn.commit()
-            conn.close()
+            await conn.commit()
+            await conn.close()
 
         time.sleep(0.1)
 
@@ -87,7 +80,7 @@ async def test_calculate_emissions(
 # or sql execution has had an error
 @pytest.mark.asyncio
 async def test_log_calculation(
-    emissions_calculator, fuel_type="gasoline", fuel_used: float = 10.0
+        fuel_type="gasoline", fuel_used: float = 10.0
 ):
     try:
         # Initialize databases
@@ -96,48 +89,44 @@ async def test_log_calculation(
 
         # paths to databases
         emissions_db_path = os.path.join(
-            os.path.dirname(__file__), "..", "..", "databases", "emissions.db"
+            db_folder, "emissions.db"
         )
         fuel_type_db_path = os.path.join(
-            os.path.dirname(__file__),
-            "..",
-            "..",
-            "databases",
-            "fuel_type_conversions.db",
+            db_folder, "fuel_type_conversions.db"
         )
 
-        with sqlite3.connect(fuel_type_db_path, timeout=20) as conn_fuel:
-            cursor_fuel = conn_fuel.cursor()
-            cursor_fuel.execute(
-                "SELECT emissions_factor FROM fuel_types WHERE fuel_type = ?",
-                (fuel_type,),
-            )
-            fuel_type_result = cursor_fuel.fetchone()
-            emissions_factor = fuel_type_result[0]
-            emissions = fuel_used * emissions_factor
+        async with aiosqlite.connect(fuel_type_db_path) as conn_fuel:
+            async with conn_fuel.cursor() as cursor_fuel:
+                await cursor_fuel.execute(
+                    "SELECT emissions_factor FROM fuel_types WHERE fuel_type = ?",
+                    (fuel_type,),
+                )
+                fuel_type_result = await cursor_fuel.fetchone()
+                emissions_factor = fuel_type_result[0]
+                emissions = fuel_used * emissions_factor
 
-            if not fuel_type_result:
-                raise ValueError(f"Fuel type {fuel_type} not found in the database")
+                if not fuel_type_result:
+                    raise ValueError(f"Fuel type {fuel_type} not found in the database")
 
-        with sqlite3.connect(emissions_db_path, timeout=20) as conn_emissions:
-            cursor_emissions = conn_emissions.cursor()
-            # Clear existing data
-            time.sleep(0.1)
-            cursor_emissions.execute("DELETE FROM emissions")
-            # Insert new test data
-            cursor_emissions.execute(
-                "INSERT INTO emissions (user_id, fuel_type, fuel_used, emissions) "
-                "VALUES (?, ?, ?, ?)",
-                (1, fuel_type, fuel_used, emissions),
-            )
-            cursor_emissions.execute("SELECT * FROM emissions")
-            conn_emissions.commit()
-            expected_result = cursor_emissions.fetchall()
-        conn_emissions.close()
-        conn_fuel.close()
+        async with aiosqlite.connect(emissions_db_path) as conn_emissions:
+            async with conn_emissions.cursor() as cursor_emissions:
+                # Clear existing data
+                await asyncio.sleep(0.1)
+                await cursor_emissions.execute("DELETE FROM emissions")
+                # Insert new test data
+                await cursor_emissions.execute(
+                    "INSERT INTO emissions (user_id, fuel_type, fuel_used, emissions) "
+                    "VALUES (?, ?, ?, ?)",
+                    (1, fuel_type, fuel_used, emissions),
+                )
+                await cursor_emissions.execute("SELECT * FROM emissions")
+                await conn_emissions.commit()
+                expected_result = await cursor_emissions.fetchall()
+                await conn_emissions.close()
+                await conn_fuel.close()
 
         # Test the actual function
-        real_result = emissions_calculator.log_calculation(
+        real_result = await log_calculation(
             2, fuel_type, fuel_used, emissions
         )
         print(expected_result)

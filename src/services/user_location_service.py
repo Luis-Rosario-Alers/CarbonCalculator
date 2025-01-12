@@ -12,7 +12,7 @@ class UserLocationService:
     def __init__(self, access_token):
         self.access_token = access_token
 
-    async def get_user_location(self) -> tuple[float, float]:
+    async def get_user_location(self) -> tuple[float, float] | None:
         logger.info("Getting user location")
         handler = ipinfo.getHandlerAsync(self.access_token)
         try:

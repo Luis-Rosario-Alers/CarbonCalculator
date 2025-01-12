@@ -1,16 +1,16 @@
 import asyncio
 import json
+import logging
 import os
 import sys
 
 import aiofiles
 import aiosqlite
-import logging
 
 logger = logging.getLogger("data")
 
 # Get the directory of the current script or executable
-if getattr(sys, 'frozen', False):
+if getattr(sys, "frozen", False):
     # If the application is run as a bundle (e.g., with PyInstaller)
     application_path = os.path.dirname(sys.executable)
 else:
@@ -21,9 +21,9 @@ else:
 # function creates a emissions database during initialization of the program
 async def initialize_emissions_database():
     try:
-        databases_folder = os.path.join(application_path, 'databases')
+        databases_folder = os.path.join(application_path, "databases")
         os.makedirs(databases_folder, exist_ok=True)
-        db_path = os.path.join(databases_folder, 'emissions.db')
+        db_path = os.path.join(databases_folder, "emissions.db")
 
         async with aiosqlite.connect(db_path) as conn:
             async with conn.cursor() as cursor:
@@ -42,9 +42,9 @@ async def initialize_emissions_database():
 
 async def initialize_user_data_database():
     try:
-        databases_folder = os.path.join(application_path, 'databases')
+        databases_folder = os.path.join(application_path, "databases")
         os.makedirs(databases_folder, exist_ok=True)
-        db_path = os.path.join(databases_folder, 'user_data.db')
+        db_path = os.path.join(databases_folder, "user_data.db")
 
         async with aiosqlite.connect(db_path) as conn:
             async with conn.cursor() as cursor:
@@ -61,9 +61,9 @@ async def initialize_user_data_database():
 
 async def initialize_fuel_type_database():
     try:
-        databases_folder = os.path.join(application_path, 'databases')
+        databases_folder = os.path.join(application_path, "databases")
         os.makedirs(databases_folder, exist_ok=True)
-        db_path = os.path.join(databases_folder, 'fuel_type_conversions.db')
+        db_path = os.path.join(databases_folder, "fuel_type_conversions.db")
 
         async with aiosqlite.connect(db_path) as conn:
             async with conn.cursor() as cursor:
@@ -74,7 +74,10 @@ async def initialize_fuel_type_database():
                 )
 
                 json_path = os.path.join(
-                    application_path, "resources", "conversion_factors", "fuel_types.json"
+                    application_path,
+                    "resources",
+                    "conversion_factors",
+                    "fuel_types.json",
                 )
                 async with aiofiles.open(json_path, "r") as file:
                     fuel_data = json.loads(await file.read())
@@ -103,17 +106,27 @@ async def get_fuel_types():
             await cursor.execute("SELECT fuel_type FROM fuel_types")
             fuel_types = await cursor.fetchall()
         return [fuel_type[0] for fuel_type in fuel_types]
-    
-async def get_emissions_factor(fuel_type: str) -> int :
+
+
+async def get_emissions_factor(fuel_type: str) -> int:
     db_path = os.path.join(application_path, "databases", "fuel_type_conversions.db")
-    conn = aiosqlite.connect(db_path)
-    async with conn.cursor() as cursor:
-        await cursor.execute("SELECT emissions_factor FROM fuel_types WHERE fuel_type = ?",
-            (fuel_type,),)
-        emissions_factor = await cursor.fetchone()[0]
-        return emissions_factor
-    
-def log_calculation(user_id, fuel_type, fuel_used, emissions):
+    async with aiosqlite.connect(db_path) as conn:
+        async with conn.cursor() as cursor:
+            await cursor.execute(
+                "SELECT emissions_factor FROM fuel_types WHERE fuel_type = ?",
+                (fuel_type,),
+            )
+            row = await cursor.fetchone()
+            if row:
+                return row[0]
+            else:
+                error = ValueError(
+                    f"No emissions factor found for fuel type: {fuel_type}"
+                )
+                logger.error(error)
+
+
+async def log_calculation(user_id, fuel_type, fuel_used, emissions):
     try:
         # ? I would validate inputs here but im not sure.
         # What do you think I should do?
@@ -122,34 +135,32 @@ def log_calculation(user_id, fuel_type, fuel_used, emissions):
         logger.info(
             f"User ID: {user_id}, Fuel Type: {fuel_type}, Fuel Used: {fuel_used}, Emissions: {emissions}"
         )
+        db_path = os.path.join(application_path, "databases", "emissions.db")
 
         # connect to the database
-        with aiosqlite.connect(application_path, timeout=30) as conn:
-            cursor = conn.cursor()
-            cursor.execute(
-                """INSERT INTO emissions
-                (user_id, fuel_type, fuel_used, emissions)
-                VALUES (?, ?, ?, ?)""",
-                (user_id, fuel_type, fuel_used, emissions),
-            )
-            # return the log for testing purposes
-            cursor.execute(
-                "SELECT fuel_type, "
-                "fuel_used, "
-                "emissions FROM "
-                "emissions WHERE "
-                "user_id = ? AND "
-                "fuel_type = ? AND "
-                "fuel_used = ? AND emissions = ?",
-                (user_id, fuel_type, fuel_used, emissions),
-            )
-        # used for testing purposes to assert accuracy of log
-        log = cursor.fetchall()
-        # commit and close database
-        conn.commit()
-        return log
-    except aiosqlite.Error or OverflowError as e:
-        logging.getLogger("data").error(f"Database error: {e}")
+        async with aiosqlite.connect(db_path) as conn:
+            async with conn.cursor() as cursor:
+                await cursor.execute(
+                    """INSERT INTO emissions
+                    (user_id, fuel_type, fuel_used, emissions)
+                    VALUES (?, ?, ?, ?)""",
+                    (user_id, fuel_type, fuel_used, emissions),
+                )
+                # Commit the transaction
+                await conn.commit()
+
+                # Return the log for testing purposes
+                await cursor.execute(
+                    "SELECT fuel_type, fuel_used, emissions FROM emissions WHERE user_id = ? AND fuel_type = ? AND "
+                    "fuel_used = ? AND emissions = ?",
+                    (user_id, fuel_type, fuel_used, emissions),
+                )
+                log = await cursor.fetchall()
+                return log
+    except aiosqlite.Error as e:
+        logger.error(f"Database error: {e}")
+    except ValueError as e:
+        logger.error(f"Value error: {e}")
 
 
 # function to bundle initialization of all databases

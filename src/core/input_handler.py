@@ -4,7 +4,7 @@ from data.data_validator import DataValidator
 # It has been replaced by the InputForms class.
 
 
-class inputhandler:
+class InputHandler:
     @staticmethod
     def get_user_input() -> tuple[int, str, float]:
         """Get user input for the emissions' calculator.

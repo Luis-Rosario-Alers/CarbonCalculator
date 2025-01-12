@@ -1,14 +1,17 @@
 import csv
 import json
 import logging
+import os
 import sqlite3
+
+from data.database import application_path
 
 logger = logging.getLogger("data")
 
 
 class ExportManager:
-    def __init__(self, db_path):
-        self.db_path = db_path
+    def __init__(self):
+        self.db_path = os.path.join(application_path, "databases", "emissions.db")
 
     def fetch_data(self):
         conn = sqlite3.connect(self.db_path)
