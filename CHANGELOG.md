@@ -7,6 +7,9 @@
 - Fixed bug where the application would not continue to temperature type sequence because of incorrect if statement condition
 - Fixed bug where database would not have a connection open because of bad async database operations handling
 
+### Tests
+- Fixed tests that were not passing because of bad async integration into main logic
+
 ## v0.4.0
 
 ### Added
