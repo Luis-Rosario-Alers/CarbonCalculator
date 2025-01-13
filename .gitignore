@@ -1,6 +1,8 @@
 # created by virtualenv automatically
-*
-!.gitignore
+
+.vscode/
+
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -126,6 +128,4 @@ dmypy.json
 cython_debug/
 
 databases/
-
-!.github/
-!.github/**
+.env

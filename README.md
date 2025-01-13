@@ -1,27 +1,25 @@
-# Agricultural Carbon Calculator
+<div align="center">
 
-## Version
-Current version: 0.1.0
+![CarbonCalculator](https://socialify.git.ci/Luis-Rosario-Alers/CarbonCalculator/image?description=1&font=Inter&logo=https%3A%2F%2Fi.pinimg.com%2Foriginals%2F4c%2F1b%2F31%2F4c1b319027c050c1fd247c860ef2e578.png&name=1&pattern=Plus&theme=Light)
 
-## Description
-Carbon footprint calculator for agricultural businesses.
+<p align="center"><img src="https://img.shields.io/github/stars/Luis-Rosario-Alers/CarbonCalculator" alt="shields"><img src="https://img.shields.io/github/contributors/Luis-Rosario-Alers/CarbonCalculator" alt="shields"><img src="https://img.shields.io/github/issues/Luis-Rosario-Alers/CarbonCalculator" alt="shields"><img src="https://img.shields.io/github/license/Luis-Rosario-Alers/CarbonCalculator" alt="shields"></p>
 
-## Installation
-```bash
-git clone https://github.com/Luis-Rosario-Alers/CarbonCalculator
-cd CarbonCalculator
-python -m venv venv
-source venv/bin/activate  # or `venv\Scripts\activate` on Windows
-pip install -r requirements.txt
-````
+[Getting Started👋](docs/GETTING_STARTED.md) | [FAQ❓](FAQ.md)| [Contributing🤝](CONTRIBUTORS.md)
 
-## Setting up Pre-commit Hooks
+## **Description**
 
-To ensure code quality and consistency, we use pre-commit hooks in this project. Follow the steps below to set up pre-commit hooks:
-```bash
-1. **Install the required dependencies**:
-    pip install -r requirements.txt
+*The Carbon Calculator is a specialized tool designed to help agricultural businesses measure and track their carbon footprint. This calculator takes into account various farming operations, equipment usage, and agricultural practices to provide accurate carbon emission estimates.*
 
-2. **Install pre-commit hooks**:
-    pre-commit install
-````
+<h2>🧐 Features</h2>
+
+Here are some of the project's best features:
+
+* Import/Export data 📄
+
+* Weather API integration⛈️
+
+* Data visualization📊 (to be added)
+
+* User Authentication👤 (to be added)
+
+* Recommendation Engine🤖 (to be added)
