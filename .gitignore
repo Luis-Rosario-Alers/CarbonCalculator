@@ -129,3 +129,5 @@ cython_debug/
 
 databases/
 .env
+
+.qodo

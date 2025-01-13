@@ -20,7 +20,7 @@ else:
 databases_folder = os.path.join(application_path, "databases")
 
 
-# function creates a emissions database during initialization of the program
+# function creates an emissions database during initialization of the program
 async def initialize_emissions_database():
     try:
         os.makedirs(databases_folder, exist_ok=True)

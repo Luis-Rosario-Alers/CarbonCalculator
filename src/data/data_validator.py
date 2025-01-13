@@ -17,18 +17,20 @@ class DataValidator:
         db_path = os.path.join(
             application_path, "databases", "fuel_type_conversions.db"
         )
-        conn = await aiosqlite.connect(db_path)
-        cursor = await conn.execute("SELECT fuel_type FROM fuel_types")
-        fuel_types = await cursor.fetchone()
-        logger.info("fuel_type_conversions.db accessed")
-        logger.info(f"fuel_type accessed: {fuel_type}")
 
-        if fuel_type in fuel_types:
-            logger.info("fuel_type validated")
-            return True
-        else:
-            logger.error("fuel_type invalid")
-            return False
+        async with aiosqlite.connect(db_path) as conn:
+            cursor = await conn.cursor()
+            await cursor.execute("SELECT fuel_type FROM fuel_types")
+            fuel_types = await cursor.fetchone()
+            logger.info("fuel_type_conversions.db accessed")
+            if fuel_type in fuel_types:
+                logger.info(f"fuel_type accessed: {fuel_type}")
+                logger.info("fuel_type validated")
+                return True
+            else:
+                logger.info(f"fuel_type accessed: {fuel_type}")
+                logger.error("fuel_type invalid")
+                return False
 
     def validate_fuel_used(self, fuel_used):
         if not isinstance(fuel_used, (int, float)) or fuel_used <= 0:
