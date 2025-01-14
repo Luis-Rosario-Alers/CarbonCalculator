@@ -10,6 +10,7 @@ psutil
 pyinstaller
 PySide6
 pytest
+pytest-cov
 pytest-asyncio
 pytest-mock
 python-dotenv
