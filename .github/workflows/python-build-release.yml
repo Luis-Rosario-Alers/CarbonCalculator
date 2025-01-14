@@ -1,5 +1,6 @@
 name: Build and Release
 
+# Trigger the workflow on push to tags matching the pattern "v*.*.*"
 on:
   push:
     tags:
@@ -11,32 +12,24 @@ permissions:
   actions: write
 
 jobs:
-  python-app:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-
   build:
-    needs: python-app
+    # Define a matrix build to run on the latest versions of Ubuntu, macOS, and Windows
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      # Set up Python 3.12
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Install dependencies
-        run: |
+      # Install dependencies
+      - run: |
           python -m pip install --upgrade pip
           pip install pyinstaller
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-      - name: Build application
-        run: |
+      # Build the application using PyInstaller
+      - run: |
           LOG_LEVEL=debug
           if [ "$RUNNER_OS" == "Windows" ]; then
             pyinstaller --add-data "src/data/resources:resources" --icon "src/data/resources/assets/icon.ico" --paths src src/main.py --name CarbonCalculator.exe
@@ -46,17 +39,15 @@ jobs:
             pyinstaller --add-data "src/data/resources:resources" --icon "src/data/resources/assets/icon.png" --paths src src/main.py --name CarbonCalculator
           fi
         continue-on-error: true
-      - name: Archive build artifacts
-        run: |
+      # Archive the build artifacts
+      - run: |
+          mkdir -p build
           if [ "$RUNNER_OS" == "Windows" ]; then
-            mkdir -p build
             mv dist/CarbonCalculator.exe build/
           else
-            mkdir -p build
             mv dist/CarbonCalculator build/
-          fi
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+      # Upload the build artifacts
+      - uses: actions/upload-artifact@v4
         with:
           name: CarbonCalculator-${{ matrix.os }}
           path: build/
@@ -65,23 +56,21 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
+      # Download the build artifacts for each OS
+      - uses: actions/download-artifact@v4
         with:
-          name: CarbonCalculator-ubuntu-latest
+          name: CarbonCalculator-ubuntu-${{ github.ref }}
           path: build/linux
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v4
         with:
-          name: CarbonCalculator-macos-latest
+          name: CarbonCalculator-macos-${{ github.ref }}
           path: build/macos
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v4
         with:
-          name: CarbonCalculator-windows-latest
+          name: CarbonCalculator-windows-${{ github.ref }}
           path: build/windows
-      - name: Create Release
-        id: create_release
+      # Create a new release
+      - id: create_release
         uses: actions/create-release@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -90,8 +79,8 @@ jobs:
           release_name: Release ${{ github.ref }}
           draft: true
           prerelease: false
-      - name: Upload Release Assets
-        uses: actions/upload-release-asset@v2
+      # Upload the release assets for each OS
+      - uses: actions/upload-release-asset@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -99,8 +88,7 @@ jobs:
           asset_path: build/linux/CarbonCalculator
           asset_name: CarbonCalculator-linux
           asset_content_type: application/octet-stream
-      - name: Upload Release Assets
-        uses: actions/upload-release-asset@v2
+      - uses: actions/upload-release-asset@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -108,8 +96,7 @@ jobs:
           asset_path: build/macos/CarbonCalculator
           asset_name: CarbonCalculator-macos
           asset_content_type: application/octet-stream
-      - name: Upload Release Assets
-        uses: actions/upload-release-asset@v2
+      - uses: actions/upload-release-asset@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
