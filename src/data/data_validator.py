@@ -3,7 +3,7 @@ import os
 
 import aiosqlite
 
-from data.database import application_path
+from data.database import databases_folder
 
 # validates user input and database data
 
@@ -14,9 +14,7 @@ class DataValidator:
     @staticmethod
     async def validate_fuel_type(fuel_type: str) -> bool:
         logger.info("validating fuel_type")
-        db_path = os.path.join(
-            application_path, "databases", "fuel_type_conversions.db"
-        )
+        db_path = os.path.join(databases_folder, "fuel_type_conversions.db")
 
         async with aiosqlite.connect(db_path) as conn:
             cursor = await conn.cursor()

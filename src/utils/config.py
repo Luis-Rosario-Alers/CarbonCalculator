@@ -1,24 +1,19 @@
 import logging
 import os
-import sys
 
 from dotenv import load_dotenv
 
+from data.database import application_path
 from utils.logging import setup_logging
 
 setup_logging()
 
 logger = logging.getLogger("utilities")
 
-if getattr(sys, "frozen", False):
-    application_path = os.path.dirname(sys.executable)
-else:
-    application_path = os.path.dirname(__file__)
-
 env_path = os.path.join(application_path, "resources", ".env")
 
 
-load_dotenv(dotenv_path="src/utils/EXAMPLE_ENV.env")
+load_dotenv(dotenv_path=env_path)
 
 
 WEATHER_API_KEY = os.getenv("WEATHER_API_KEY")

@@ -1,6 +1,5 @@
 import asyncio
 import logging.config
-import os
 
 from PySide6.QtWidgets import QApplication
 from qasync import QEventLoop
@@ -31,10 +30,7 @@ async def start():
     user's location using the WeatherService.
 
     """
-    logger.info("Initializing databases")
-    if not os.path.exists("databases"):
-        await db.database_initialization()
-    logger.info("Databases initialized")
+    await db.database_initialization()
     internet_connection_process = await test_user_internet_connection()
     if (
         WEATHER_API_KEY is None
@@ -63,10 +59,10 @@ async def start():
 
 def run_main_window(internet_connection_status_passed):
     """
-    Run the event loop for the main window.
-
-    This function creates the application instance, sets up the Qt event loop
-    integrating it with the asyncio loop, and runs the main window of the application.
+        Run the event loop for the main window.
+    ~
+        This function creates the application instance, sets up the Qt event loop
+        integrating it with the asyncio loop, and runs the main window of the application.
     """
     logger.info("Running main window")
 
@@ -90,11 +86,10 @@ def main():
     startup tasks, and then running the main window.
     """
     logger.info("Starting application")
-    loop = asyncio.get_event_loop()
+    loop = asyncio.new_event_loop()
     internet_connection_status = loop.run_until_complete(start())
     run_main_window(internet_connection_status)
 
 
 if __name__ == "__main__":
     main()
-

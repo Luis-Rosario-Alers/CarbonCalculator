@@ -44,16 +44,18 @@ async def calculate_emissions(
         temp_deviation = (
             temperature - baseline_temperature[temperature_type]
         ) / baseline_temperature[temperature_type]
+
         adjusted_emissions_factor = emissions_factor * (1 + temp_deviation**2)
+
         emissions = fuel_used * adjusted_emissions_factor
         if not data_validator.validate_emissions(emissions):
             raise ValueError("Invalid emissions data")
         await log_calculation(user_id, fuel_type, fuel_used, emissions)
-        return user_id, fuel_type, fuel_used, emissions
+        return fuel_type, fuel_used, emissions
     else:
         logger.info("Temperature data not available, using standard emissions factor")
         emissions = fuel_used * emissions_factor
         if not data_validator.validate_emissions(emissions):
             raise ValueError("Invalid emissions data")
         await log_calculation(user_id, fuel_type, fuel_used, emissions)
-        return user_id, fuel_type, fuel_used, emissions
+        return fuel_type, fuel_used, emissions

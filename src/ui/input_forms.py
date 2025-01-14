@@ -1,6 +1,7 @@
 import asyncio
 import logging
 
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QComboBox,
     QFileDialog,
@@ -88,12 +89,16 @@ class InputForms(QWidget):
         try:
             # user_id, fuel_type and fuel_used are NOT valid, it will raise a ValueError and QMessageBox will show
             # the error message
-            if not data_validator.validate_user_id(user_id) or not data_validator.validate_fuel_used(fuel_used):
+            if not data_validator.validate_user_id(
+                user_id
+            ) or not data_validator.validate_fuel_used(fuel_used):
                 error = ValueError("Invalid input")
                 QMessageBox.critical(self, "Error", str(error))
                 return
             # checking if the user_id, fuel_type and fuel_used are valid
-            elif data_validator.validate_user_id(user_id) and data_validator.validate_fuel_used(fuel_used):
+            elif data_validator.validate_user_id(
+                user_id
+            ) and data_validator.validate_fuel_used(fuel_used):
                 logger.info("Valid input: sending data to EmissionsCalculator")
                 # Send the validated data to EmissionsCalculator
                 from main import user_local_temps
@@ -102,18 +107,20 @@ class InputForms(QWidget):
 
                 if user_local_temps is None:
                     logger.info("Temperature data not available")
-                    asyncio.ensure_future(
+                    future = asyncio.ensure_future(
                         calculate_emissions(
                             user_id,
                             fuel_type,
                             fuel_used,
                         )
                     )
-                    self.import_export_data()
+                    future.add_done_callback(
+                        lambda f: self.display_results(*f.result())
+                    )
                 elif user_local_temps is not None:
                     logger.info("Temperature data available")
                     temperature_type = self.temperature_type()
-                    asyncio.ensure_future(
+                    future = asyncio.ensure_future(
                         calculate_emissions(
                             user_id,
                             fuel_type,
@@ -122,7 +129,9 @@ class InputForms(QWidget):
                             temperature_type,
                         )
                     )
-                    self.import_export_data()
+                    future.add_done_callback(
+                        lambda f: self.display_results(*f.result())
+                    )
 
         except ValueError as e:
             logger.error(f"Error submitting data: {e}")
@@ -202,3 +211,20 @@ class InputForms(QWidget):
             logger.info("Kelvin temperature type selected")
             temperature_type = 2
             return temperature_type
+
+    def display_results(self, fuel_type, fuel_used, emissions):
+        logger.info("Future callback: displaying results")
+        results = QMessageBox(self)
+        results.setWindowTitle("Results")
+        results.setTextFormat(Qt.TextFormat.RichText)
+        results.setText(
+            f"<b>Fuel Type:</b> {fuel_type} <b>Fuel Used:</b> {fuel_used} <b>Emissions:</b> {emissions}"
+        )
+        ok_button = QPushButton("Ok")
+        results.addButton(ok_button, QMessageBox.AcceptRole)
+        logger.info("Emissions calculation results displayed")
+        results.exec_()
+        selected_button = results.clickedButton()
+        if selected_button is ok_button:
+            logger.info("Ok button clicked")
+            self.import_export_data()

@@ -9,23 +9,37 @@ import aiosqlite
 
 logger = logging.getLogger("data")
 
-# Get the directory of the current script or executable
-if getattr(sys, "frozen", False):
-    # If the application is run as a bundle (e.g., with PyInstaller)
-    application_path = os.path.dirname(sys.executable)
-else:
-    # If the application is run as a script
-    application_path = os.path.dirname(__file__)
 
-databases_folder = os.path.join(application_path, "databases")
+def determine_application_path():
+    if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
+        logger.info("Running as a PyInstaller bundle")
+        application_path = sys._MEIPASS
+        databases_folder = os.path.join(application_path, "databases")
+        logger.info(f"Application path set to: {application_path}")
+        logger.info(f"Databases folder set to: {databases_folder}")
+    else:
+        logger.info("Running as a script")
+        application_path = os.path.dirname(__file__)
+        databases_folder = os.path.join(application_path, "databases")
+        logger.info(f"Application path set to: {application_path}")
+        logger.info(f"Databases folder set to: {databases_folder}")
+    return application_path, databases_folder
+
+
+application_path, databases_folder = determine_application_path()
+
+
+def setup_databases_folder():
+    if os.path.exists(databases_folder):
+        pass
+    elif not os.path.exists(databases_folder):
+        os.makedirs(databases_folder, exist_ok=True)
 
 
 # function creates an emissions database during initialization of the program
 async def initialize_emissions_database():
     try:
-        os.makedirs(databases_folder, exist_ok=True)
         db_path = os.path.join(databases_folder, "emissions.db")
-
         async with aiosqlite.connect(db_path) as conn:
             async with conn.cursor() as cursor:
                 await cursor.execute(
@@ -43,8 +57,6 @@ async def initialize_emissions_database():
 
 async def initialize_user_data_database():
     try:
-        databases_folder = os.path.join(application_path, "databases")
-        os.makedirs(databases_folder, exist_ok=True)
         db_path = os.path.join(databases_folder, "user_data.db")
 
         async with aiosqlite.connect(db_path) as conn:
@@ -62,8 +74,6 @@ async def initialize_user_data_database():
 
 async def initialize_fuel_type_database():
     try:
-        databases_folder = os.path.join(application_path, "databases")
-        os.makedirs(databases_folder, exist_ok=True)
         db_path = os.path.join(databases_folder, "fuel_type_conversions.db")
 
         async with aiosqlite.connect(db_path) as conn:
@@ -80,8 +90,11 @@ async def initialize_fuel_type_database():
                     "conversion_factors",
                     "fuel_types.json",
                 )
-                async with aiofiles.open(json_path, "r") as file:
-                    fuel_data = json.loads(await file.read())
+                try:
+                    async with aiofiles.open(json_path, "r") as file:
+                        fuel_data = json.loads(await file.read())
+                except json.JSONDecodeError:
+                    print("Error loading fuel type data")
 
                 for fuel in fuel_data:
                     await cursor.execute(
@@ -100,7 +113,7 @@ async def initialize_fuel_type_database():
 
 
 async def get_fuel_types():
-    db_path = os.path.join(application_path, "databases", "fuel_type_conversions.db")
+    db_path = os.path.join(databases_folder, "fuel_type_conversions.db")
     conn = aiosqlite.connect(db_path)
     async with conn:
         async with conn.cursor() as cursor:
@@ -110,7 +123,7 @@ async def get_fuel_types():
 
 
 async def get_emissions_factor(fuel_type: str) -> int:
-    db_path = os.path.join(application_path, "databases", "fuel_type_conversions.db")
+    db_path = os.path.join(databases_folder, "fuel_type_conversions.db")
     async with aiosqlite.connect(db_path) as conn:
         async with conn.cursor() as cursor:
             await cursor.execute(
@@ -136,7 +149,7 @@ async def log_calculation(user_id, fuel_type, fuel_used, emissions):
         logger.info(
             f"User ID: {user_id}, Fuel Type: {fuel_type}, Fuel Used: {fuel_used}, Emissions: {emissions}"
         )
-        db_path = os.path.join(application_path, "databases", "emissions.db")
+        db_path = os.path.join(databases_folder, "emissions.db")
 
         # connect to the database
         async with aiosqlite.connect(db_path) as conn:
@@ -166,11 +179,17 @@ async def log_calculation(user_id, fuel_type, fuel_used, emissions):
 
 # function to bundle initialization of all databases
 async def database_initialization():
-    await asyncio.gather(
-        initialize_emissions_database(),
-        initialize_user_data_database(),
-        initialize_fuel_type_database(),
-    )
+    if os.path.exists(databases_folder):
+        pass
+    elif not os.path.exists(databases_folder):
+        setup_databases_folder()
+        logger.info("Initializing databases"),
+        await asyncio.gather(
+            initialize_emissions_database(),
+            initialize_user_data_database(),
+            initialize_fuel_type_database(),
+        )
+    logger.info("Databases initialized")
 
 
 # function to test initialization of all databases

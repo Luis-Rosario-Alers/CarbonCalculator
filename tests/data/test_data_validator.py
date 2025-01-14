@@ -1,4 +1,4 @@
-from unittest.mock import AsyncMock, patch, Mock
+from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
 
@@ -15,13 +15,13 @@ async def test_validate_fuel_type_valid(data_validator: DataValidator):
     """Test validate_fuel_type with an invalid fuel type."""
     mock_cursor = AsyncMock()
     mock_cursor.fetchone.return_value = "gasoline"
-    
+
     mock_conn = AsyncMock()
     mock_conn.cursor.return_value = mock_cursor
 
     mock_conn.__aenter__.return_value = mock_conn
     mock_conn.__aexit__.return_value = None
-    
+
     with patch("aiosqlite.connect", return_value=mock_conn):
         result = await data_validator.validate_fuel_type("gasoline")
         assert result is True

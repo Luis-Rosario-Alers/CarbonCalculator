@@ -1,8 +1,9 @@
 import csv
 import json
 import logging
-import sqlite3
 import os
+import sqlite3
+
 from data.database import databases_folder
 
 logger = logging.getLogger("data")

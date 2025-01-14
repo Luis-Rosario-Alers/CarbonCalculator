@@ -7,8 +7,11 @@ import aiosqlite
 import pytest
 
 from core.emissions_calculator import calculate_emissions
-from data.database import log_calculation
-from data.database import initialize_emissions_database, initialize_fuel_type_database
+from data.database import (
+    initialize_emissions_database,
+    initialize_fuel_type_database,
+    log_calculation,
+)
 
 # ! BEWARE THAT RUNNING THESE TESTS WILL DELETE THE DATABASES FOLDER AND ALL ITS CONTENTS.
 # ! MAKE SURE TO BACK UP ANY IMPORTANT DATA BEFORE RUNNING THESE TESTS.
@@ -120,4 +123,3 @@ async def test_log_calculation(
 
     except Exception as e:
         print(f"Error during test: {e}")
-

@@ -4,14 +4,14 @@ import logging
 import os
 import sqlite3
 
-from data.database import application_path
+from data.database import databases_folder
 
 logger = logging.getLogger("data")
 
 
 class ExportManager:
     def __init__(self):
-        self.db_path = os.path.join(application_path, "databases", "emissions.db")
+        self.db_path = os.path.join(databases_folder, "emissions.db")
 
     def fetch_data(self):
         conn = sqlite3.connect(self.db_path)

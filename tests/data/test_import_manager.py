@@ -5,16 +5,22 @@ from datetime import datetime
 import aiosqlite
 import pytest
 
-from data.database import initialize_emissions_database, application_path
+from data.database import (
+    application_path,
+    databases_folder,
+    initialize_emissions_database,
+    setup_databases_folder,
+)
 from data.import_manager import ImportManager
 
 
 @pytest.fixture(autouse=True)
 async def cleanup_database():
     # Create a fresh database folder if it doesn't exist
+    setup_databases_folder()
     await initialize_emissions_database()
     yield
-    db_path = os.path.join(application_path, "databases", "emissions.db")
+    db_path = os.path.join(databases_folder, "emissions.db")
     conn = await aiosqlite.connect(db_path)
     cursor = await conn.cursor()
     await cursor.execute("DELETE FROM emissions")
