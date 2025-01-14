@@ -51,6 +51,7 @@ async def start():
             user_local_temps = None
         else:
             user_local_temps = await weather_service.get_weather(
+                # latitude      # longitude
                 user_coords[0], user_coords[1]
             )
 

@@ -66,9 +66,10 @@ async def test_calculate_emissions(
                 expected_emissions = await calculate_emissions(
                     1, fuel_type, fuel_used
                 )
+                fuel_type, fuel_used, expected_emissions = expected_emissions
 
         # assert that expected function logic is equal to actual function logic
-        assert emissions == expected_emissions[3]
+        assert emissions == expected_emissions
     finally:
         time.sleep(0.1)
 

@@ -24,7 +24,12 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle("Carbon Calculator")
         self.setGeometry(100, 100, 400, 300)
-        self.setWindowIcon(QIcon(f"{application_path}/resources/assets/icon.png"))
+        if sys.platform == "darwin":
+            self.setWindowIcon(QIcon(f"{application_path}/resources/assets/icon.icns"))
+        elif sys.platform == "win32":
+            self.setWindowIcon(QIcon(f"{application_path}/resources/assets/icon.ico"))
+        else:
+            self.setWindowIcon(QIcon(f"{application_path}/resources/assets/icon.png"))
         # TODO: find a way to change the icon on the taskbar
 
         central_widget = QWidget()

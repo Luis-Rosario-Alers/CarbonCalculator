@@ -5,6 +5,7 @@
 ### Changed
 
 - Changed `loop = asyncio.get_event_loop()` to `loop = asyncio.new_event_loop()` in `main.py` to be able to run the application without any deprecation issues
+- Changed logic on how GUI displays application icon to be able to dynamically change format depending on OS
 
 
 ### Added
