@@ -1,4 +1,3 @@
-import asyncio
 import os
 import shutil
 import time
@@ -19,9 +18,10 @@ from data.database import (
 
 
 # path to database folder
-db_folder = os.path.join(os.path.dirname(__file__), "..", "..", "src", "data", "databases")
+db_folder = os.path.join(
+    os.path.dirname(__file__), "..", "..", "src", "data", "databases"
+)
 print(db_folder)
-
 
 
 @pytest.fixture(autouse=True)
@@ -43,9 +43,7 @@ def cleanup_database():
 
 # * If this test fails, check the calculate_emissions module for logic changes such as math operator changing
 @pytest.mark.asyncio
-async def test_calculate_emissions(
-        fuel_type="gasoline", fuel_used: float = 10.0
-):
+async def test_calculate_emissions(fuel_type="gasoline", fuel_used: float = 10.0):
     try:
         # initializes fuel type databases necessary for test
         await initialize_fuel_type_database()
@@ -63,9 +61,7 @@ async def test_calculate_emissions(
                 # simulate expected function logic
                 emissions_factor = (await cursor.fetchone())[0]
                 emissions = fuel_used * emissions_factor
-                expected_emissions = await calculate_emissions(
-                    1, fuel_type, fuel_used
-                )
+                expected_emissions = await calculate_emissions(1, fuel_type, fuel_used)
                 fuel_type, fuel_used, expected_emissions = expected_emissions
 
         # assert that expected function logic is equal to actual function logic
@@ -86,12 +82,7 @@ async def test_log_calculation(
         await initialize_emissions_database()
 
         # paths to databases
-        emissions_db_path = os.path.join(
-            db_folder, "emissions.db"
-        )
-        fuel_type_db_path = os.path.join(
-            db_folder, "fuel_type_conversions.db"
-        )
+        fuel_type_db_path = os.path.join(db_folder, "fuel_type_conversions.db")
 
         conn_fuel = await aiosqlite.connect(fuel_type_db_path)
         cursor_fuel = await conn_fuel.cursor()
@@ -110,10 +101,7 @@ async def test_log_calculation(
 
         expected_result = [(fuel_type, fuel_used, emissions)]
         # Test the actual function
-        real_result = await log_calculation(
-            2, fuel_type, fuel_used, emissions
-        )
-
+        real_result = await log_calculation(2, fuel_type, fuel_used, emissions)
 
         print(f"expected result: {expected_result}")
         print(f"real result: {real_result}")

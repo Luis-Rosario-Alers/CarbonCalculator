@@ -1,8 +1,6 @@
 import csv
 import json
 
-import pytest
-
 from data.export_manager import ExportManager
 
 

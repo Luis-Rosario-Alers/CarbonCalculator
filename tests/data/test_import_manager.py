@@ -1,12 +1,10 @@
 import os
-import sqlite3
 from datetime import datetime
 
 import aiosqlite
 import pytest
 
 from data.database import (
-    application_path,
     databases_folder,
     initialize_emissions_database,
     setup_databases_folder,

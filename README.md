@@ -1,10 +1,15 @@
 <div align="center">
 
-![CarbonCalculator](https://socialify.git.ci/Luis-Rosario-Alers/CarbonCalculator/image?description=1&font=Inter&logo=https%3A%2F%2Fi.pinimg.com%2Foriginals%2F4c%2F1b%2F31%2F4c1b319027c050c1fd247c860ef2e578.png&name=1&pattern=Plus&theme=Light)
+[![CarbonCalculator](https://socialify.git.ci/Luis-Rosario-Alers/CarbonCalculator/image?description=1&font=Inter&logo=https%3A%2F%2Fi.pinimg.com%2Foriginals%2F4c%2F1b%2F31%2F4c1b319027c050c1fd247c860ef2e578.png&name=1&pattern=Plus&theme=Light)](https://github.com/Luis-Rosario-Alers/CarbonCalculator)
 
-<p align="center"><img src="https://img.shields.io/github/stars/Luis-Rosario-Alers/CarbonCalculator" alt="shields"><img src="https://img.shields.io/github/contributors/Luis-Rosario-Alers/CarbonCalculator" alt="shields"><img src="https://img.shields.io/github/issues/Luis-Rosario-Alers/CarbonCalculator" alt="shields"><img src="https://img.shields.io/github/license/Luis-Rosario-Alers/CarbonCalculator" alt="shields"></p>
+[![Stars](https://img.shields.io/github/stars/Luis-Rosario-Alers/CarbonCalculator)](https://github.com/Luis-Rosario-Alers/CarbonCalculator/stargazers)
+[![Contributors](https://img.shields.io/github/contributors/Luis-Rosario-Alers/CarbonCalculator)](https://github.com/Luis-Rosario-Alers/CarbonCalculator/graphs/contributors)
+[![Issues](https://img.shields.io/github/issues/Luis-Rosario-Alers/CarbonCalculator)](https://github.com/Luis-Rosario-Alers/CarbonCalculator/issues)
+[![License](https://img.shields.io/github/license/Luis-Rosario-Alers/CarbonCalculator)](https://github.com/Luis-Rosario-Alers/CarbonCalculator/blob/master/LICENSE)
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit)
+[![codecov](https://codecov.io/github/Luis-Rosario-Alers/CarbonCalculator/graph/badge.svg?token=OVPU0O07GO)](https://codecov.io/github/Luis-Rosario-Alers/CarbonCalculator)
 
-[Getting Started👋](docs/GETTING_STARTED.md) | [FAQ❓](FAQ.md)| [Contributing🤝](CONTRIBUTORS.md)
+[Getting Started👋](docs/GETTING_STARTED.md) | [FAQ❓](FAQ.md)| [Contributing🤝](CONTRIBUTING)
 
 ## **Description**
 
