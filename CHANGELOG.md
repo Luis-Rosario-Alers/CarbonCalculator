@@ -1,5 +1,28 @@
 # Changelog
 
+## v0.4.1
+
+### Changed
+
+- Changed `loop = asyncio.get_event_loop()` to `loop = asyncio.new_event_loop()` in `main.py` to be able to run the application without any deprecation issues
+- Changed logic on how GUI displays application icon to be able to dynamically change format depending on OS
+
+
+### Added
+
+- Added `determine_application_path()` in `database.py` to be able to dynamically determine the path for database folder creation and other main logic operations
+- Added `setup_database_folder()` in `database.py` to be able to create the database folder if it does not exist in a more concise way
+- Added GitHub Actions workflow for automated testing
+
+### Fixed
+
+- Fixed bug where the application would not continue to temperature type sequence because of incorrect if statement condition
+- Fixed bug where database would not have a connection open because of bad async database operations handling
+
+### Tests
+
+- Fixed tests that were not passing because of bad async integration into main logic
+
 ## v0.4.0
 
 ### Added

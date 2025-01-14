@@ -15,13 +15,13 @@ class WeatherService:
 
     async def get_weather(
         self, latitude=None, longitude=None
-    ) -> tuple[float, float, float]:
+    ) -> tuple[float, float, float] | None:
         logger.info("Fetching weather data")
         url = f"https://api.openweathermap.org/data/2.5/weather?lat={latitude}&lon={longitude}&appid={self.api_key}"
         timeout = aiohttp.ClientTimeout(total=5)
         try:
             async with aiohttp.ClientSession() as session:
-                response = session.get(url, timeout=timeout)
+                response = await session.get(url, timeout=timeout)
                 weather_data = await response.json()
                 if weather_data.get("cod") != 200:
                     logger.error(

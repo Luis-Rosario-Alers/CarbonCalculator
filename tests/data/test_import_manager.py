@@ -1,20 +1,29 @@
 import os
-import sqlite3
 from datetime import datetime
 
+import aiosqlite
 import pytest
 
+from data.database import (
+    databases_folder,
+    initialize_emissions_database,
+    setup_databases_folder,
+)
 from data.import_manager import ImportManager
 
 
 @pytest.fixture(autouse=True)
-def cleanup_database():
+async def cleanup_database():
+    # Create a fresh database folder if it doesn't exist
+    setup_databases_folder()
+    await initialize_emissions_database()
     yield
-    conn = sqlite3.connect("databases/emissions.db")
-    cursor = conn.cursor()
-    cursor.execute("DELETE FROM emissions")
-    conn.commit()
-    conn.close()
+    db_path = os.path.join(databases_folder, "emissions.db")
+    conn = await aiosqlite.connect(db_path)
+    cursor = await conn.cursor()
+    await cursor.execute("DELETE FROM emissions")
+    await conn.commit()
+    await conn.close()
 
 
 # * Tests for import_json method

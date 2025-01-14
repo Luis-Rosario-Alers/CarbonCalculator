@@ -13,8 +13,8 @@ async def test_user_internet_connection():
                 if response.status == 200:
                     logger.info("Internet connection established.")
                     return True
-    except aiohttp.ClientError:
-        logger.warning(UserWarning("No internet connection found."))
+    except aiohttp.ClientError as e:
+        logger.error(f"an error occurred testing internet connection: {e}")
         logger.info("Program will now proceed in offline mode.")
         logger.info("Note: Some features may not be available.")
         return False

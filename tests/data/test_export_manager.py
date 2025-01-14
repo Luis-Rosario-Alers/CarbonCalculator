@@ -1,8 +1,6 @@
 import csv
 import json
 
-import pytest
-
 from data.export_manager import ExportManager
 
 
@@ -16,7 +14,7 @@ def test_export_to_json_writes_data_with_correct_structure(tmp_path, mocker):
     mock_fetch = mocker.patch("data.export_manager.ExportManager.fetch_data")
     mock_fetch.return_value = test_data
 
-    export_manager = ExportManager("dummy.db")
+    export_manager = ExportManager()
     output_file = tmp_path / "test_output.json"
 
     # When
@@ -42,7 +40,7 @@ def test_export_to_json_handles_empty_dataset(tmp_path, mocker):
     mock_fetch = mocker.patch("data.export_manager.ExportManager.fetch_data")
     mock_fetch.return_value = []
 
-    export_manager = ExportManager("dummy.db")
+    export_manager = ExportManager()
     output_file = tmp_path / "empty_output.json"
 
     # When
@@ -66,7 +64,7 @@ def test_export_to_json_handles_large_datasets(tmp_path, mocker):
     ]
     mock_fetch = mocker.patch("data.export_manager.ExportManager.fetch_data")
     mock_fetch.return_value = large_test_data
-    export_manager = ExportManager("dummy.db")
+    export_manager = ExportManager()
     output_file = tmp_path / "large_test_output.json"
     # When
     export_manager.export_to_json(output_file)
@@ -92,7 +90,7 @@ def test_export_to_csv_writes_data_with_correct_structure(tmp_path, mocker):
     ]
     mock_fetch = mocker.patch("data.export_manager.ExportManager.fetch_data")
     mock_fetch.return_value = test_data
-    export_manager = ExportManager("dummy.db")
+    export_manager = ExportManager()
     output_file = tmp_path / "test_output.csv"
     # When
     export_manager.export_to_csv(output_file)
@@ -115,7 +113,7 @@ def test_export_to_csv_handles_empty_dataset(tmp_path, mocker):
     # Given
     mock_fetch = mocker.patch("data.export_manager.ExportManager.fetch_data")
     mock_fetch.return_value = []
-    export_manager = ExportManager("dummy.db")
+    export_manager = ExportManager()
     output_file = tmp_path / "empty_output.csv"
     # When
     export_manager.export_to_csv(output_file)
@@ -134,7 +132,7 @@ def test_export_to_csv_handles_large_datasets(tmp_path, mocker):
     ]
     mock_fetch = mocker.patch("data.export_manager.ExportManager.fetch_data")
     mock_fetch.return_value = large_test_data
-    export_manager = ExportManager("dummy.db")
+    export_manager = ExportManager()
     output_file = tmp_path / "large_test_output.csv"
     # When
     export_manager.export_to_csv(output_file)
