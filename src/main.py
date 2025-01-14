@@ -52,7 +52,8 @@ async def start():
         else:
             user_local_temps = await weather_service.get_weather(
                 # latitude      # longitude
-                user_coords[0], user_coords[1]
+                user_coords[0],
+                user_coords[1],
             )
 
         return internet_connection_process  # return internet_connection_process
