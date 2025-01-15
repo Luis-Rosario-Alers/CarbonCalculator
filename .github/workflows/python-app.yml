@@ -3,9 +3,7 @@
 name: Python application
 
 on:
-  # Trigger the workflow on push to main or release branches, and on tags matching v*.*.*
   push:
-    branches: [ "main", "release/**" ]
     tags: [ "v*.*.*" ]
   # Trigger the workflow on pull requests to main or release branches
   pull_request:
