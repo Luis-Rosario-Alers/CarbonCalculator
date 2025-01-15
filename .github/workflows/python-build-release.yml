@@ -38,7 +38,6 @@ jobs:
           else
             pyinstaller --add-data "src/data/resources:resources" --icon "src/data/resources/assets/icon.png" --paths src src/main.py --name CarbonCalculator
           fi
-        continue-on-error: true
       # Archive the build artifacts
       - run: |
           mkdir -p build
@@ -56,18 +55,26 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      # Check for successful build completion
+      - name: Check build status
+        if: ${{ always() }}
+        run: |
+          if [ -z "$(ls -A build)" ]; then
+            echo "Build failed, no artifacts found."
+            exit 1
+          fi
       # Download the build artifacts for each OS
       - uses: actions/download-artifact@v4
         with:
-          name: CarbonCalculator-ubuntu-${{ github.ref }}
+          name: CarbonCalculator-ubuntu-latest
           path: build/linux
       - uses: actions/download-artifact@v4
         with:
-          name: CarbonCalculator-macos-${{ github.ref }}
+          name: CarbonCalculator-macos-latest
           path: build/macos
       - uses: actions/download-artifact@v4
         with:
-          name: CarbonCalculator-windows-${{ github.ref }}
+          name: CarbonCalculator-windows-latest
           path: build/windows
       # Create a new release
       - id: create_release
