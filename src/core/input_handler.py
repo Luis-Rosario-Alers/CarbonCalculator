@@ -33,6 +33,8 @@ class InputHandler:
                     break
                 print("Fuel used must be a positive number")
             except ValueError:
-                print("Invalid input. Please enter a numeric value for fuel used.")
+                print(
+                    "Invalid input. Please enter a numeric value for fuel used."
+                )
 
         return user_id, fuel_type, fuel_used

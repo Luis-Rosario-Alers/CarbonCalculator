@@ -25,11 +25,17 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Carbon Calculator")
         self.setGeometry(100, 100, 400, 300)
         if sys.platform == "darwin":
-            self.setWindowIcon(QIcon(f"{application_path}/resources/assets/icon.icns"))
+            self.setWindowIcon(
+                QIcon(f"{application_path}/resources/assets/icon.icns")
+            )
         elif sys.platform == "win32":
-            self.setWindowIcon(QIcon(f"{application_path}/resources/assets/icon.ico"))
+            self.setWindowIcon(
+                QIcon(f"{application_path}/resources/assets/icon.ico")
+            )
         else:
-            self.setWindowIcon(QIcon(f"{application_path}/resources/assets/icon.png"))
+            self.setWindowIcon(
+                QIcon(f"{application_path}/resources/assets/icon.png")
+            )
         # TODO: find a way to change the icon on the taskbar
 
         central_widget = QWidget()
@@ -39,7 +45,9 @@ class MainWindow(QMainWindow):
         self.input_forms = InputForms(self)
         layout.addWidget(self.input_forms)
 
-        self.display_internet_connection_status(self.internet_connection_status)
+        self.display_internet_connection_status(
+            self.internet_connection_status
+        )
 
     def closeEvent(self, event):
         reply = QMessageBox.question(
@@ -70,7 +78,9 @@ class MainWindow(QMainWindow):
                 "No internet connection found. Some features may not be available."
             )
         else:
-            msg_box.setText("There was an error checking the internet connection.")
+            msg_box.setText(
+                "There was an error checking the internet connection."
+            )
 
         msg_box.exec_()
 

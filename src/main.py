@@ -5,7 +5,9 @@ from PySide6.QtWidgets import QApplication
 from qasync import QEventLoop
 
 import data.database as db
-from services.user_internet_connection_service import test_user_internet_connection
+from services.user_internet_connection_service import (
+    test_user_internet_connection,
+)
 from services.user_location_service import UserLocationService
 from services.weather_service import WeatherService
 from ui.main_window import MainWindow
@@ -56,7 +58,9 @@ async def start():
                 user_coords[1],
             )
 
-        return internet_connection_process  # return internet_connection_process
+        return (
+            internet_connection_process  # return internet_connection_process
+        )
 
 
 def run_main_window(internet_connection_status_passed):

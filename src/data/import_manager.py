@@ -26,7 +26,13 @@ class ImportManager:
         with open(self.input_path, "r") as f:
             data_dicts = json.load(f)
 
-        required_keys = {"user_id", "fuel_type", "fuel_used", "emissions", "timestamp"}
+        required_keys = {
+            "user_id",
+            "fuel_type",
+            "fuel_used",
+            "emissions",
+            "timestamp",
+        }
         for entry in data_dicts:
             # Checks for missing keys by subtracting required
             # keys: 5 and entry.keys: 5 and then

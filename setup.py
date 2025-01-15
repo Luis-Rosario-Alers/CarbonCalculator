@@ -16,6 +16,7 @@ setup(
         "pyinstaller",
         "python-dotenv",
         "pytest",
+        "pytest-cov",
         "pytest-mock",
         "python-dotenv",
         "aiosqlite",

@@ -43,7 +43,9 @@ def cleanup_database():
 
 # * If this test fails, check the calculate_emissions module for logic changes such as math operator changing
 @pytest.mark.asyncio
-async def test_calculate_emissions(fuel_type="gasoline", fuel_used: float = 10.0):
+async def test_calculate_emissions(
+    fuel_type="gasoline", fuel_used: float = 10.0
+):
     try:
         # initializes fuel type databases necessary for test
         await initialize_fuel_type_database()
@@ -61,7 +63,9 @@ async def test_calculate_emissions(fuel_type="gasoline", fuel_used: float = 10.0
                 # simulate expected function logic
                 emissions_factor = (await cursor.fetchone())[0]
                 emissions = fuel_used * emissions_factor
-                expected_emissions = await calculate_emissions(1, fuel_type, fuel_used)
+                expected_emissions = await calculate_emissions(
+                    1, fuel_type, fuel_used
+                )
                 fuel_type, fuel_used, expected_emissions = expected_emissions
 
         # assert that expected function logic is equal to actual function logic
@@ -95,7 +99,9 @@ async def test_log_calculation(
         emissions = fuel_used * emissions_factor
 
         if not fuel_type_result:
-            raise ValueError(f"Fuel type {fuel_type} not found in the database")
+            raise ValueError(
+                f"Fuel type {fuel_type} not found in the database"
+            )
 
         await conn_fuel.close()
 

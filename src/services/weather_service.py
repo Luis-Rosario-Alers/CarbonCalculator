@@ -31,13 +31,23 @@ class WeatherService:
 
                 logger.info("Weather data retrieved")
                 temperature_kelvin = weather_data["main"]["temp"]
-                temperature_converter = TemperatureConverter(temperature_kelvin)
-                temperature_celsius = temperature_converter.convert_to_celsius()
-                temperature_fahrenheit = temperature_converter.convert_to_fahrenheit()
+                temperature_converter = TemperatureConverter(
+                    temperature_kelvin
+                )
+                temperature_celsius = (
+                    temperature_converter.convert_to_celsius()
+                )
+                temperature_fahrenheit = (
+                    temperature_converter.convert_to_fahrenheit()
+                )
                 logger.info(
                     f"Temperature in Celsius: {temperature_celsius}, Fahrenheit: {temperature_fahrenheit}, Kelvin: {temperature_kelvin}"
                 )
-                return temperature_celsius, temperature_fahrenheit, temperature_kelvin
+                return (
+                    temperature_celsius,
+                    temperature_fahrenheit,
+                    temperature_kelvin,
+                )
         except aiohttp.ClientError as e:
             logger.error(f"Error getting weather data: {e}")
             return None

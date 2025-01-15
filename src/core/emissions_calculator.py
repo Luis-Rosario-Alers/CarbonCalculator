@@ -53,7 +53,9 @@ async def calculate_emissions(
         await log_calculation(user_id, fuel_type, fuel_used, emissions)
         return fuel_type, fuel_used, emissions
     else:
-        logger.info("Temperature data not available, using standard emissions factor")
+        logger.info(
+            "Temperature data not available, using standard emissions factor"
+        )
         emissions = fuel_used * emissions_factor
         if not data_validator.validate_emissions(emissions):
             raise ValueError("Invalid emissions data")

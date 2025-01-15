@@ -35,7 +35,7 @@ jobs:
     # Lint the code with flake8
     - name: Lint with flake8
       run: |
-        flake8
+        flake8 . --ignore=E501,E402,B950
     # Run tests with pytest and generate a coverage report
     - name: Test with pytest
       run: |

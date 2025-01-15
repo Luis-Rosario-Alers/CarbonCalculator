@@ -136,8 +136,12 @@ class InputForms(QWidget):
         except ValueError as e:
             logger.error(f"Error submitting data: {e}")
             logger.info(f"user_id type: {type(user_id)}, value: {user_id}")
-            logger.info(f"fuel_type type: {type(fuel_type)}, value: {fuel_type}")
-            logger.info(f"fuel_used type: {type(fuel_used)}, value: {fuel_used}")
+            logger.info(
+                f"fuel_type type: {type(fuel_type)}, value: {fuel_type}"
+            )
+            logger.info(
+                f"fuel_used type: {type(fuel_used)}, value: {fuel_used}"
+            )
             QMessageBox.critical(self, "Error", str(e))
 
     def import_export_data(self):
@@ -169,7 +173,9 @@ class InputForms(QWidget):
                     import_manager.import_from_json()
                 else:
                     logger.error("Unsupported file format")
-                    QMessageBox.critical(self, "Error", "Unsupported file format")
+                    QMessageBox.critical(
+                        self, "Error", "Unsupported file format"
+                    )
         elif msg_box.clickedButton() == export_button:
             # Open file dialog to export data
             file_path, _ = QFileDialog.getSaveFileName(
@@ -186,17 +192,23 @@ class InputForms(QWidget):
                     export_manager.export_to_json(file_path)
                 else:
                     logger.error("Unsupported file format")
-                    QMessageBox.critical(self, "Error", "Unsupported file format")
+                    QMessageBox.critical(
+                        self, "Error", "Unsupported file format"
+                    )
 
     def temperature_type(self):
         temperature_dialogue = QMessageBox(self)
         temperature_dialogue.setWindowTitle("Temperature Type")
-        temperature_dialogue.setText("Which temperature type would you like to use?")
+        temperature_dialogue.setText(
+            "Which temperature type would you like to use?"
+        )
         celsius_button = QPushButton("Celsius")
         fahrenheit_button = QPushButton("Fahrenheit")
         kelvin_button = QPushButton("Kelvin")
         temperature_dialogue.addButton(celsius_button, QMessageBox.AcceptRole)
-        temperature_dialogue.addButton(fahrenheit_button, QMessageBox.AcceptRole)
+        temperature_dialogue.addButton(
+            fahrenheit_button, QMessageBox.AcceptRole
+        )
         temperature_dialogue.addButton(kelvin_button, QMessageBox.AcceptRole)
         temperature_dialogue.exec_()
         if temperature_dialogue.clickedButton() == celsius_button:

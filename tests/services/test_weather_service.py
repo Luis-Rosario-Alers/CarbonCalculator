@@ -16,6 +16,8 @@ async def test_get_weather_returns_none_on_error_response(mocker):
 
     weather_service = WeatherService("your_weather_api_key_here")
     # When
-    result = await weather_service.get_weather(latitude=51.5074, longitude=-0.1278)
+    result = await weather_service.get_weather(
+        latitude=51.5074, longitude=-0.1278
+    )
     # Then
     assert result is None

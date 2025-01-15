@@ -81,7 +81,9 @@ def test_import_json_data_types(tmp_path):
 # Raises ValueError when CSV file is missing required headers
 def test_import_csv_with_missing_headers(tmp_path):
     # Given
-    csv_content = "user_id,fuel_type,emissions,timestamp\n1,gas,25.3,2023-01-01"
+    csv_content = (
+        "user_id,fuel_type,emissions,timestamp\n1,gas,25.3,2023-01-01"
+    )
     csv_file = tmp_path / "test.csv"
     csv_file.write_text(csv_content)
     import_manager = ImportManager(str(csv_file))
@@ -112,9 +114,7 @@ def test_import_csv_with_extra_columns(tmp_path):
 # Checks that CSV values are of correct data types
 def test_import_csv_data_types(tmp_path):
     # Given
-    csv_content = (
-        "user_id,fuel_type,fuel_used,emissions,timestamp\n123,gas,50.5,150.3,2024-01-01"
-    )
+    csv_content = "user_id,fuel_type,fuel_used,emissions,timestamp\n123,gas,50.5,150.3,2024-01-01"
     csv_file = tmp_path / "test.csv"
     csv_file.write_text(csv_content)
     import_manager = ImportManager(str(csv_file))
