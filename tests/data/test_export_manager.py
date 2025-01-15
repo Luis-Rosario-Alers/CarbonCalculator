@@ -1,9 +1,7 @@
 import csv
 import json
 
-import pytest
-
-from data.export_manager import ExportManager
+from src.data.export_manager import ExportManager
 
 
 # Successfully exports data from SQLite to JSON file with correct structure
@@ -13,10 +11,12 @@ def test_export_to_json_writes_data_with_correct_structure(tmp_path, mocker):
         (1, "gasoline", 10.5, 24.3, "2023-01-01"),
         (2, "diesel", 8.2, 22.1, "2023-01-02"),
     ]
-    mock_fetch = mocker.patch("data.export_manager.ExportManager.fetch_data")
+    mock_fetch = mocker.patch(
+        "src.data.export_manager.ExportManager.fetch_data"
+    )
     mock_fetch.return_value = test_data
 
-    export_manager = ExportManager("dummy.db")
+    export_manager = ExportManager()
     output_file = tmp_path / "test_output.json"
 
     # When
@@ -26,7 +26,10 @@ def test_export_to_json_writes_data_with_correct_structure(tmp_path, mocker):
     with open(output_file) as f:
         exported_data = json.load(f)
 
+    mock_fetch.assert_called_once()
+
     assert len(exported_data) == 2
+
     assert exported_data[0] == {
         "user_id": 1,
         "fuel_type": "gasoline",
@@ -39,10 +42,12 @@ def test_export_to_json_writes_data_with_correct_structure(tmp_path, mocker):
 # Handle empty result set from database
 def test_export_to_json_handles_empty_dataset(tmp_path, mocker):
     # Given
-    mock_fetch = mocker.patch("data.export_manager.ExportManager.fetch_data")
+    mock_fetch = mocker.patch(
+        "src.data.export_manager.ExportManager.fetch_data"
+    )
     mock_fetch.return_value = []
 
-    export_manager = ExportManager("dummy.db")
+    export_manager = ExportManager()
     output_file = tmp_path / "empty_output.json"
 
     # When
@@ -64,9 +69,11 @@ def test_export_to_json_handles_large_datasets(tmp_path, mocker):
         (i, "fuel_type", i * 1.1, i * 2.2, f"2023-01-{i % 30 + 1:02d}")
         for i in range(1000000)  # Simulate a large dataset
     ]
-    mock_fetch = mocker.patch("data.export_manager.ExportManager.fetch_data")
+    mock_fetch = mocker.patch(
+        "src.data.export_manager.ExportManager.fetch_data"
+    )
     mock_fetch.return_value = large_test_data
-    export_manager = ExportManager("dummy.db")
+    export_manager = ExportManager()
     output_file = tmp_path / "large_test_output.json"
     # When
     export_manager.export_to_json(output_file)
@@ -90,9 +97,11 @@ def test_export_to_csv_writes_data_with_correct_structure(tmp_path, mocker):
         (1, "gasoline", 10.5, 24.3, "2023-01-01"),
         (2, "diesel", 8.2, 22.1, "2023-01-02"),
     ]
-    mock_fetch = mocker.patch("data.export_manager.ExportManager.fetch_data")
+    mock_fetch = mocker.patch(
+        "src.data.export_manager.ExportManager.fetch_data"
+    )
     mock_fetch.return_value = test_data
-    export_manager = ExportManager("dummy.db")
+    export_manager = ExportManager()
     output_file = tmp_path / "test_output.csv"
     # When
     export_manager.export_to_csv(output_file)
@@ -113,9 +122,11 @@ def test_export_to_csv_writes_data_with_correct_structure(tmp_path, mocker):
 def test_export_to_csv_handles_empty_dataset(tmp_path, mocker):
 
     # Given
-    mock_fetch = mocker.patch("data.export_manager.ExportManager.fetch_data")
+    mock_fetch = mocker.patch(
+        "src.data.export_manager.ExportManager.fetch_data"
+    )
     mock_fetch.return_value = []
-    export_manager = ExportManager("dummy.db")
+    export_manager = ExportManager()
     output_file = tmp_path / "empty_output.csv"
     # When
     export_manager.export_to_csv(output_file)
@@ -132,9 +143,11 @@ def test_export_to_csv_handles_large_datasets(tmp_path, mocker):
         (i, "fuel_type", i * 1.1, i * 2.2, f"2023-01-{i % 30 + 1:02d}")
         for i in range(1000000)
     ]
-    mock_fetch = mocker.patch("data.export_manager.ExportManager.fetch_data")
+    mock_fetch = mocker.patch(
+        "src.data.export_manager.ExportManager.fetch_data"
+    )
     mock_fetch.return_value = large_test_data
-    export_manager = ExportManager("dummy.db")
+    export_manager = ExportManager()
     output_file = tmp_path / "large_test_output.csv"
     # When
     export_manager.export_to_csv(output_file)

@@ -1,6 +1,7 @@
 import asyncio
 import logging
 
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QComboBox,
     QFileDialog,
@@ -12,7 +13,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from core.emissions_calculator import EmissionsCalculator
+from core.emissions_calculator import calculate_emissions
 from data.data_validator import DataValidator
 from data.database import get_fuel_types
 from data.export_manager import ExportManager
@@ -86,50 +87,61 @@ class InputForms(QWidget):
             logger.error("Invalid fuel used value")
             fuel_used = None
         try:
-            # user_id, fuel_type and fuel_used are NOT valid, it will raise a ValueError and QMessageBox will show the error message
-            if (
-                not data_validator.validate_user_id(user_id)
-                or not data_validator.validate_fuel_type(fuel_type)
-                or not data_validator.validate_fuel_used(fuel_used)
-            ):
+            # user_id, fuel_type and fuel_used are NOT valid, it will raise a ValueError and QMessageBox will show
+            # the error message
+            if not data_validator.validate_user_id(
+                user_id
+            ) or not data_validator.validate_fuel_used(fuel_used):
                 error = ValueError("Invalid input")
                 QMessageBox.critical(self, "Error", str(error))
                 return
             # checking if the user_id, fuel_type and fuel_used are valid
-            elif (
-                data_validator.validate_user_id(user_id)
-                and data_validator.validate_fuel_type(fuel_type)
-                and data_validator.validate_fuel_used(fuel_used)
-            ):
+            elif data_validator.validate_user_id(
+                user_id
+            ) and data_validator.validate_fuel_used(fuel_used):
                 logger.info("Valid input: sending data to EmissionsCalculator")
                 # Send the validated data to EmissionsCalculator
-                emissions_calculator = EmissionsCalculator()
                 from main import user_local_temps
 
                 logger.info(f"User Local Temps: {user_local_temps}")
-                if user_local_temps is not None:
+
+                if user_local_temps is None:
                     logger.info("Temperature data not available")
-                    emissions = emissions_calculator.calculate_emissions(
-                        user_id, fuel_type, fuel_used
+                    future = asyncio.ensure_future(
+                        calculate_emissions(
+                            user_id,
+                            fuel_type,
+                            fuel_used,
+                        )
                     )
-                    self.results = f"User ID: {user_id}, Fuel Type: {fuel_type}, Fuel Used: {fuel_used}, Emissions: {emissions}"
-                    QMessageBox.information(self, "Results", self.results)
-                    self.import_export_data()
+                    future.add_done_callback(
+                        lambda f: self.display_results(*f.result())
+                    )
                 elif user_local_temps is not None:
                     logger.info("Temperature data available")
                     temperature_type = self.temperature_type()
-                    emissions = emissions_calculator.calculate_emissions(
-                        user_id,
-                        fuel_type,
-                        fuel_used,
-                        user_local_temps[temperature_type],
-                        temperature_type,
+                    future = asyncio.ensure_future(
+                        calculate_emissions(
+                            user_id,
+                            fuel_type,
+                            fuel_used,
+                            user_local_temps[temperature_type],
+                            temperature_type,
+                        )
                     )
-                    self.results = f"User ID: {user_id}, Fuel Type: {fuel_type}, Fuel Used: {fuel_used}, Emissions: {emissions}, Temperature: {user_local_temps[temperature_type]}"
-                    QMessageBox.information(self, "Results", self.results)
-                    self.import_export_data()
-        except Exception as e:
+                    future.add_done_callback(
+                        lambda f: self.display_results(*f.result())
+                    )
+
+        except ValueError as e:
             logger.error(f"Error submitting data: {e}")
+            logger.info(f"user_id type: {type(user_id)}, value: {user_id}")
+            logger.info(
+                f"fuel_type type: {type(fuel_type)}, value: {fuel_type}"
+            )
+            logger.info(
+                f"fuel_used type: {type(fuel_used)}, value: {fuel_used}"
+            )
             QMessageBox.critical(self, "Error", str(e))
 
     def import_export_data(self):
@@ -161,7 +173,9 @@ class InputForms(QWidget):
                     import_manager.import_from_json()
                 else:
                     logger.error("Unsupported file format")
-                    QMessageBox.critical(self, "Error", "Unsupported file format")
+                    QMessageBox.critical(
+                        self, "Error", "Unsupported file format"
+                    )
         elif msg_box.clickedButton() == export_button:
             # Open file dialog to export data
             file_path, _ = QFileDialog.getSaveFileName(
@@ -171,24 +185,30 @@ class InputForms(QWidget):
                 "CSV Files (*.csv);;JSON Files (*.json);;All Files (*)",
             )
             if file_path:
-                export_manager = ExportManager("databases/emissions.db")
+                export_manager = ExportManager()
                 if file_path.endswith(".csv"):
                     export_manager.export_to_csv(file_path)
                 elif file_path.endswith(".json"):
                     export_manager.export_to_json(file_path)
                 else:
                     logger.error("Unsupported file format")
-                    QMessageBox.critical(self, "Error", "Unsupported file format")
+                    QMessageBox.critical(
+                        self, "Error", "Unsupported file format"
+                    )
 
     def temperature_type(self):
         temperature_dialogue = QMessageBox(self)
         temperature_dialogue.setWindowTitle("Temperature Type")
-        temperature_dialogue.setText("Which temperature type would you like to use?")
+        temperature_dialogue.setText(
+            "Which temperature type would you like to use?"
+        )
         celsius_button = QPushButton("Celsius")
         fahrenheit_button = QPushButton("Fahrenheit")
         kelvin_button = QPushButton("Kelvin")
         temperature_dialogue.addButton(celsius_button, QMessageBox.AcceptRole)
-        temperature_dialogue.addButton(fahrenheit_button, QMessageBox.AcceptRole)
+        temperature_dialogue.addButton(
+            fahrenheit_button, QMessageBox.AcceptRole
+        )
         temperature_dialogue.addButton(kelvin_button, QMessageBox.AcceptRole)
         temperature_dialogue.exec_()
         if temperature_dialogue.clickedButton() == celsius_button:
@@ -203,3 +223,20 @@ class InputForms(QWidget):
             logger.info("Kelvin temperature type selected")
             temperature_type = 2
             return temperature_type
+
+    def display_results(self, fuel_type, fuel_used, emissions):
+        logger.info("Future callback: displaying results")
+        results = QMessageBox(self)
+        results.setWindowTitle("Results")
+        results.setTextFormat(Qt.TextFormat.RichText)
+        results.setText(
+            f"<b>Fuel Type:</b> {fuel_type} <b>Fuel Used:</b> {fuel_used} <b>Emissions:</b> {emissions}"
+        )
+        ok_button = QPushButton("Ok")
+        results.addButton(ok_button, QMessageBox.AcceptRole)
+        logger.info("Emissions calculation results displayed")
+        results.exec_()
+        selected_button = results.clickedButton()
+        if selected_button is ok_button:
+            logger.info("Ok button clicked")
+            self.import_export_data()

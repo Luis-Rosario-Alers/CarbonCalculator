@@ -1,13 +1,13 @@
 import asyncio
-import logging
 import logging.config
-import os
 
 from PySide6.QtWidgets import QApplication
 from qasync import QEventLoop
 
 import data.database as db
-from services.user_internet_connection_service import test_user_internet_connection
+from services.user_internet_connection_service import (
+    test_user_internet_connection,
+)
 from services.user_location_service import UserLocationService
 from services.weather_service import WeatherService
 from ui.main_window import MainWindow
@@ -17,6 +17,9 @@ from utils.logging import setup_logging
 setup_logging()
 
 logger = logging.getLogger("main")
+
+
+user_local_temps = None
 
 
 async def start():
@@ -29,19 +32,16 @@ async def start():
     user's location using the WeatherService.
 
     """
-    logger.info("Initializing databases")
-    if not os.path.exists("databases"):
-        await db.database_initialization()
-    logger.info("Databases initialized")
-    internet_connection_status = await test_user_internet_connection()
+    await db.database_initialization()
+    internet_connection_process = await test_user_internet_connection()
     if (
         WEATHER_API_KEY is None
         or IP_API_TOKEN is None
-        or internet_connection_status is False
+        or internet_connection_process is False
     ):
-        user_coords = None
+        logger.warning("Continuing program without local temperatures")
         user_local_temps = None
-        return internet_connection_status
+        return internet_connection_process
     else:
         user_location_service = UserLocationService(IP_API_TOKEN)
         weather_service = WeatherService(WEATHER_API_KEY)
@@ -49,21 +49,26 @@ async def start():
 
         if user_coords is None:
             logger.error("Failed to retrieve user coordinates")
+            logger.warning("Continuing program without local temperatures")
             user_local_temps = None
         else:
             user_local_temps = await weather_service.get_weather(
-                user_coords[0], user_coords[1]
+                # latitude      # longitude
+                user_coords[0],
+                user_coords[1],
             )
 
-        return internet_connection_status
+        return (
+            internet_connection_process  # return internet_connection_process
+        )
 
 
-def run_main_window(internet_connection_status):
+def run_main_window(internet_connection_status_passed):
     """
-    Run the event loop for the main window.
-
-    This function creates the application instance, sets up the Qt event loop
-    integrating it with the asyncio loop, and runs the main window of the application.
+        Run the event loop for the main window.
+    ~
+        This function creates the application instance, sets up the Qt event loop
+        integrating it with the asyncio loop, and runs the main window of the application.
     """
     logger.info("Running main window")
 
@@ -72,7 +77,7 @@ def run_main_window(internet_connection_status):
     loop = QEventLoop(app)
     asyncio.set_event_loop(loop)
 
-    main_window = MainWindow(internet_connection_status)
+    main_window = MainWindow(internet_connection_status_passed)
     main_window.show()
 
     with loop:
@@ -80,7 +85,6 @@ def run_main_window(internet_connection_status):
 
 
 def main():
-    global internet_connection_status
     """
     Main entry point for the application.
 
@@ -88,7 +92,7 @@ def main():
     startup tasks, and then running the main window.
     """
     logger.info("Starting application")
-    loop = asyncio.get_event_loop()
+    loop = asyncio.new_event_loop()
     internet_connection_status = loop.run_until_complete(start())
     run_main_window(internet_connection_status)
 

@@ -1,7 +1,10 @@
 import csv
 import json
 import logging
+import os
 import sqlite3
+
+from data.database import databases_folder
 
 logger = logging.getLogger("data")
 
@@ -10,8 +13,10 @@ class ImportManager:
     def __init__(self, input_path):
         self.input_path = input_path
 
-    def insert_data(self, data):
-        conn = sqlite3.connect("databases/emissions.db")
+    @staticmethod
+    def insert_data(data):
+        db_path = os.path.join(databases_folder, "emissions.db")
+        conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
         cursor.executemany("INSERT INTO emissions VALUES (?,?,?,?,?)", data)
         conn.commit()
@@ -21,7 +26,13 @@ class ImportManager:
         with open(self.input_path, "r") as f:
             data_dicts = json.load(f)
 
-        required_keys = {"user_id", "fuel_type", "fuel_used", "emissions", "timestamp"}
+        required_keys = {
+            "user_id",
+            "fuel_type",
+            "fuel_used",
+            "emissions",
+            "timestamp",
+        }
         for entry in data_dicts:
             # Checks for missing keys by subtracting required
             # keys: 5 and entry.keys: 5 and then
@@ -30,16 +41,16 @@ class ImportManager:
             if (
                 missing_keys
             ):  # if there are missing keys, it raises a value error with the amount missing.
-                raise ValueError(f"Missing required keys: {missing_keys}")
                 logger.error(f"Missing required keys: {missing_keys}")
+                raise ValueError(f"Missing required keys: {missing_keys}")
             for (
                 key
             ) in (
                 required_keys
             ):  # iterates through each key and checks if they are null or empty.
-                if entry[key] is None or entry[key] == "":
-                    raise ValueError(f"Missing value for key: {key}")
+                if key not in entry or entry[key] is None or entry[key] == "":
                     logger.error(f"Missing value for key: {key}")
+                    raise ValueError(f"Missing value for key: {key}")
 
         # Convert data to a list of tuples
         data = [
@@ -77,13 +88,13 @@ class ImportManager:
                 missing_keys = required_keys - row.keys()
                 if missing_keys:  # if there are missing keys,
                     # it raises a value error with the amount missing.
-                    raise ValueError(f"Missing required keys: {missing_keys}")
                     logger.error(f"Missing required keys: {missing_keys}")
+                    raise ValueError(f"Missing required keys: {missing_keys}")
                 for key in required_keys:
                     # iterates through each key and checks if they are null or empty.
-                    if row[key] is None or row[key] == "":
-                        raise ValueError(f"Missing value for key: {key}")
+                    if key not in row or row[key] is None or row[key] == "":
                         logger.error(f"Missing value for key: {key}")
+                        raise ValueError(f"Missing value for key: {key}")
 
             # Convert data to a list of tuples
         data = [
