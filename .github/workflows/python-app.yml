@@ -35,7 +35,7 @@ jobs:
 
       # Set PYTHONPATH
     - name: Set PYTHONPATH
-      run: echo "PYTHONPATH=src" >> $GITHUB_ENV
+      run: echo "PYTHONPATH=\$PYTHONPATH:./src" >> $GITHUB_ENV
 
       # Lint the code with flake8
     - name: Lint with flake8
