@@ -1,6 +1,6 @@
 import pytest
 
-from services.weather_service import WeatherService
+from src.services.weather_service import WeatherService
 
 
 # Returns None when API response code is not 200

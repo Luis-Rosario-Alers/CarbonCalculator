@@ -2,7 +2,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from data.data_validator import DataValidator
+from src.data.data_validator import DataValidator
 
 
 @pytest.fixture

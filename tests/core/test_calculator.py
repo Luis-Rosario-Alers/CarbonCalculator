@@ -5,8 +5,8 @@ import time
 import aiosqlite
 import pytest
 
-from core.emissions_calculator import calculate_emissions
-from data.database import (
+from src.core.emissions_calculator import calculate_emissions
+from src.data.database import (
     initialize_emissions_database,
     initialize_fuel_type_database,
     log_calculation,

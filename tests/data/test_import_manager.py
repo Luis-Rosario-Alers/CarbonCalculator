@@ -4,12 +4,12 @@ from datetime import datetime
 import aiosqlite
 import pytest
 
-from data.database import (
+from src.data.database import (
     databases_folder,
     initialize_emissions_database,
     setup_databases_folder,
 )
-from data.import_manager import ImportManager
+from src.data.import_manager import ImportManager
 
 
 @pytest.fixture(autouse=True)
