@@ -36,10 +36,14 @@ jobs:
     - name: Lint with flake8
       run: |
         flake8 . --ignore=E203,E501,E701,W503
-    # Run tests with pytest and generate a coverage report
+    # Set the PYTHONPATH environment variable to include the src directory
+    - name: Set PYTHONPATH
+      run: |
+        echo "PYTHONPATH=$GITHUB_WORKSPACE/src" >> $GITHUB_ENV
+
     - name: Test with pytest
       run: |
-        echo "PYTHONPATH=./src" >> $GITHUB_ENV
+        echo $PYTHONPATH
         pytest --cov=. --cov-report=html tests/
     # Upload coverage reports to Codecov
     - name: Upload coverage reports to Codecov
