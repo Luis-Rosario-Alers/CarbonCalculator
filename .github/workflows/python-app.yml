@@ -37,4 +37,9 @@ jobs:
       run: flake8 . --ignore=E203,E501,E701,W503
 
     - name: Test with pytest
-      run: pytest --cov=. --cov-report=html tests/
+      run: pytest --cov=. --cov-branch --cov-report=xml tests/
+
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v5
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
