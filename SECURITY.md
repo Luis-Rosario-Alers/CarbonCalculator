@@ -13,7 +13,7 @@ If you discover a security vulnerability, please report it to us privately. Do n
 We ask that you:
 
 - **Act in good faith** to avoid privacy violations.
-- **Provide us with a reasonable amount of time** to resolve the issue before any disclosure to the public or a third-party.
+- **Provide us with a reasonable amount of time** to resolve the issue before any disclosure to the public or a third party.
 - **Avoid exploiting the vulnerability** for any reason, including demonstrating additional risk.
 
 ## Security Best Practices🙎‍♂️

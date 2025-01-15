@@ -3,13 +3,17 @@ import os
 
 from dotenv import load_dotenv
 
+from data.database import application_path
 from utils.logging import setup_logging
 
 setup_logging()
 
 logger = logging.getLogger("utilities")
 
-load_dotenv(dotenv_path="src/utils/EXAMPLE_ENV.env")
+env_path = os.path.join(application_path, "resources", ".env")
+
+
+load_dotenv(dotenv_path=env_path)
 
 
 WEATHER_API_KEY = os.getenv("WEATHER_API_KEY")
