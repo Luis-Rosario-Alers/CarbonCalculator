@@ -8,6 +8,7 @@
 [![License](https://img.shields.io/github/license/Luis-Rosario-Alers/CarbonCalculator)](https://github.com/Luis-Rosario-Alers/CarbonCalculator/blob/master/LICENSE)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit)](https://github.com/pre-commit/pre-commit)
 [![codecov](https://codecov.io/github/Luis-Rosario-Alers/CarbonCalculator/graph/badge.svg?token=OVPU0O07GO)](https://codecov.io/github/Luis-Rosario-Alers/CarbonCalculator)
+[![Build and Release](https://github.com/Luis-Rosario-Alers/CarbonCalculator/actions/workflows/python-build-release.yml/badge.svg)](https://github.com/Luis-Rosario-Alers/CarbonCalculator/actions/workflows/python-build-release.yml)
 
 [Getting Started👋](docs/GETTING_STARTED.md) | [FAQ❓](FAQ.md)| [Contributing🤝](CONTRIBUTING)
 
