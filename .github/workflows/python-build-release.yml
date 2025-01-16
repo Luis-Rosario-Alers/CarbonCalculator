@@ -119,31 +119,39 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: CarbonCalculator-ubuntu-latest
-          path: build/ubuntu/
+          path: linux/
       - uses: actions/download-artifact@v4
         with:
           name: CarbonCalculator-macos-latest
-          path: build/macos/
+          path: macos/
       - uses: actions/download-artifact@v4
         with:
           name: CarbonCalculator-windows-latest
-          path: build/windows/
+          path: windows/
 
       # Debug: List downloaded artifacts
       - name: List downloaded artifacts
         run: |
           echo "Linux artifacts:"
-          ls -R build/ubuntu
+          ls -R linux/
           echo "MacOS artifacts:"
-          ls -R build/macos
+          ls -R macos/
           echo "Windows artifacts:"
-          ls -R build/windows
+          ls -R windows/
 
       - name: Zip artifacts
         run: |
-            cd build/windows/CarbonCalculator && zip -r ../../CarbonCalculator-windows-latest.zip .
-            cd build/macos/CarbonCalculator && zip -r ../../CarbonCalculator-macos-latest.zip .
-            cd build/ubuntu/CarbonCalculator && zip -r ../../CarbonCalculator-ubuntu-latest.zip .
+            echo "Checking windows directory"
+            ls windows/CarbonCalculator
+            cd windows/CarbonCalculator && zip -r ../../CarbonCalculator-windows-latest.zip .
+      
+            echo "Checking macos directory"
+            ls macos/CarbonCalculator
+            cd macos/CarbonCalculator && zip -r ../../CarbonCalculator-macos-latest.zip .
+      
+            echo "Checking linux directory"
+            ls linux/CarbonCalculator
+            cd linux/CarbonCalculator && zip -r ../../CarbonCalculator-linux-latest.zip .
         shell: bash
       # Create release
       - name: Release
@@ -151,7 +159,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            build/CarbonCalculator-ubuntu-latest.zip
-            build/CarbonCalculator-macos-latest.zip
-            build/CarbonCalculator-windows-latest.zip
+            windows/CarbonCalculator-windows-latest.zip
+            macos/CarbonCalculator-macos-latest.zip
+            linux/CarbonCalculator-linux-latest.zip
 
