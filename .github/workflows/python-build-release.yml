@@ -85,6 +85,7 @@ jobs:
           mkdir -p build
           if [[ "$RUNNER_OS" == "Windows" ]]; then
             if [ -d dist/CarbonCalculator ]; then
+              rm -rf build/CarbonCalculator
               mv dist/CarbonCalculator build/
             else
               echo "Directory dist/CarbonCalculator not found"
@@ -92,6 +93,7 @@ jobs:
             fi
           else
             if [ -d dist/CarbonCalculator ]; then
+              rm -rf build/CarbonCalculator
               mv dist/CarbonCalculator build/
             else
               echo "Directory dist/CarbonCalculator not found"
