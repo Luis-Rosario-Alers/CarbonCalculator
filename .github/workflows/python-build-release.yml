@@ -108,11 +108,12 @@ jobs:
           path: build/
 
   release:
+    permissions:
+      contents: write
     continue-on-error: true
     needs: build
     runs-on: ubuntu-latest
     steps:
-      # Check for successful build completion
       # Download the build artifacts for each OS
       - uses: actions/download-artifact@v4
         with:
@@ -126,39 +127,47 @@ jobs:
         with:
           name: CarbonCalculator-windows-latest
           path: build/windows
-      # Create a new release
-      - id: create_release
-        uses: actions/create-release@v1
+
+      # Debug: List downloaded artifacts
+      - name: List downloaded artifacts
+        run: |
+          echo "Linux artifacts:"
+          ls -R build/linux
+          echo "MacOS artifacts:"
+          ls -R build/macos
+          echo "Windows artifacts:"
+          ls -R build/windows
+
+      # Install GitHub CLI
+      - name: Install GitHub CLI
+        run: |
+          type -p curl >/dev/null || (sudo apt update && sudo apt install curl -y)
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
+          && sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
+          && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+          && sudo apt update \
+          && sudo apt install gh -y
+
+      # Create release
+      - name: Create Release
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          draft: true
-          prerelease: false
-      # Upload the release assets for each OS
-      - uses: actions/upload-release-asset@v1
+        run: |
+          response=$(gh api \
+            --method POST \
+            /repos/${{ github.repository }}/releases \
+            -f tag_name="${{ github.ref_name }}" \
+            -f name="Release ${{ github.ref_name }}" \
+            -f draft=true \
+            -f prerelease=false)
+          echo "UPLOAD_URL=$(echo $response | jq -r .upload_url)" >> $GITHUB_ENV
+
+      # Upload assets with correct paths
+      - name: Upload Release Assets
         env:
           GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/linux/CarbonCalculator-ubuntu-latest
-          asset_name: CarbonCalculator-linux
-          asset_content_type: application/octet-stream
-      - uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/macos/CarbonCalculator-macos-latest
-          asset_name: CarbonCalculator-macos
-          asset_content_type: application/octet-stream
-      - uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/windows/CarbonCalculator-windows-latest
-          asset_name: CarbonCalculator-windows
-          asset_content_type: application/octet-stream
-          
+        run: |
+          for file in $(find build -type f); do
+            gh release upload ${{ github.ref_name }} "$file" --clobber
+          done
+
