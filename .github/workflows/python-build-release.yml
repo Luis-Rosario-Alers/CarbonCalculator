@@ -84,17 +84,17 @@ jobs:
           ls -al dist
           mkdir -p build
           if [[ "$RUNNER_OS" == "Windows" ]]; then
-            if [ -f dist/CarbonCalculator ]; then
+            if [ -d dist/CarbonCalculator ]; then
               mv dist/CarbonCalculator build/
             else
-              echo "File dist/CarbonCalculator not found"
+              echo "Directory dist/CarbonCalculator not found"
               exit 1
             fi
           else
-            if [ -f dist/CarbonCalculator ]; then
+            if [ -d dist/CarbonCalculator ]; then
               mv dist/CarbonCalculator build/
             else
-              echo "File dist/CarbonCalculator not found"
+              echo "Directory dist/CarbonCalculator not found"
               exit 1
             fi
           fi
@@ -129,6 +129,7 @@ jobs:
           if [ -z "$(ls -A build)" ]; then
             echo "Build failed, no artifacts found."
             exit 1
+          fi
       # Download the build artifacts for each OS
       - uses: actions/download-artifact@v4
         with:
@@ -185,8 +186,12 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const tag = '${{ github.ref }}'.replace('refs/tags/', '');
+            console.log(`Attempting to delete tag: ${tag}`);
+            console.log(`Repository owner: ${context.repo.owner}`);
+            console.log(`Repository name: ${context.repo.name}`);
             await github.rest.git.deleteRef({
               owner: context.repo.owner,
               repo: context.repo.name,
               ref: `tags/${tag}`
             });
+          
