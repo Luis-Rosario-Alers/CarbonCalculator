@@ -151,7 +151,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            windows/CarbonCalculator-windows-latest.zip
+            windows/CarbonCalculator/CarbonCalculator-windows-latest.zip
             macos/CarbonCalculator/CarbonCalculator-macos-latest.zip
-            linux/CarbonCalculator-linux-latest.zip
+            linux/CarbonCalculator/CarbonCalculator-linux-latest.zip
 
