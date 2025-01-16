@@ -32,38 +32,54 @@ jobs:
           pip install pyinstaller
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
         shell: bash
+      - name: Install dependencies on Linux
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libxkbcommon-x11-0 libxcb-shape0 libxcb-xkb1 libxcb-icccm4 libxcb-render-util0 libxcb-image0 libxcb-cursor0 libxcb-keysyms1
       # Build the application using PyInstaller
       - run: |
-            LOG_LEVEL=debug
-            if [ "$RUNNER_OS" == "Windows" ]; then
+          LOG_LEVEL=debug
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
             pyinstaller \
               --add-data "src/data/resources:resources" \
               --icon "src/data/resources/assets/icon.ico" \
               --paths src \
               src/main.py \
               --name CarbonCalculator.exe
-            elif [ "$RUNNER_OS" == "macOS" ]; then
+          elif [ "$RUNNER_OS" == "macOS" ]; then
             pyinstaller \
               --add-data "src/data/resources:resources" \
               --icon "src/data/resources/assets/icon.icns" \
               --paths src \
               src/main.py \
               --name CarbonCalculator
-            else
+          else
             pyinstaller \
               --add-data "src/data/resources:resources" \
               --icon "src/data/resources/assets/icon.png" \
               --paths src \
               src/main.py \
               --name CarbonCalculator
-            fi
+          fi
       # Archive the build artifacts
       - run: |
           mkdir -p build
-          if [ "$RUNNER_OS" == "Windows" ]; then
-            mv dist/CarbonCalculator.exe build/
+          if [[ "$RUNNER_OS" == "Windows" ]] then
+            if [ -f dist/CarbonCalculator.exe ]; then
+              mv dist/CarbonCalculator.exe build/
+            else
+              echo "File dist/CarbonCalculator.exe not found"
+              exit 1
+            fi
           else
-            mv dist/CarbonCalculator build/
+            if [ -f dist/CarbonCalculator ]; then
+              mv dist/CarbonCalculator build/
+            else
+              echo "File dist/CarbonCalculator not found"
+              exit 1
+            fi
+          fi
       # Upload the build artifacts
       - uses: actions/upload-artifact@v4
         with:
