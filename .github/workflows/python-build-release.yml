@@ -138,6 +138,8 @@ jobs:
           ls -R build/macos/CarbonCalculator-macos-latest
           echo "Windows artifacts:"
           ls -R build/windows/CarbonCalculator-windows-latest
+          cd build
+          pwd
 
       # Create release
       - name: Release
@@ -145,7 +147,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            build/ubuntu/CarbonCalculator-ubuntu-latest
-            build/macos/CarbonCalculator-macos-latest
-            build/windows/CarbonCalculator-windows-latest
+            ubuntu
+            macos
+            windows
 
