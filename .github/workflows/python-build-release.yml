@@ -141,13 +141,9 @@ jobs:
 
       - name: Zip artifacts
         run: |
-          if [[ "$RUNNER_OS" == "Windows" ]]; then
             cd build/windows/CarbonCalculator && zip -r ../../CarbonCalculator-windows-latest.zip .
-          elif [[ "$RUNNER_OS" == "macOS" ]]; then
             cd build/macos/CarbonCalculator && zip -r ../../CarbonCalculator-macos-latest.zip .
-          else
             cd build/ubuntu/CarbonCalculator && zip -r ../../CarbonCalculator-ubuntu-latest.zip .
-          fi
         shell: bash
       # Create release
       - name: Release
