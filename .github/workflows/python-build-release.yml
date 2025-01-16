@@ -102,15 +102,6 @@ jobs:
             fi
           fi
         shell: bash
-      - name: Zip artifacts
-        run: |
-          if [[ "$RUNNER_OS" == "Windows" ]]; then
-            cd build/CarbonCalculator && zip -r ../../CarbonCalculator-windows-latest.zip .
-          elif [[ "$RUNNER_OS" == "macOS" ]]; then
-            cd build/CarbonCalculator && zip -r ../../CarbonCalculator-macos-latest.zip .
-          else
-            cd build/CarbonCalculator && zip -r ../../CarbonCalculator-ubuntu-latest.zip .
-          fi
       # Upload the build artifacts
       - uses: actions/upload-artifact@v4
         with:
@@ -148,13 +139,23 @@ jobs:
           echo "Windows artifacts:"
           ls -R build/windows/CarbonCalculator-windows-latest
 
+      - name: Zip artifacts
+        run: |
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            cd build/windows/CarbonCalculator && zip -r ../../CarbonCalculator-windows-latest.zip .
+          elif [[ "$RUNNER_OS" == "macOS" ]]; then
+            cd build/macos/CarbonCalculator && zip -r ../../CarbonCalculator-macos-latest.zip .
+          else
+            cd build/ubuntu/CarbonCalculator && zip -r ../../CarbonCalculator-ubuntu-latest.zip .
+          fi
+        shell: bash
       # Create release
       - name: Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            build/ubuntu/CarbonCalculator-ubuntu-latest.zip
-            build/macos/CarbonCalculator-macos-latest.zip
-            build/windows/CarbonCalculator-windows-latest.zip
+            build/CarbonCalculator-ubuntu-latest.zip
+            build/CarbonCalculator-macos-latest.zip
+            build/CarbonCalculator-windows-latest.zip
 
