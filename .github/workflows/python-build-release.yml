@@ -141,9 +141,9 @@ jobs:
 
       - name: Zip artifacts
         run: |
-            (cd windows/CarbonCalculator && zip -r CarbonCalculator-windows-latest.zip)
-            (cd macos/CarbonCalculator && zip -r CarbonCalculator-macos-latest.zip)
-            (cd linux/CarbonCalculator && zip -r CarbonCalculator-linux-latest.zip)
+          cd windows && zip -r CarbonCalculator-windows-latest.zip CarbonCalculator/
+          cd ../macos && zip -r CarbonCalculator-macos-latest.zip CarbonCalculator/
+          cd ../linux && zip -r CarbonCalculator-linux-latest.zip CarbonCalculator/
         shell: bash
       # Create release
       - name: Release
