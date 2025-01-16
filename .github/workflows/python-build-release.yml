@@ -133,11 +133,11 @@ jobs:
       - name: List downloaded artifacts
         run: |
           echo "Linux artifacts:"
-          ls -R build/ubuntu/CarbonCalculator-ubuntu-latest
+          ls -R build/ubuntu
           echo "MacOS artifacts:"
-          ls -R build/macos/CarbonCalculator-macos-latest
+          ls -R build/macos
           echo "Windows artifacts:"
-          ls -R build/windows/CarbonCalculator-windows-latest
+          ls -R build/windows
 
       - name: Zip artifacts
         run: |
