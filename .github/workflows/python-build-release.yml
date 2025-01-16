@@ -20,7 +20,7 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       # Set up Python 3.12
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5.0.0
         with:
           python-version: '3.12'
       # Install dependencies
@@ -30,14 +30,29 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       # Build the application using PyInstaller
       - run: |
-          LOG_LEVEL=debug
-          if [ "$RUNNER_OS" == "Windows" ]; then
-            pyinstaller --add-data "src/data/resources:resources" --icon "src/data/resources/assets/icon.ico" --paths src src/main.py --name CarbonCalculator.exe
-          elif [ "$RUNNER_OS" == "macOS" ]; then
-            pyinstaller --add-data "src/data/resources:resources" --icon "src/data/resources/assets/icon.icns" --paths src src/main.py --name CarbonCalculator
-          else
-            pyinstaller --add-data "src/data/resources:resources" --icon "src/data/resources/assets/icon.png" --paths src src/main.py --name CarbonCalculator
-          fi
+            LOG_LEVEL=debug
+            if [ "$RUNNER_OS" == "Windows" ]; then
+            pyinstaller \
+              --add-data "src/data/resources:resources" \
+              --icon "src/data/resources/assets/icon.ico" \
+              --paths src \
+              src/main.py \
+              --name CarbonCalculator.exe
+            elif [ "$RUNNER_OS" == "macOS" ]; then
+            pyinstaller \
+              --add-data "src/data/resources:resources" \
+              --icon "src/data/resources/assets/icon.icns" \
+              --paths src \
+              src/main.py \
+              --name CarbonCalculator
+            else
+            pyinstaller \
+              --add-data "src/data/resources:resources" \
+              --icon "src/data/resources/assets/icon.png" \
+              --paths src \
+              src/main.py \
+              --name CarbonCalculator
+            fi
       # Archive the build artifacts
       - run: |
           mkdir -p build
@@ -78,7 +93,7 @@ jobs:
           path: build/windows
       # Create a new release
       - id: create_release
-        uses: actions/create-release@v2
+        uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -87,7 +102,7 @@ jobs:
           draft: true
           prerelease: false
       # Upload the release assets for each OS
-      - uses: actions/upload-release-asset@v2
+      - uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -95,7 +110,7 @@ jobs:
           asset_path: build/linux/CarbonCalculator
           asset_name: CarbonCalculator-linux
           asset_content_type: application/octet-stream
-      - uses: actions/upload-release-asset@v2
+      - uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -103,7 +118,7 @@ jobs:
           asset_path: build/macos/CarbonCalculator
           asset_name: CarbonCalculator-macos
           asset_content_type: application/octet-stream
-      - uses: actions/upload-release-asset@v2
+      - uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
