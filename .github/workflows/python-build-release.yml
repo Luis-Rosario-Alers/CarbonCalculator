@@ -82,10 +82,10 @@ jobs:
           ls -al
           echo "Files in the dist directory:"
           ls -al dist
-          mkdir -p build
           if [[ "$RUNNER_OS" == "Windows" ]]; then
             if [ -d dist/CarbonCalculator ]; then
               rm -rf build/CarbonCalculator
+              mkdir -p build
               mv dist/CarbonCalculator build/
             else
               echo "Directory dist/CarbonCalculator not found"
