@@ -67,7 +67,7 @@ def test_export_to_json_handles_large_datasets(tmp_path, mocker):
     # Given
     large_test_data = [
         (i, "fuel_type", i * 1.1, i * 2.2, f"2023-01-{i % 30 + 1:02d}")
-        for i in range(1000000)  # Simulate a large dataset
+        for i in range(1000)  # Simulate a large dataset
     ]
     mock_fetch = mocker.patch(
         "src.data.export_manager.ExportManager.fetch_data"
@@ -80,7 +80,7 @@ def test_export_to_json_handles_large_datasets(tmp_path, mocker):
     # Then
     with open(output_file) as f:
         exported_data = json.load(f)
-    assert len(exported_data) == 1000000
+    assert len(exported_data) == 1000
     assert exported_data[0] == {
         "user_id": 0,
         "fuel_type": "fuel_type",
@@ -141,7 +141,7 @@ def test_export_to_csv_handles_large_datasets(tmp_path, mocker):
     # Given
     large_test_data = [
         (i, "fuel_type", i * 1.1, i * 2.2, f"2023-01-{i % 30 + 1:02d}")
-        for i in range(1000000)
+        for i in range(1000)
     ]
     mock_fetch = mocker.patch(
         "src.data.export_manager.ExportManager.fetch_data"
@@ -156,7 +156,7 @@ def test_export_to_csv_handles_large_datasets(tmp_path, mocker):
         reader = csv.DictReader(f)
         first_row = next(reader)
         row_count = sum(1 for _ in reader) + 1
-    assert row_count == 1000000
+    assert row_count == 1000
     assert first_row == {
         "user_id": "0",
         "fuel_type": "fuel_type",

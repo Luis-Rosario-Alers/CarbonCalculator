@@ -119,25 +119,25 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: CarbonCalculator-ubuntu-latest
-          path: CarbonCalculator-ubuntu-latest
+          path: build/ubuntu/CarbonCalculator-ubuntu-latest
       - uses: actions/download-artifact@v4
         with:
           name: CarbonCalculator-macos-latest
-          path: CarbonCalculator-macos-latest
+          path: build/macos/CarbonCalculator-macos-latest
       - uses: actions/download-artifact@v4
         with:
           name: CarbonCalculator-windows-latest
-          path: CarbonCalculator-windows-latest
+          path: build/windows/CarbonCalculator-windows-latest
 
       # Debug: List downloaded artifacts
       - name: List downloaded artifacts
         run: |
           echo "Linux artifacts:"
-          ls -R CarbonCalculator-ubuntu-latest
+          ls -R build/ubuntu/CarbonCalculator-ubuntu-latest
           echo "MacOS artifacts:"
-          ls -R CarbonCalculator-macos-latest
+          ls -R build/macos/CarbonCalculator-macos-latest
           echo "Windows artifacts:"
-          ls -R CarbonCalculator-windows-latest
+          ls -R build/windows/CarbonCalculator-windows-latest
 
       # Create release
       - name: Release
@@ -145,7 +145,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            CarbonCalculator-windows-latest
-            CarbonCalculator-macos-latest
-            CarbonCalculator-ubuntu-latest
+            build/ubuntu/CarbonCalculator-ubuntu-latest
+            build/macos/CarbonCalculator-macos-latest
+            build/windows/CarbonCalculator-windows-latest
 
