@@ -126,3 +126,16 @@ jobs:
           asset_path: build/windows/CarbonCalculator.exe
           asset_name: CarbonCalculator-windows.exe
           asset_content_type: application/octet-stream
+
+      - name: Delete tag on failure
+        if: failure()
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const tag = '${{ github.ref }}'.replace('refs/tags/', '');
+            await github.rest.git.deleteRef({
+              owner: context.repo.owner,
+              repo: context.repo.name,
+              ref: `tags/${tag}`
+            });
