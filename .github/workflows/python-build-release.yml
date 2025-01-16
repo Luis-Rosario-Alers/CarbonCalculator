@@ -58,7 +58,7 @@ jobs:
               --icon "src/data/resources/assets/icon.ico" \
               --paths src \
               src/main.py \
-              --name CarbonCalculator.exe
+              --name CarbonCalculator
           elif [ "$RUNNER_OS" == "macOS" ]; then
             pyinstaller \
               --add-data "src/data/resources:resources" \
@@ -80,12 +80,14 @@ jobs:
           echo "Current working directory: $(pwd)"
           echo "Files in the current directory:"
           ls -al
+          echo "Files in the dist directory:"
+          ls -al dist
           mkdir -p build
-          if [[ "$RUNNER_OS" == "Windows" ]] then
-            if [ -f dist/CarbonCalculator.exe ]; then
-              mv dist/CarbonCalculator.exe build/
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            if [ -f dist/CarbonCalculator ]; then
+              mv dist/CarbonCalculator build/
             else
-              echo "File dist/CarbonCalculator.exe not found"
+              echo "File dist/CarbonCalculator not found"
               exit 1
             fi
           else
