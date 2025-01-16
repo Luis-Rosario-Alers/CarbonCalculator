@@ -85,7 +85,7 @@ jobs:
           if [[ "$RUNNER_OS" == "Windows" ]]; then
             if [ -d dist/CarbonCalculator ]; then
               rm -rf build/CarbonCalculator
-              mkdir -p build
+              mkdir -p build/
               mv dist/CarbonCalculator build/
             else
               echo "Directory dist/CarbonCalculator not found"
@@ -112,26 +112,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Delete tag on failure
-        if: failure()
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const tag = '${{ github.ref }}'.replace('refs/tags/', '');
-            await github.rest.git.deleteRef({
-              owner: context.repo.owner,
-              repo: context.repo.name,
-              ref: `tags/${tag}`
-            });
       # Check for successful build completion
-      - name: Check build status
-        if: ${{ always() }}
-        run: |
-          if [ -z "$(ls -A build)" ]; then
-            echo "Build failed, no artifacts found."
-            exit 1
-          fi
       # Download the build artifacts for each OS
       - uses: actions/download-artifact@v4
         with:
@@ -177,23 +158,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: build/windows/CarbonCalculator.exe
-          asset_name: CarbonCalculator-windows.exe
+          asset_path: build/windows/CarbonCalculator
+          asset_name: CarbonCalculator-windows
           asset_content_type: application/octet-stream
-
-      - name: Delete tag on failure
-        if: failure()
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const tag = '${{ github.ref }}'.replace('refs/tags/', '');
-            console.log(`Attempting to delete tag: ${tag}`);
-            console.log(`Repository owner: ${context.repo.owner}`);
-            console.log(`Repository name: ${context.repo.name}`);
-            await github.rest.git.deleteRef({
-              owner: context.repo.owner,
-              repo: context.repo.name,
-              ref: `tags/${tag}`
-            });
           
