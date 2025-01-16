@@ -50,6 +50,18 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libxkbcommon-x11-0 libxcb-shape0 libxcb-xkb1 libxcb-icccm4 libxcb-render-util0 libxcb-image0 libxcb-cursor0 libxcb-keysyms1
         shell: bash
+      - name: Install dependencies on Windows
+        if: runner.os == 'Windows'
+        run: |
+          # Install Visual C++ Redistributable
+          curl -L "https://aka.ms/vs/17/release/vc_redist.x64.exe" -o vc_redist.x64.exe
+          ./vc_redist.x64.exe /quiet /norestart
+
+          # Install Windows SDK components
+          curl -L "https://go.microsoft.com/fwlink/p/?LinkId=2033908" -o winsdksetup.exe
+          ./winsdksetup.exe /features + /
+        shell: powershell
+
       - run: |
           LOG_LEVEL=debug
           if [[ "$RUNNER_OS" == "Windows" ]]; then
@@ -145,7 +157,7 @@ jobs:
           curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
           && sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
           && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
-          && sudo apt update \
+          && sudo apt update 
           && sudo apt install gh -y
 
       # Create release
@@ -158,8 +170,8 @@ jobs:
             /repos/${{ github.repository }}/releases \
             -f tag_name="${{ github.ref_name }}" \
             -f name="Release ${{ github.ref_name }}" \
-            -f draft=true \
-            -f prerelease=false)
+            -f draft=:true \
+            -f prerelease=:false)
           echo "UPLOAD_URL=$(echo $response | jq -r .upload_url)" >> $GITHUB_ENV
 
       # Upload assets with correct paths
