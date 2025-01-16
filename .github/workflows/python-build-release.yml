@@ -50,10 +50,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libxkbcommon-x11-0 libxcb-shape0 libxcb-xkb1 libxcb-icccm4 libxcb-render-util0 libxcb-image0 libxcb-cursor0 libxcb-keysyms1
         shell: bash
-      - name: Install Visual C++ Redistributable
-        if: runner.os == 'Windows'
-        run: choco install vcredist-all -y
-        shell: powershell
 
       - run: |
           LOG_LEVEL=debug
@@ -123,25 +119,25 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: CarbonCalculator-ubuntu-latest
-          path: build/linux
+          path: CarbonCalculator-ubuntu-latest
       - uses: actions/download-artifact@v4
         with:
           name: CarbonCalculator-macos-latest
-          path: build/macos
+          path: CarbonCalculator-macos-latest
       - uses: actions/download-artifact@v4
         with:
           name: CarbonCalculator-windows-latest
-          path: build/windows
+          path: CarbonCalculator-windows-latest
 
       # Debug: List downloaded artifacts
       - name: List downloaded artifacts
         run: |
           echo "Linux artifacts:"
-          ls -R build/linux
+          ls -R CarbonCalculator-ubuntu-latest
           echo "MacOS artifacts:"
-          ls -R build/macos
+          ls -R CarbonCalculator-macos-latest
           echo "Windows artifacts:"
-          ls -R build/windows
+          ls -R CarbonCalculator-windows-latest
 
       # Create release
       - name: Release
@@ -149,7 +145,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            build/linux/*
-            build/macos/*
-            build/windows/*
+            CarbonCalculator-windows-latest
+            CarbonCalculator-macos-latest
+            CarbonCalculator-ubuntu-latest
 
