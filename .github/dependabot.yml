@@ -12,11 +12,3 @@ updates:
     commit-message:
       # Prefix all commit messages with "chore: "
       prefix: "chore: "
-
-  - package-ecosystem: "npm"
-    directory: "/" # Location of your JavaScript dependency file
-    schedule:
-      interval: "weekly"
-    commit-message:
-      # Prefix all commit messages with "chore: "
-      prefix: "chore: "
