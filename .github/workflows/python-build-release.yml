@@ -50,17 +50,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libxkbcommon-x11-0 libxcb-shape0 libxcb-xkb1 libxcb-icccm4 libxcb-render-util0 libxcb-image0 libxcb-cursor0 libxcb-keysyms1
         shell: bash
-      - name: Install dependencies on Windows
-        if: runner.os == 'Windows'
-        run: |
-          # Install Visual C++ Redistributable
-          curl -L "https://aka.ms/vs/17/release/vc_redist.x64.exe" -o vc_redist.x64.exe
-          ./vc_redist.x64.exe /quiet /norestart
-
-          # Install Windows SDK components
-          curl -L "https://go.microsoft.com/fwlink/p/?LinkId=2033908" -o winsdksetup.exe
-          ./winsdksetup.exe /features + /
-        shell: powershell
 
       - run: |
           LOG_LEVEL=debug
