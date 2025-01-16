@@ -141,17 +141,9 @@ jobs:
 
       - name: Zip artifacts
         run: |
-            echo "Checking windows directory"
-            ls windows/CarbonCalculator
-            cd windows/CarbonCalculator && zip -r ../../CarbonCalculator-windows-latest.zip .
-      
-            echo "Checking macos directory"
-            ls macos/CarbonCalculator
-            cd macos/CarbonCalculator && zip -r ../../CarbonCalculator-macos-latest.zip .
-      
-            echo "Checking linux directory"
-            ls linux/CarbonCalculator
-            cd linux/CarbonCalculator && zip -r ../../CarbonCalculator-linux-latest.zip .
+            (cd windows/CarbonCalculator && zip -r CarbonCalculator-windows-latest.zip)
+            (cd macos/CarbonCalculator && zip -r CarbonCalculator-macos-latest.zip)
+            (cd linux/CarbonCalculator && zip -r CarbonCalculator-linux-latest.zip)
         shell: bash
       # Create release
       - name: Release
@@ -160,6 +152,6 @@ jobs:
         with:
           files: |
             windows/CarbonCalculator-windows-latest.zip
-            macos/CarbonCalculator-macos-latest.zip
+            macos/CarbonCalculator/CarbonCalculator-macos-latest.zip
             linux/CarbonCalculator-linux-latest.zip
 
