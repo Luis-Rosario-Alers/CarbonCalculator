@@ -9,10 +9,13 @@ from PySide6.QtWidgets import (
     QPushButton,
     QVBoxLayout,
     QWidget,
+    QTabWidget,
+    QLabel,
 )
 
 from data.database import application_path
 from ui.input_forms import InputForms
+
 
 logger = logging.getLogger("ui")
 
@@ -40,10 +43,29 @@ class MainWindow(QMainWindow):
 
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
-
         layout = QVBoxLayout(central_widget)
         self.input_forms = InputForms(self)
-        layout.addWidget(self.input_forms)
+
+        self.tab_widget = QTabWidget()
+
+        # Step 2: Create QWidget for each page
+        tab1 = QWidget()
+        tab2 = QWidget()
+
+        # Step 3: Add child widgets to each page
+        layout1 = QVBoxLayout()
+        layout1.addWidget(self.input_forms)
+        tab1.setLayout(layout1)
+
+        layout2 = QVBoxLayout()
+        layout2.addWidget(QLabel("Content of Tab 2"))
+        tab2.setLayout(layout2)
+
+        # Step 4: Add pages to the QTabWidget
+        self.tab_widget.addTab(tab1, "General")
+        self.tab_widget.addTab(tab2, "Settings")
+
+        layout.addWidget(self.tab_widget)
 
         self.display_internet_connection_status(
             self.internet_connection_status
