@@ -1,17 +1,20 @@
 import asyncio
+import json
 import logging.config
+import os
 
+import aiofiles
 from PySide6.QtWidgets import QApplication
 from qasync import QEventLoop
 
 import data.database as db
+from data.database import application_path
 from services.user_internet_connection_service import (
     test_user_internet_connection,
 )
 from services.user_location_service import UserLocationService
 from services.weather_service import WeatherService
 from ui.main_window import MainWindow
-from utils.config import IP_API_TOKEN, WEATHER_API_KEY
 from utils.logging import setup_logging
 
 setup_logging()
@@ -34,6 +37,18 @@ async def start():
     """
     await db.database_initialization()
     internet_connection_process = await test_user_internet_connection()
+    settings_path = os.path.join(
+        application_path, "resources", "config", "settings.json"
+    )
+    if os.path.exists(settings_path):
+        async with aiofiles.open(settings_path, "r") as file:
+            data = json.loads(await file.read())
+            IP_API_TOKEN = data.get("ip_key")
+            WEATHER_API_KEY = data.get("weather_key")
+    else:
+        IP_API_TOKEN = None
+        WEATHER_API_KEY = None
+
     if (
         WEATHER_API_KEY is None
         or IP_API_TOKEN is None

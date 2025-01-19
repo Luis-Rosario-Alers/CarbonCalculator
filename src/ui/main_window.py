@@ -7,15 +7,14 @@ from PySide6.QtWidgets import (
     QMainWindow,
     QMessageBox,
     QPushButton,
+    QTabWidget,
     QVBoxLayout,
     QWidget,
-    QTabWidget,
-    QLabel,
 )
 
 from data.database import application_path
 from ui.input_forms import InputForms
-
+from ui.settings_menu import SettingPage
 
 logger = logging.getLogger("ui")
 
@@ -27,6 +26,7 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle("Carbon Calculator")
         self.setGeometry(100, 100, 400, 300)
+        self.setMaximumSize(400, 300)
         if sys.platform == "darwin":
             self.setWindowIcon(
                 QIcon(f"{application_path}/resources/assets/icon.icns")
@@ -39,31 +39,14 @@ class MainWindow(QMainWindow):
             self.setWindowIcon(
                 QIcon(f"{application_path}/resources/assets/icon.png")
             )
-        # TODO: find a way to change the icon on the taskbar
 
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         layout = QVBoxLayout(central_widget)
-        self.input_forms = InputForms(self)
-
         self.tab_widget = QTabWidget()
 
-        # Step 2: Create QWidget for each page
-        tab1 = QWidget()
-        tab2 = QWidget()
-
-        # Step 3: Add child widgets to each page
-        layout1 = QVBoxLayout()
-        layout1.addWidget(self.input_forms)
-        tab1.setLayout(layout1)
-
-        layout2 = QVBoxLayout()
-        layout2.addWidget(QLabel("Content of Tab 2"))
-        tab2.setLayout(layout2)
-
-        # Step 4: Add pages to the QTabWidget
-        self.tab_widget.addTab(tab1, "General")
-        self.tab_widget.addTab(tab2, "Settings")
+        self.tab_widget.addTab(InputForms(self), "General")
+        self.tab_widget.addTab(SettingPage(self), "Settings")
 
         layout.addWidget(self.tab_widget)
 
@@ -77,7 +60,6 @@ class MainWindow(QMainWindow):
             "Exit",
             "Are you sure you want to exit?",
             QMessageBox.Yes | QMessageBox.No,
-            QMessageBox.No,
         )
 
         if reply == QMessageBox.Yes:

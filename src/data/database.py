@@ -73,8 +73,22 @@ async def initialize_user_data_database():
 
 
 async def initialize_fuel_type_database():
+    global settings_path
     try:
         db_path = os.path.join(databases_folder, "fuel_type_conversions.db")
+
+        # Ensure settings directory exists
+        settings_dir = os.path.join(application_path, "resources", "config")
+        os.makedirs(settings_dir, exist_ok=True)
+
+        # Settings file path
+        settings_path = os.path.join(settings_dir, "settings.json")
+
+        # Default conversion factors path
+        default_factors_path = os.path.join(
+            application_path, "resources", "config", "conversion_factors"
+        )
+        os.makedirs(default_factors_path, exist_ok=True)
 
         async with aiosqlite.connect(db_path) as conn:
             async with conn.cursor() as cursor:
@@ -83,32 +97,55 @@ async def initialize_fuel_type_database():
                     fuel_types
                     (fuel_type TEXT PRIMARY KEY, emissions_factor REAL)"""
                 )
+                try:
+                    async with aiofiles.open(settings_path, "r") as file:
+                        settings = json.loads(await file.read())
+                        json_path = settings.get("emissions_factors_path")
+                        logger.info(f"Settings loaded: {settings}")
+                        if not json_path:
+                            # Create default settings if not exists
+                            json_path = os.path.join(
+                                default_factors_path, "fuel_types.json"
+                            )
+                            json_path = os.path.normpath(json_path)
+                            os.makedirs(
+                                os.path.dirname(json_path), exist_ok=True
+                            )
+                            # Save the default settings back to the settings file
+                            settings["emissions_factors_path"] = json_path
+                            async with aiofiles.open(
+                                settings_path, "w"
+                            ) as settings_file:
+                                await settings_file.write(
+                                    json.dumps(settings, indent=4)
+                                )
+                except json.JSONDecodeError:
+                    logger.error("Error loading settings file")
+                    return 0
 
-                json_path = os.path.join(
-                    application_path,
-                    "resources",
-                    "conversion_factors",
-                    "fuel_types.json",
-                )
                 try:
                     async with aiofiles.open(json_path, "r") as file:
                         fuel_data = json.loads(await file.read())
                 except json.JSONDecodeError:
                     print("Error loading fuel type data")
-
+            try:
                 for fuel in fuel_data:
                     await cursor.execute(
                         "INSERT OR IGNORE INTO fuel_types VALUES (?, ?)",
                         (fuel["fuel_type"], fuel["emissions_factor"]),
                     )
-                await conn.commit()
+                    await conn.commit()
+            except UnboundLocalError as e:
+                logger.error(f"Error: {e}")
+                logger.error("Fuel type data path does not contain valid data")
+                return 0
     except aiosqlite.Error as e:
-        print(f"Database error: {e}")
-        print("Fuel type database not initialized")
+        logger.error(f"Database error: {e}")
+        logger.error("Fuel type database not initialized")
         return 0
     except (json.JSONDecodeError, KeyError, TypeError) as e:
-        print(f"JSON error: {e}")
-        print("Fuel type data was not loaded correctly")
+        logger.error(f"JSON error: {e}")
+        logger.error("Fuel type data was not loaded correctly")
         return 0
 
 
@@ -180,7 +217,7 @@ async def log_calculation(user_id, fuel_type, fuel_used, emissions):
 # function to bundle initialization of all databases
 async def database_initialization():
     if os.path.exists(databases_folder):
-        pass
+        await initialize_fuel_type_database()
     elif not os.path.exists(databases_folder):
         setup_databases_folder()
         logger.info("Initializing databases"),
