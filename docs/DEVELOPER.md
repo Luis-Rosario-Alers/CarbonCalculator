@@ -16,7 +16,7 @@ await db.database_initialization()
 ```
 
 
-It then tests the user's internet connection using: 
+It then tests the user's internet connection using:
 ```python
 await test_user_internet_connection()
 ```
@@ -37,14 +37,14 @@ if (
 ```
 
 
-But if it can find both required API keys then it will retrieve the user's location using the `UserLocationService`: 
+But if it can find both required API keys then it will retrieve the user's location using the `UserLocationService`:
 ```python
 user_location_service = UserLocationService(IP_API_TOKEN)
 user_coords = await user_location_service.get_user_location()
 ```
 
 
-After that it fetches weather data for the user's coordinates using the `WeatherService`: 
+After that it fetches weather data for the user's coordinates using the `WeatherService`:
 ```python
 user_local_temps = await weather_service.get_weather(
    user_coords[0],  # latitude
@@ -66,27 +66,27 @@ The `run_main_window` function is in the `main.py` file.
 To set up the Qt application and integrate the event loop with `asyncio`, then display the main window of the application.
 
 
-It creates a `QApplication` instance using the code: 
+It creates a `QApplication` instance using the code:
 ```python
 app = QApplication([])
 ```
 
 
-It integrates the Qt event loop with `asyncio` using: 
+It integrates the Qt event loop with `asyncio` using:
 ```python
 loop = QEventLoop(app)
 asyncio.set_event_loop(loop)
 ```
 
 
-It then creates and displays the main window: 
+It then creates and displays the main window:
 ```python
 main_window = MainWindow(internet_connection_status_passed)
 main_window.show()
 ```
 
 
-The function runs the event loop using: 
+The function runs the event loop using:
 ```python
 with loop:
    loop.run_forever()
@@ -103,7 +103,7 @@ with loop:
 The `closeEvent` method is triggered when the user attempts to close the application window. Its purpose is to confirm the user's intention to exit and handle the response accordingly.
 
 ### Purpose
-The method displays a dialog box asking the user whether they are sure they want to exit the application. This dialog is created using the following code:  
+The method displays a dialog box asking the user whether they are sure they want to exit the application. This dialog is created using the following code:
 ```python
 reply = QMessageBox.question(
     self,
@@ -114,23 +114,23 @@ reply = QMessageBox.question(
 )
 ```
 
-- **Title**: `"Exit"`  
-- **Message**: `"Are you sure you want to exit?"`  
+- **Title**: `"Exit"`
+- **Message**: `"Are you sure you want to exit?"`
 - **Buttons**: `Yes` and `No`, with the default set to `No`.
 
 #### User Response Handling
 
-If the user clicks Yes, the application logs the exit action and closes:  
+If the user clicks Yes, the application logs the exit action and closes:
 ```python
 if reply == QMessageBox.Yes:
     logging.getLogger("main").info("Exiting application")
     event.accept()
 ```
-The logger records: `"Exiting application"`.  
+The logger records: `"Exiting application"`.
 `event.accept()` allows the application to close.
 
 
-If the user clicks No, the application ignores the close event and keeps running:  
+If the user clicks No, the application ignores the close event and keeps running:
 ```python
 else:
     event.ignore()
@@ -145,8 +145,8 @@ This makes sure the user does not accidentally exit the program without confirma
 
 
 ### Receiving the Submit Button Click
-When the user clicks the "Submit" button, the `submit` method is triggered through the `clicked` signal of the `submit_button`. 
- 
+When the user clicks the "Submit" button, the `submit` method is triggered through the `clicked` signal of the `submit_button`.
+
 ```python
 self.submit_button.clicked.connect(self.submit)
 ```
@@ -156,7 +156,7 @@ This establishes that when the button is clicked, the `submit` method will execu
 
 
 ### Triggering Submit
-Inside the `submit` method, user-entered values are retrieved from input fields for processing.  
+Inside the `submit` method, user-entered values are retrieved from input fields for processing.
 
 
 ```python
@@ -168,7 +168,7 @@ fuel_used = self.fuel_used_entry.text()
 Here, the inputs are fetched as strings from the GUI components (`user_id_entry`, `fuel_type_entry`, and `fuel_used_entry`).
 
 ### Converting user_id to an Integer
-The `user_id` input is attempted to be converted to an integer using `int(user_id)`. If this fails, a `ValueError` is caught, and `user_id` is set to `None`.  
+The `user_id` input is attempted to be converted to an integer using `int(user_id)`. If this fails, a `ValueError` is caught, and `user_id` is set to `None`.
 ```python
 try:
     user_id = int(user_id)
@@ -209,7 +209,7 @@ An early return prevents further operations when conversions fail.
 ---
 
 ### Validating Inputs Using `DataValidator`
-The `DataValidator` validates the inputs (`user_id`, `fuel_type`, `fuel_used`). This ensures all fields are within acceptable ranges and formats.  
+The `DataValidator` validates the inputs (`user_id`, `fuel_type`, `fuel_used`). This ensures all fields are within acceptable ranges and formats.
 
 ```python
 if not DataValidator.validate_user_id(user_id):
@@ -230,7 +230,7 @@ Each input is checked, and if any validation fails, an error message is displaye
 ### Are Any Inputs Invalid?
 If any validation check returns `False`, an appropriate error message is logged, and the process terminates.
 
- 
+
 ```python
 if not all([user_id, fuel_type, fuel_used]):
     self.display_error("One or more inputs are invalid.")
@@ -242,9 +242,9 @@ This makes sure that inputs that are invalid don't make it to the next steps.
 ---
 
 ## user_local_temps Equal to None?
-`user_local_temps` determines how emissions are calculated.  
+`user_local_temps` determines how emissions are calculated.
 
-#### If Yes (`user_local_temps` is `None`):  
+#### If Yes (`user_local_temps` is `None`):
 If no temperature data is available, only `user_id`, `fuel_type`, and `fuel_used` are passed to `calculate_emissions`.
 
 
@@ -253,7 +253,7 @@ if user_local_temps is None:
     emissions = calculate_emissions(user_id, fuel_type, fuel_used)
 ```
 
-#### If No (`user_local_temps` is not `None`):  
+#### If No (`user_local_temps` is not `None`):
 When temperature data is available, the `temperature_type` method allows the user to select a unit (Celsius, Fahrenheit, or Kelvin), and the corresponding local temperature is included.
 
 
