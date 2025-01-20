@@ -1,120 +1,80 @@
-import os
-import shutil
-import time
-
 import aiosqlite
 import pytest
 
 from src.core.emissions_calculator import calculate_emissions
-from src.data.database import (
-    initialize_emissions_database,
-    initialize_fuel_type_database,
-    log_calculation,
-)
+from src.data.database import initialize_fuel_type_database, log_calculation
 
 # ! BEWARE THAT RUNNING THESE TESTS WILL DELETE THE DATABASES FOLDER AND ALL ITS CONTENTS.
 # ! MAKE SURE TO BACK UP ANY IMPORTANT DATA BEFORE RUNNING THESE TESTS.
 # ! RUNNING THESE TEST CONCURRENTLY WILL NOT WORK. IDK why.
 
 
-# path to database folder
-db_folder = os.path.join(
-    os.path.dirname(__file__), "..", "..", "src", "data", "databases"
-)
-print(db_folder)
-
-
-@pytest.fixture(autouse=True)
-def cleanup_database():
-    # Create a fresh database folder if it doesn't exist
-    os.makedirs(db_folder, exist_ok=True)
-
-    yield  # Run the test
-
-    # Cleanup after test
-    time.sleep(0.1)  # Allow time for file handles to be released
-    try:
-        if os.path.exists(db_folder):
-            # Remove all files in the database folder
-            shutil.rmtree(db_folder)
-    except PermissionError as e:
-        print(f"Warning: Could not delete database folder: {e}")
-
-
 # * If this test fails, check the calculate_emissions module for logic changes such as math operator changing
 @pytest.mark.asyncio
 async def test_calculate_emissions(
-    fuel_type="gasoline", fuel_used: float = 10.0
+    mocker, fuel_type="gasoline", fuel_used: float = 10.0
 ):
-    try:
-        # initializes fuel type databases necessary for test
-        await initialize_fuel_type_database()
+    # Arrange
+    mock_db_path = "fuel_type_conversions.db"
+    mocker.patch("os.path.join", return_value=mock_db_path)
 
-        # absolute path to databases
-        db_path = os.path.join(db_folder, "fuel_type_conversions.db")
-        async with aiosqlite.connect(db_path) as conn:
-            async with conn.cursor() as cursor:
-                # find fuel_type emissions factor
-                await cursor.execute(
-                    "SELECT emissions_factor FROM fuel_types WHERE fuel_type = ?",
-                    (fuel_type,),
-                )
+    mock_databases_folder = mocker.patch(
+        "src.data.database.setup_databases_folder"
+    )
+    mock_databases_folder.return_value = mocker.AsyncMock()
 
-                # simulate expected function logic
-                emissions_factor = (await cursor.fetchone())[0]
-                emissions = fuel_used * emissions_factor
-                expected_emissions = await calculate_emissions(
-                    1, fuel_type, fuel_used
-                )
-                fuel_type, fuel_used, expected_emissions = expected_emissions
+    mock_cursor = mocker.AsyncMock()
+    mock_cursor.fetchone.return_value = [2.5]  # Mocked emission factor
 
-        # assert that expected function logic is equal to actual function logic
-        assert emissions == expected_emissions
-    finally:
-        time.sleep(0.1)
+    mock_conn = mocker.AsyncMock()
+    mock_conn.__aenter__.return_value = mock_conn
+    mock_conn.cursor.return_value.__aenter__.return_value = mock_cursor
 
+    mocker.patch("aiosqlite.connect", return_value=mock_conn)
 
-# if this test fails, most likely conversion rates have changed
-# or sql execution has had an error
-@pytest.mark.asyncio
-async def test_log_calculation(
-    fuel_type="gasoline", fuel_used: float = 10.0, user_id: int = 1
-):
-    try:
-        # Initialize databases
-        await initialize_fuel_type_database()
-        await initialize_emissions_database()
+    await initialize_fuel_type_database()
 
-        # paths to databases
-        fuel_type_db_path = os.path.join(db_folder, "fuel_type_conversions.db")
-
-        conn_fuel = await aiosqlite.connect(fuel_type_db_path)
-        cursor_fuel = await conn_fuel.cursor()
-        await cursor_fuel.execute(
-            "SELECT emissions_factor FROM fuel_types WHERE fuel_type = ?",
-            (fuel_type,),
-        )
-        fuel_type_result = await cursor_fuel.fetchone()
-        emissions_factor = fuel_type_result[0]
-        emissions = fuel_used * emissions_factor
-
-        if not fuel_type_result:
-            raise ValueError(
-                f"Fuel type {fuel_type} not found in the database"
+    # Act | if this test is failing, PLEASE check emission factor values for changes
+    async with aiosqlite.connect(mock_db_path) as conn:
+        async with await conn.cursor() as cursor:
+            await cursor.execute(
+                "SELECT emissions_factor FROM fuel_types WHERE fuel_type = ?",
+                (fuel_type,),
+            )
+            emissions_factor = (await cursor.fetchone())[0]
+            expected_emissions = fuel_used * emissions_factor
+            fuel_type, fuel_used, emissions = await calculate_emissions(
+                1, fuel_type, fuel_used
             )
 
-        await conn_fuel.close()
+    # Assert
+    assert expected_emissions == emissions
 
-        expected_result = [(fuel_type, fuel_used, emissions)]
-        # Test the actual function
-        real_result = await log_calculation(2, fuel_type, fuel_used, emissions)
 
-        print(f"expected result: {expected_result}")
-        print(f"real result: {real_result}")
+@pytest.mark.asyncio
+async def test_log_calculation(mocker):
+    # Arrange
+    mock_db_path = "emissions.db"
+    mocker.patch("os.path.join", return_value=mock_db_path)
 
-        assert real_result[0][0] == expected_result[0][0]  # fuel_type
-        assert real_result[0][1] == expected_result[0][1]  # fuel_used
-        assert real_result[0][2] == expected_result[0][2]  # emissions
+    mock_databases_folder = mocker.patch(
+        "src.data.database.setup_databases_folder"
+    )
+    mock_databases_folder.return_value = mocker.AsyncMock()
 
-    except Exception as e:
-        print(f"Error during test: {e}")
+    mock_cursor = mocker.AsyncMock()
+    mock_cursor.fetchall.return_value = [(1, "gasoline", 10.0, 25.0)]
+
+    mock_conn = mocker.AsyncMock()
+    mock_conn.__aenter__.return_value = mock_conn
+    mock_conn.__aexit__.return_value = None
+    mock_conn.cursor.return_value.__aenter__.return_value = mock_cursor
+    mock_conn.cursor.return_value.__aexit__.return_value = None
+
+    mocker.patch("aiosqlite.connect", return_value=mock_conn)
+
+    # Act
+    result = await log_calculation(1, "gasoline", 10.0, 25.0)
+
+    # Assert
+    assert result == [(1, "gasoline", 10.0, 25.0)]

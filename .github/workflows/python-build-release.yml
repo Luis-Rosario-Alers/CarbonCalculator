@@ -20,19 +20,6 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
-      # Delete tag on failure
-      - name: Delete tag on failure
-        if: failure()
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const tag = '${{ github.ref }}'.replace('refs/tags/', '');
-            await github.rest.git.deleteRef({
-              owner: context.repo.owner,
-              repo: context.repo.name,
-              ref: `tags/${tag}`
-            });
       - uses: actions/checkout@v4
       # Set up Python 3.12
       - uses: actions/setup-python@v5.0.0
