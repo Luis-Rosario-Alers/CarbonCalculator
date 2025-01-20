@@ -10,7 +10,7 @@ from qasync import QEventLoop
 import data.database as db
 from data.database import application_path
 from services.user_internet_connection_service import (
-    test_user_internet_connection,
+    user_internet_connection_check,
 )
 from services.user_location_service import UserLocationService
 from services.weather_service import WeatherService
@@ -36,7 +36,7 @@ async def start():
 
     """
     await db.database_initialization()
-    internet_connection_process = await test_user_internet_connection()
+    internet_connection_process = await user_internet_connection_check()
     settings_path = os.path.join(
         application_path, "resources", "config", "settings.json"
     )
