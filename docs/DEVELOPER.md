@@ -1,4 +1,3 @@
-
 # Developer Documentation
 These are the developer docs of the carbon calculator project.
 
@@ -263,4 +262,3 @@ else:
     temp_type = self.temperature_type()
     emissions = calculate_emissions(user_id, fuel_type, fuel_used, user_local_temps[temp_type])
 ```
-

@@ -5,11 +5,11 @@ import aiohttp
 logger = logging.getLogger("services")
 
 
-async def test_user_internet_connection():
+async def user_internet_connection_check():
     logger.info("Testing internet connection")
     try:
         async with aiohttp.ClientSession() as session:
-            async with session.get(
+            async with await session.get(
                 "https://www.google.com/", timeout=5
             ) as response:
                 if response.status == 200:

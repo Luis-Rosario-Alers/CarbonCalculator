@@ -7,12 +7,14 @@ from PySide6.QtWidgets import (
     QMainWindow,
     QMessageBox,
     QPushButton,
+    QTabWidget,
     QVBoxLayout,
     QWidget,
 )
 
 from data.database import application_path
 from ui.input_forms import InputForms
+from ui.settings_menu import SettingPage
 
 logger = logging.getLogger("ui")
 
@@ -24,6 +26,7 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle("Carbon Calculator")
         self.setGeometry(100, 100, 400, 300)
+        self.setMaximumSize(400, 300)
         if sys.platform == "darwin":
             self.setWindowIcon(
                 QIcon(f"{application_path}/resources/assets/icon.icns")
@@ -36,14 +39,16 @@ class MainWindow(QMainWindow):
             self.setWindowIcon(
                 QIcon(f"{application_path}/resources/assets/icon.png")
             )
-        # TODO: find a way to change the icon on the taskbar
 
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
-
         layout = QVBoxLayout(central_widget)
-        self.input_forms = InputForms(self)
-        layout.addWidget(self.input_forms)
+        self.tab_widget = QTabWidget()
+
+        self.tab_widget.addTab(InputForms(self), "General")
+        self.tab_widget.addTab(SettingPage(self), "Settings")
+
+        layout.addWidget(self.tab_widget)
 
         self.display_internet_connection_status(
             self.internet_connection_status
@@ -55,7 +60,6 @@ class MainWindow(QMainWindow):
             "Exit",
             "Are you sure you want to exit?",
             QMessageBox.Yes | QMessageBox.No,
-            QMessageBox.No,
         )
 
         if reply == QMessageBox.Yes:
