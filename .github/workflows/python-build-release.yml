@@ -20,19 +20,6 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
-      # Delete tag on failure
-      - name: Delete tag on failure
-        if: failure()
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const tag = '${{ github.ref }}'.replace('refs/tags/', '');
-            await github.rest.git.deleteRef({
-              owner: context.repo.owner,
-              repo: context.repo.name,
-              ref: `tags/${tag}`
-            });
       - uses: actions/checkout@v4
       # Set up Python 3.12
       - uses: actions/setup-python@v5.0.0
@@ -59,6 +46,8 @@ jobs:
               --icon "src/data/resources/assets/icon.ico" \
               --paths src \
               src/main.py \
+              --windowed \
+              --noconsole \
               --name CarbonCalculator
           elif [ "$RUNNER_OS" == "macOS" ]; then
             pyinstaller \
@@ -66,6 +55,8 @@ jobs:
               --icon "src/data/resources/assets/icon.icns" \
               --paths src \
               src/main.py \
+              --windowed \
+              --noconsole \
               --name CarbonCalculator
           else
             pyinstaller \
@@ -73,6 +64,8 @@ jobs:
               --icon "src/data/resources/assets/icon.png" \
               --paths src \
               src/main.py \
+              --windowed \
+              --noconsole \
               --name CarbonCalculator
           fi
         shell: bash
@@ -92,9 +85,19 @@ jobs:
               echo "Directory dist/CarbonCalculator not found"
               exit 1
             fi
-          else
+          elif [ "$RUNNER_OS" == "macOS" ]; then
+            if [ -d dist/CarbonCalculator.app ]; then
+              rm -rf build/CarbonCalculator
+              mkdir -p build/
+              mv dist/CarbonCalculator.app build/
+            else
+              echo "Directory dist/CarbonCalculator.app not found"
+              exit 1
+            fi
+          elif [ "$RUNNER_OS" == "Linux" ]; then
             if [ -d dist/CarbonCalculator ]; then
               rm -rf build/CarbonCalculator
+              mkdir -p build/
               mv dist/CarbonCalculator build/
             else
               echo "Directory dist/CarbonCalculator not found"
@@ -142,7 +145,7 @@ jobs:
       - name: Zip artifacts
         run: |
           cd windows && zip -r CarbonCalculator-windows-latest.zip CarbonCalculator/
-          cd ../macos && zip -r CarbonCalculator-macos-latest.zip CarbonCalculator/
+          cd ../macos && zip -r CarbonCalculator-macos-latest.zip CarbonCalculator.app/
           cd ../linux && zip -r CarbonCalculator-linux-latest.zip CarbonCalculator/
         shell: bash
       # Create release
