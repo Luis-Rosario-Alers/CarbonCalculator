@@ -26,14 +26,24 @@ logger = logging.getLogger("ui")
 class InputForms(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
+        widget_size = (350, 25)
+
         self.user_id_label = QLabel("User ID:")
         self.user_id_entry = QLineEdit()
+        self.user_id_entry.setFixedSize(*widget_size)
+
         self.fuel_type_label = QLabel("Fuel Type:")
         self.fuel_type_entry = QComboBox()
+        self.fuel_type_entry.setFixedSize(*widget_size)
+
         self.fuel_used_label = QLabel("Fuel Used:")
         self.fuel_used_entry = QLineEdit()
+        self.fuel_used_entry.setFixedSize(*widget_size)
+
         self.submit_button = QPushButton("Submit")
+        self.submit_button.setFixedSize(*widget_size)
         self.submit_button.clicked.connect(self.submit)
+
         self.results = None
 
         layout = QVBoxLayout()

@@ -27,6 +27,7 @@ class WeatherService:
                     logger.error(
                         f"API Error: {weather_data.get('message', 'Unknown error')}"
                     )
+                    logger.error("Weather data not retrieved")
                     return None
 
                 logger.info("Weather data retrieved")
