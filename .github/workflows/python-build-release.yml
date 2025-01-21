@@ -85,9 +85,19 @@ jobs:
               echo "Directory dist/CarbonCalculator not found"
               exit 1
             fi
-          else
+          elif [ "$RUNNER_OS" == "macOS" ]; then
+            if [ -d dist/CarbonCalculator.app ]; then
+              rm -rf build/CarbonCalculator
+              mkdir -p build/
+              mv dist/CarbonCalculator.app build/
+            else
+              echo "Directory dist/CarbonCalculator.app not found"
+              exit 1
+            fi
+          elif [ "$RUNNER_OS" == "Linux" ]; then
             if [ -d dist/CarbonCalculator ]; then
               rm -rf build/CarbonCalculator
+              mkdir -p build/
               mv dist/CarbonCalculator build/
             else
               echo "Directory dist/CarbonCalculator not found"
