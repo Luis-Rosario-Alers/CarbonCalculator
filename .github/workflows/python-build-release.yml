@@ -46,6 +46,8 @@ jobs:
               --icon "src/data/resources/assets/icon.ico" \
               --paths src \
               src/main.py \
+              --windowed \
+              --noconsole \
               --name CarbonCalculator
           elif [ "$RUNNER_OS" == "macOS" ]; then
             pyinstaller \
@@ -53,6 +55,8 @@ jobs:
               --icon "src/data/resources/assets/icon.icns" \
               --paths src \
               src/main.py \
+              --windowed \
+              --noconsole \
               --name CarbonCalculator
           else
             pyinstaller \
@@ -60,6 +64,8 @@ jobs:
               --icon "src/data/resources/assets/icon.png" \
               --paths src \
               src/main.py \
+              --windowed \
+              --noconsole \
               --name CarbonCalculator
           fi
         shell: bash
