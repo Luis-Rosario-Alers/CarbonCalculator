@@ -1,7 +1,5 @@
-import sys
 import pytest
-from PySide6.QtCore import QRect, QSize, Qt
-from PySide6.QtWidgets import QApplication, QMessageBox, QPushButton, QWidget
+from PySide6.QtCore import QRect, QSize
 
 from src.ui.main_window import MainWindow
 
