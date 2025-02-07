@@ -30,7 +30,9 @@ class SettingsManager:
             json.dump(self.settings, f, indent=4)
 
     def get_setting(self, key):
-        return self.settings.get(key, self.default_settings.get(key))
+        return self.settings.get(
+            key, self.default_settings.get(key)
+        )  # If key is not found in settings, return default setting
 
     def update_settings(self, **kwargs):
         self.settings.update(kwargs)

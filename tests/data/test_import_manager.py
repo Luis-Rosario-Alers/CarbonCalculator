@@ -14,52 +14,57 @@ from src.data.import_manager import ImportManager
 class TestImportManager:
     @pytest.fixture(autouse=True)
     async def cleanup_database(self):
-        # Create a fresh database folder if it doesn't exist
+        # Arrange
         setup_databases_folder()
         await initialize_emissions_database()
+
+        # Act & Assert
         yield
-        # Remove the database folder and its contents
+
+        # Cleanup
         shutil.rmtree(databases_folder)
 
     # * Tests for import_json method
-    # Raises ValueError when JSON file is missing required headers
     def test_import_json_with_missing_header(self, tmp_path):
-        # Given
+        # Arrange
         json_content = '[{"user_id": 1, "fuel_type": "gas", "emissions": 25.3, "timestamp": "2023-01-01"}]'
         json_file = tmp_path / "test.json"
         json_file.write_text(json_content)
         import_manager = ImportManager(str(json_file))
-        # When/Then
+
+        # Act & Assert
         with pytest.raises(ValueError) as exc_info:
             import_manager.import_from_json()
         assert "Missing required keys: {'fuel_used'}" in str(exc_info.value)
 
-    # Handles JSON file with extra columns beyond required ones
     def test_import_json_with_extra_columns(self, tmp_path):
-        # Given
+        # Arrange
         json_content = '[{"user_id": 123, "fuel_type": "gas", "fuel_used": 50, "emissions": 150, "timestamp": "2024-01-01", "extra_column": "extra_value"}]'
         json_file = tmp_path / "test.json"
         json_file.write_text(json_content)
         import_manager = ImportManager(str(json_file))
-        # When
-        imported_data = import_manager.import_from_json()
-        # Then
         expected_data = [(123, "gas", 50, 150, "2024-01-01")]
+
+        # Act
+        imported_data = import_manager.import_from_json()
+
+        # Assert
         assert (
             imported_data == expected_data
         ), "Extra columns should be ignored in imported data"
 
-    # Checks that JSON values are of correct data types
     def test_import_json_data_types(self, tmp_path):
-        # Given
+        # Arrange
         json_content = '[{"user_id": 123, "fuel_type": "gas", "fuel_used": 50.5, "emissions": 150.3, "timestamp": "2024-01-01"}]'
         json_file = tmp_path / "test.json"
         json_file.write_text(json_content)
         import_manager = ImportManager(str(json_file))
-        # When
+
+        # Act
         imported_data = import_manager.import_from_json()
-        # Then
         row = imported_data[0]
+
+        # Assert
         assert isinstance(row[0], int), "user_id should be integer"
         assert isinstance(row[1], str), "fuel_type should be string"
         assert isinstance(row[2], (int, float)), "fuel_used should be numeric"
@@ -70,50 +75,48 @@ class TestImportManager:
             pytest.fail("timestamp should be in YYYY-MM-DD format")
 
     # * Tests for import_csv method
-    # Raises ValueError when CSV file is missing required headers
     def test_import_csv_with_missing_headers(self, tmp_path):
-        # Given
+        # Arrange
         csv_content = (
             "user_id,fuel_type,emissions,timestamp\n1,gas,25.3,2023-01-01"
         )
         csv_file = tmp_path / "test.csv"
         csv_file.write_text(csv_content)
         import_manager = ImportManager(str(csv_file))
-        # When/Then
+
+        # Act & Assert
         with pytest.raises(ValueError) as exc_info:
             import_manager.import_from_csv()
         assert "Missing required keys: {'fuel_used'}" in str(exc_info.value)
 
-    # Handles CSV file with extra columns beyond required ones
     def test_import_csv_with_extra_columns(self, tmp_path):
-        # Given
+        # Arrange
         csv_content = "user_id,fuel_type,fuel_used,emissions,timestamp,extra_column\n123,gas,50,150,2024-01-01,extra_value"
         csv_file = tmp_path / "test.csv"
         csv_file.write_text(csv_content)
         import_manager = ImportManager(str(csv_file))
+        expected_data = [("123", "gas", "50", "150", "2024-01-01")]
 
-        # When
+        # Act
         imported_data = import_manager.import_from_csv()
 
-        # Then
-        expected_data = [("123", "gas", "50", "150", "2024-01-01")]
+        # Assert
         assert (
             imported_data == expected_data
         ), "Extra columns should be ignored in imported data"
 
-    # Checks that CSV values are of correct data types
     def test_import_csv_data_types(self, tmp_path):
-        # Given
+        # Arrange
         csv_content = "user_id,fuel_type,fuel_used,emissions,timestamp\n123,gas,50.5,150.3,2024-01-01"
         csv_file = tmp_path / "test.csv"
         csv_file.write_text(csv_content)
         import_manager = ImportManager(str(csv_file))
 
-        # When
+        # Act
         imported_data = import_manager.import_from_csv()
-
-        # Then
         row = imported_data[0]
+
+        # Assert
         assert isinstance(int(row[0]), int), "user_id should be integer"
         assert isinstance(row[1], str), "fuel_type should be string"
         assert float(row[2]), "fuel_used should be numeric"
@@ -122,3 +125,33 @@ class TestImportManager:
             datetime.strptime(row[4], "%Y-%m-%d")
         except ValueError:
             pytest.fail("timestamp should be in YYYY-MM-DD format")
+
+    def test_import_from_json_missing_values_in_keys(self, mocker, tmp_path):
+        # Arrange
+        mock_logger = mocker.patch("src.data.import_manager.logger")
+        json_content = '[{"user_id": 1, "fuel_type": "gas", "fuel_used": null, "emissions": 25.3, "timestamp": "2023-01-01"}]'
+        json_file = tmp_path / "test.json"
+        json_file.write_text(json_content)
+        import_manager = ImportManager(str(json_file))
+
+        # Act & Assert
+        with pytest.raises(ValueError):
+            import_manager.import_from_json()
+        mock_logger.error.assert_called_once_with(
+            "Missing value for key: fuel_used"
+        )
+
+    def test_import_from_csv_missing_values_in_keys(self, mocker, tmp_path):
+        # Arrange
+        mock_logger = mocker.patch("src.data.import_manager.logger")
+        csv_content = "user_id,fuel_type,fuel_used,emissions,timestamp\n1,gas,,25.3,2023-01-01"
+        csv_file = tmp_path / "test.csv"
+        csv_file.write_text(csv_content)
+        import_manager = ImportManager(str(csv_file))
+
+        # Act & Assert
+        with pytest.raises(ValueError):
+            import_manager.import_from_csv()
+        mock_logger.error.assert_called_once_with(
+            "Missing value for key: fuel_used"
+        )

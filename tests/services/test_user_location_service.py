@@ -13,13 +13,10 @@ class TestUserLocationService:
         mock_details = mocker.Mock()
         mock_details.latitude = 51.5074
         mock_details.longitude = -0.1278
-
         mock_handler = mocker.AsyncMock()
         mock_handler.getDetails.return_value = mock_details
-
         mock_get_handler = mocker.patch("ipinfo.getHandlerAsync")
         mock_get_handler.return_value = mock_handler
-
         service = UserLocationService("test_token")
 
         # Act
@@ -35,10 +32,8 @@ class TestUserLocationService:
         # Arrange
         mock_handler = mocker.AsyncMock()
         mock_handler.getDetails.side_effect = Exception("API Error")
-
         mock_get_handler = mocker.patch("ipinfo.getHandlerAsync")
         mock_get_handler.return_value = mock_handler
-
         service = UserLocationService("test_token")
 
         # Act

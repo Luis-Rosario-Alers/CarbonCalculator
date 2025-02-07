@@ -57,9 +57,35 @@ class DataValidator:
 
     @staticmethod
     def validate_integer(integer):
-
-        min_value = -9223372036854775808
-        max_value = 9223372036854775807
+        min_value = -9223372036854775808  # minimum value for a 64-bit integer
+        max_value = 9223372036854775807  # maximum value for a 64-bit integer
         if not (min_value <= integer <= max_value):
             raise ValueError(f"{integer} is not a valid integer")
         return True
+
+    @staticmethod
+    def validate_temperature_type(temperature_type):
+        if (
+            not isinstance(temperature_type, int)
+            or temperature_type < 0
+            or temperature_type > 2
+        ):
+            raise ValueError(
+                f"{temperature_type} is not a valid temperature type"
+            )
+        return True
+
+    @staticmethod
+    def validate_temperature(temperature, temperature_type):
+        if not isinstance(temperature, (int, float)):
+            raise ValueError(f"{temperature} is not a valid temperature")
+        if temperature_type == 0:  # Celsius
+            if temperature < -273.15:
+                raise ValueError(f"{temperature} is not a valid temperature")
+        elif temperature_type == 1:  # Fahrenheit
+            if temperature < -459.67:
+                raise ValueError(f"{temperature} is not a valid temperature")
+        elif temperature_type == 2:  # Kelvin
+            if temperature < 0:
+                raise ValueError(f"{temperature} is not a valid temperature")
+        return True  # if all checks pass
