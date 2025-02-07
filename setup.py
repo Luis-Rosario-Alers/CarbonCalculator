@@ -25,7 +25,6 @@ setup(
         "aiohttp",
         "pytest-asyncio",
         "ipinfo",
-        "pytest-qt",
         "pytest-xvfb",
     ],
     entry_points={
