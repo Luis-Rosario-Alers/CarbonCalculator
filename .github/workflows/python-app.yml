@@ -7,7 +7,7 @@ on:
     tags: [ "v*.*.*" ]
   # Trigger the workflow on pull requests to main or release branches
   pull_request:
-    branches: [ "main", "release/**" ]
+    branches: [ "main", "release/**", "develop" ]
 
 permissions:
   contents: read

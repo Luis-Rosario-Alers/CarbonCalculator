@@ -10,9 +10,7 @@ from PySide6.QtWidgets import (
 )
 
 from data.settings_manager import SettingsManager
-from utils.logging import setup_logging
 
-setup_logging()
 logger = logging.getLogger("ui")
 
 

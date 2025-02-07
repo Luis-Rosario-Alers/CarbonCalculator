@@ -25,6 +25,7 @@ setup(
         "aiohttp",
         "pytest-asyncio",
         "ipinfo",
+        "pytest-xvfb",
     ],
     entry_points={
         "console_scripts": [

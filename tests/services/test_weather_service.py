@@ -1,3 +1,4 @@
+import aiohttp
 import pytest
 
 from src.services.weather_service import TemperatureConverter, WeatherService
@@ -7,7 +8,7 @@ class TestWeatherService:
     # Returns None when API response code is not 200
     @pytest.mark.asyncio
     async def test_get_weather_returns_none_on_error_response(self, mocker):
-        # Given
+        # Arrange
         mock_logger = mocker.patch("src.services.weather_service.logger")
         mock_response = {"cod": 401, "message": "Invalid API key"}
         mock_session = mocker.AsyncMock()
@@ -17,13 +18,29 @@ class TestWeatherService:
         mocker.patch("aiohttp.ClientSession", return_value=mock_session)
 
         weather_service = WeatherService("your_weather_api_key_here")
-        # When
+        # Act
         result = await weather_service.get_weather(
             latitude=51.5074, longitude=-0.1278
         )
         # Assert
         assert result is None
         mock_logger.error.assert_called_with("Weather data not retrieved")
+
+    @pytest.mark.asyncio
+    async def test_get_weather_returns_none_on_aiohttp_error_(self, mocker):
+        # Arrange
+        mock_logger = mocker.patch("src.services.weather_service.logger")
+        mock_session = mocker.patch("aiohttp.ClientSession")
+        mock_session.side_effect = aiohttp.ClientError
+
+        weather_service = WeatherService("your_weather_api_key_here")
+        # Act
+        result = await weather_service.get_weather(
+            latitude=51.5074, longitude=-0.1278
+        )
+        # Assert
+        assert result is None
+        mock_logger.error.assert_called()
 
     # Successfully retrieves weather data and returns tuple of temperatures when valid coordinates provided
     @pytest.mark.asyncio

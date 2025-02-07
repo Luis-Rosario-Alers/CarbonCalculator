@@ -8,7 +8,6 @@ from data.database import get_emissions_factor, log_calculation
 logger = logging.getLogger("core")
 
 
-# class to make Emissions calculating easier.
 async def calculate_emissions(
     user_id: int,
     fuel_type: str,
@@ -31,16 +30,21 @@ async def calculate_emissions(
     ValueError: If any of the inputs are invalid or if the calculated emissions data is invalid.
     """
     data_validator = DataValidator()
+    # Validate temperature type and temperature values
+    if temperature_type is not None and temperature is not None:
+        data_validator.validate_temperature_type(temperature_type)
+        data_validator.validate_temperature(temperature, temperature_type)
+
     emissions_factor = await get_emissions_factor(fuel_type)
 
     # * Check This ⬇️ if emissions tests have failed
     if temperature is not None and temperature_type is not None:
         logger.info("Temperature data available, adjusting emissions factor")
         baseline_temperature = [
-            15,
-            59,
-            288.15,
-        ]  # Baseline temperatures in Celsius, Fahrenheit, and Kelvin
+            20.0,  # Celsius
+            68.0,  # Fahrenheit
+            293.15,  # Kelvin
+        ]
         temp_deviation = (
             temperature - baseline_temperature[temperature_type]
         ) / baseline_temperature[temperature_type]
