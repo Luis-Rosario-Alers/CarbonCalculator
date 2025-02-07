@@ -15,5 +15,5 @@ coverage:
 
 ignore:
   - "src/ui/*"
-  - "setup.py"      
+  - "setup.py"
   - "tests/**/*"
