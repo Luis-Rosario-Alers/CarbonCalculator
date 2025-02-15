@@ -77,7 +77,9 @@ class DataValidator:
 
     @staticmethod
     def validate_temperature(temperature, temperature_type):
-        if not isinstance(temperature, (int, float)):
+        if not isinstance(temperature, (int, float)) or isinstance(
+            temperature, bool
+        ):
             raise ValueError(f"{temperature} is not a valid temperature")
         if temperature_type == 0:  # Celsius
             if temperature < -273.15:
@@ -86,6 +88,6 @@ class DataValidator:
             if temperature < -459.67:
                 raise ValueError(f"{temperature} is not a valid temperature")
         elif temperature_type == 2:  # Kelvin
-            if temperature < 0:
+            if temperature <= 0:
                 raise ValueError(f"{temperature} is not a valid temperature")
         return True  # if all checks pass

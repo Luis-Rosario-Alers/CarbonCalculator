@@ -99,3 +99,39 @@ class TestCalculator:
                 await calculate_emissions(
                     1, "gasoline", 10.0, temperature, temp_type
                 )
+
+    @pytest.mark.asyncio
+    async def test_calculate_emissions_uses_data_validator_validate_emissions_with_no_temperature_data(
+        self, mocker
+    ):
+        # Arrange
+        mock_data_validator = mocker.patch(
+            "src.core.emissions_calculator.DataValidator.validate_emissions"
+        )
+        mock_data_validator.return_value = False
+        mock_emissions_factor = mocker.patch(
+            "src.core.emissions_calculator.get_emissions_factor"
+        )
+        mock_emissions_factor.return_value = 2.5
+
+        # Act/Assert
+        with pytest.raises(ValueError):
+            await calculate_emissions(1, "gasoline", 10.0)
+
+    @pytest.mark.asyncio
+    async def test_calculate_emissions_uses_data_validator_validate_emissions_with_temperature_data(
+        self, mocker
+    ):
+        # Arrange
+        mock_data_validator = mocker.patch(
+            "src.core.emissions_calculator.DataValidator.validate_emissions"
+        )
+        mock_data_validator.return_value = False
+        mock_emissions_factor = mocker.patch(
+            "src.core.emissions_calculator.get_emissions_factor"
+        )
+        mock_emissions_factor.return_value = 2.5
+
+        # Assert/Act
+        with pytest.raises(ValueError):
+            await calculate_emissions(1, "gasoline", 10.0, 25.0, 0)

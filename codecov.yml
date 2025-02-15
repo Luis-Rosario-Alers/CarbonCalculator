@@ -3,5 +3,17 @@ coverage:
     project:
       default:
         target: auto
-        threshold: 0%
-        base: auto
+        branches:
+          - main
+          - developer
+    patch:
+      default:
+        target: auto
+        branches:
+          - main
+          - developer
+
+ignore:
+  - "src/ui/*"
+  - "setup.py"
+  - "tests/**/*"

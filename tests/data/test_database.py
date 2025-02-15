@@ -248,6 +248,10 @@ class TestDatabase:
         )
         mock_create_db.return_value = mocker.AsyncMock()
         mock_insert = mocker.patch("src.data.database.insert_fuel_data")
+        mock_os_path_exists = mocker.patch("os.path.exists")
+        mock_os_path_exists.return_value = True
+        mock_os_remove = mocker.patch("os.remove")
+        mock_os_remove.return_value = None
 
         # Act
         result = await initialize_fuel_type_database()

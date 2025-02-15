@@ -70,23 +70,23 @@ class MainWindow(QMainWindow):
 
     def display_internet_connection_status(self, has_internet):
         """Display a message box with the internet connection status."""
-        msg_box = QMessageBox(self)
-        msg_box.setWindowTitle("Status")
-        ok_button = QPushButton("Ok.")
-        msg_box.addButton(ok_button, QMessageBox.AcceptRole)
+        self.status_msg_box = QMessageBox(self)
+        self.status_msg_box.setWindowTitle("Status")
+        self.ok_button = QPushButton("Ok.")
+        self.status_msg_box.addButton(self.ok_button, QMessageBox.AcceptRole)
 
         if has_internet:
-            msg_box.setText("Internet connection found.")
+            self.status_msg_box.setText("Internet connection found.")
         elif has_internet is False:
-            msg_box.setText(
+            self.status_msg_box.setText(
                 "No internet connection found. Some features may not be available."
             )
         else:
-            msg_box.setText(
+            self.status_msg_box.setText(
                 "There was an error checking the internet connection."
             )
 
-        msg_box.exec_()
+        self.status_msg_box.exec_()
 
 
 if __name__ == "__main__":
