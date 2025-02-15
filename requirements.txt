@@ -3,6 +3,7 @@ aiohttp
 aiosqlite
 asyncio
 black
+chardet
 ipinfo
 Matplotlib
 pre-commit
