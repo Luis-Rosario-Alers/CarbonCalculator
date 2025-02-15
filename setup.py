@@ -22,7 +22,6 @@ setup(
         "pytest-asyncio",
         "pytest-cov",
         "pytest-mock",
-        "pytest-qt",
         "pytest-xvfb",
         "python-dotenv",
         "qasync",
