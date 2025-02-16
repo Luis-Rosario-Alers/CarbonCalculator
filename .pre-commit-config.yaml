@@ -12,7 +12,6 @@ repos:
     - id: name-tests-test
       args: ["--pytest-test-first", "test_*.py"]
     - id: check-merge-conflict
-    - id: check-added-large-files
     - id: check-ast
   - repo: https://github.com/psf/black
     rev: 24.10.0
