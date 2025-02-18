@@ -1,5 +1,5 @@
-<!-- 
-### Feature Pull Request Template
+<!--
+### Pull Request Template
 
 Gitmoji Reference Guide (for PR naming):
 ✨ `:sparkles:` - Add new feature
@@ -21,28 +21,30 @@ Gitmoji Reference Guide (for PR naming):
 -->
 
 ## Description
-<!-- Please include a summary of the change and which issue is fixed. -->
+<!-- Please include a summary of the changes and the related issue. -->
 
 ## Related Issue
 <!-- If this PR fixes an issue, please link to the issue here. -->
 
 ## Type of Change
 - [ ] New feature (non-breaking change which adds functionality)
+- [ ] Bug fix (non-breaking change which fixes an issue)
 - [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
 - [ ] Other (please describe):
 
 ## Checklist
-- [ ] My code follows the project conventions and style guidelines.
-- [ ] I have performed a self-review of my own code.
-- [ ] I have commented my code, particularly in hard-to-understand areas.
-- [ ] I have made corresponding changes to the documentation.
-- [ ] My changes generate no new warnings.
-- [ ] I have added tests that prove my fix is effective or that my feature works.
-- [ ] New and existing unit tests pass locally with my changes.
+- [ ] My code follows the project conventions and style guidelines
+- [ ] I have performed a self-review of my own code
+- [ ] I have commented my code, particularly in hard-to-understand areas
+- [ ] I have made corresponding changes to the documentation
+- [ ] My changes generate no new warnings
+- [ ] I have added tests that prove my fix is effective or that my feature works
+- [ ] New and existing unit tests pass locally with my changes
 
 ## Branch Naming Conventions
-- Feature branches should be named as `feature/your-feature-description`.
-- Use Gitmoji for pull request names to stick to conventions (e.g., `✨ Add new feature`).
+- Feature branches should be named as `feature/your-feature-description`
+- Bug fix branches should be named as `bugfix/your-bug-fix-description`
+- Use Gitmoji for pull request names to stick to conventions (e.g., `✨ Add new feature` or `🐛 Fix a bug`)
 
 ## Additional Notes
-<!-- Any additional information or context about the PR. -->
+<!-- Any additional information or context about the PR. --> 
