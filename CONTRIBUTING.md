@@ -111,7 +111,7 @@ When submitting a PR:
 
 We use Conventional Commits with emojis to add visual context to our commit messages. Here's how to format your commits:
 
-```
+```env
 <emoji> <type>(<scope>): <subject>
 
 [optional body]
