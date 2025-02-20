@@ -1,264 +1,263 @@
 # Developer Documentation
-These are the developer docs of the carbon calculator project.
 
+## Table of Contents
 
-## Start
-The `start()` function is in the `main.py` file.
+- [Developer Documentation](#developer-documentation)
+  - [Table of Contents](#table-of-contents)
+    - [Setup](#setup)
+  - [Project Structure](#project-structure)
+    - [Auth](#auth)
+    - [Core](#core)
+    - [Data](#data)
+      - [Data Management](#data-management)
+      - [Data Processing](#data-processing)
+    - [Services](#services)
+    - [UI](#ui)
+  - [Development Environment](#development-environment)
+    - [Contributors' Development Environment Requirements](#contributors-development-environment-requirements)
+      - [Common Setup Issues and Solutions](#common-setup-issues-and-solutions)
+  - [Development Workflow](#development-workflow)
+    - [Branching Strategy](#branching-strategy)
+  - [Testing](#testing)
+    - [How to run tests](#how-to-run-tests)
 
+### Setup
 
-### Purpose
-To initialize the database, test the users internet connection, retrive the users location, and fetch the weather data.
+1. **Fork the repository**:
 
+    - Go to the repository page on GitHub.
+    - Click the "Fork" button to create a copy of the repository under your GitHub account.
 
-It initializes the data bases using the code:
-```python
-await db.database_initialization()
+2. **Clone the repository**:
+
+    ```sh
+    git clone https://github.com/yourusername/CarbonCalculator.git
+    cd CarbonCalculator
+    ```
+
+3. **Create and activate a virtual environment**:
+
+    ```sh
+    python -m venv .venv
+    .venv\Scripts\activate  # On Windows
+    # source .venv/bin/activate  # On macOS/Linux
+    ```
+
+4. **Install the package in editable mode**:
+
+    ```sh
+    pip install -e .
+    ```
+
+5. **Run the application**:
+
+    ```sh
+    carbon_calculator
+    ```
+
+## Project Structure
+
+The project follows a modular structure with clear separation of concerns. Here's an overview of the main directories and files under `src/`:
+
+![Project Structure](/docs/images/project_structure.png)
+
+### Auth
+
+![Auth Folder](/docs/images/auth_path.png)
+
+The `auth` folder manages user authentication and authorization:
+
+- `user_auth.py`: Handles user authentication flows and access control
+  - User login/logout
+  - Permission management
+  - Session handling
+  (Note: Authentication features are planned but not yet implemented)
+
+### Core
+
+![Core Folder](/docs/images/core_path.png)
+
+The `core` folder contains the main business logic and calculation engine:
+
+- `emissions_calculator.py`: Central carbon emissions calculator
+  - Processes temperature data from weather service
+  - Applies emissions factors and formulas
+- `recommendations.py`: Provides emission reduction recommendations using AI (Not implemented yet)
+
+### Data
+
+![Data Folder](/docs/images/data_path.png)
+
+The `data` folder contains the data management logic for the application:
+
+#### Data Management
+
+- `resources/` - Data files and app configuration
+- `database.py` - Database operations (creation, cleanup, etc.)
+- `settings_manager.py` - Manages application settings (e.g. default values, etc.)
+
+#### Data Processing
+
+- `data_validator.py` - Input validation
+- `export_manager.py` - Data export (CSV, JSON)
+- `import_manager.py` - Data import (CSV, JSON)
+
+### Services
+
+![Services Folder](/docs/images/services_path.png)
+
+The `services` folder contains the service logic for the application:
+
+- `weather_service.py` - Weather data retrieval and processing
+- `user_location_service.py` - User location retrieval and processing
+- `user_internet_connection_service.py` - Tests user internet connection
+
+### UI
+
+![UI Folder](/docs/images/ui_path.png)
+
+The `ui` folder contains the UI logic for the application:
+
+- `main_window.py` - Main application window to initialize the application UI
+- `settings_menu.py` - Settings menu for configuring the application
+- `input_forms.py` - Input forms such as input fields, buttons, etc.
+
+## Development Environment
+
+### Contributors' Development Environment Requirements
+
+This project enforces the use of pre-commit hooks to ensure adherence to commit standards and maintain code quality.
+
+Follow the steps below to set up pre-commit in your development environment:
+
+1. Ensure you have Python 3.10+ and pip installed.
+
+2. Activate the virtual environment:
+
+   ```bash
+   .venv\Scripts\activate  # On Windows
+   # source .venv/bin/activate  # On macOS/Linux
+   ```
+
+3. Install the project's dependencies:
+
+   ```bash
+   pip install -e .
+   ```
+
+4. Install pre-commit:
+
+   ```bash
+   pip install pre-commit
+   ```
+
+5. Install the project's pre-commit hooks:
+
+   ```bash
+   pre-commit install
+   ```
+
+#### Common Setup Issues and Solutions
+
+- **Virtual Environment Activation Fails**:
+  - Windows: Ensure you're using PowerShell or CMD with admin privileges
+  - Unix: Check file permissions with `ls -la .venv/bin/activate`
+  - Try recreating the virtual environment if activation consistently fails
+
+- **Dependency Conflicts**:
+  - Clear pip cache: `pip cache purge`
+  - Update pip: `python -m pip install --upgrade pip`
+  - If conflicts persist, try installing dependencies one by one to identify the conflict
+
+- **Pre-commit Hook Installation Fails**:
+  - Ensure git is initialized: `git init`
+  - Try removing and reinstalling pre-commit: `pip uninstall pre-commit && pip install pre-commit`
+
+For detailed commit guidelines and instructions on how to contribute, please refer to the [CONTRIBUTING.md](./../CONTRIBUTING.md) file.
+
+## Development Workflow
+
+### Branching Strategy
+
+This project uses the git-flow branching strategy, which provides a robust framework for managing larger projects. The workflow is particularly well-suited for projects that have a scheduled release cycle.
+
+![Git Flow](/docs/images/git_flow_diagram.png)
+
+Key Concepts:
+
+- `main` - Production-ready code
+- `develop` - Latest development changes
+- `feature/*` - New features
+- `bugfix/*` - Non-urgent bug fixes
+- `hotfix/*` - Urgent production fixes
+- `release/*` - Release preparation
+
+Common Workflows:
+
+1. **Starting a New Feature**:
+
+   ```bash
+   git checkout develop
+   git pull origin develop
+   git checkout -b feature/new-feature
+   # Make changes
+   git commit -m "Add new feature"
+   git push origin feature/new-feature
+   # Create PR to develop
+   ```
+
+2. **Fixing a Bug**:
+
+   ```bash
+   git checkout develop
+   git pull origin develop
+   git checkout -b bugfix/fix-description
+   # Fix bug
+   git commit -m "Fix bug"
+   git push origin bugfix/fix-description
+   # Create PR to develop
+   ```
+
+3. **Emergency Hotfix**:
+
+   ```bash
+   git checkout main
+   git pull origin main
+   git checkout -b hotfix/critical-fix
+   # Fix critical issue
+   git commit -m "Fix critical issue"
+   git push origin hotfix/critical-fix
+   # Create PR to both main and develop
+   ```
+
+For more detailed information about git-flow, refer to:
+
+- [Atlassian's Git Flow Tutorial](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow)
+- [Git Flow Cheat Sheet](https://danielkummer.github.io/git-flow-cheatsheet/)
+
+## Testing
+
+### How to run tests
+
+This project uses pytest for testing, with a focus on maintaining high test coverage and ensuring code reliability.
+
+Basic test commands:
+
+```bash
+# Run all tests
+pytest
+
+# Run tests with coverage report
+pytest --cov=.
+
+# Run specific test file
+pytest tests/path/to/test_file.py
+
+# Run tests with detailed output
+pytest -v
+
+# Run tests that match a pattern
+pytest -k "test_pattern"
 ```
 
-
-It then tests the user's internet connection using:
-```python
-await test_user_internet_connection()
-```
-
-
-If required API keys (`WEATHER_API_KEY` and `IP_API_TOKEN`) are missing, or if there is no internet connection, the program will proceed without fetching local temperatures.
-
-
-```python
-if (
-   WEATHER_API_KEY is None
-   or IP_API_TOKEN is None
-   or internet_connection_process is False
-):
-   logger.warning("Continuing program without local temperatures")
-   user_local_temps = None
-   return internet_connection_process
-```
-
-
-But if it can find both required API keys then it will retrieve the user's location using the `UserLocationService`:
-```python
-user_location_service = UserLocationService(IP_API_TOKEN)
-user_coords = await user_location_service.get_user_location()
-```
-
-
-After that it fetches weather data for the user's coordinates using the `WeatherService`:
-```python
-user_local_temps = await weather_service.get_weather(
-   user_coords[0],  # latitude
-   user_coords[1],  # longitude
-)
-```
-
-
----
-
-
-## Run Main Window
-The `run_main_window` function is in the `main.py` file.
-
-
-
-
-### Purpose
-To set up the Qt application and integrate the event loop with `asyncio`, then display the main window of the application.
-
-
-It creates a `QApplication` instance using the code:
-```python
-app = QApplication([])
-```
-
-
-It integrates the Qt event loop with `asyncio` using:
-```python
-loop = QEventLoop(app)
-asyncio.set_event_loop(loop)
-```
-
-
-It then creates and displays the main window:
-```python
-main_window = MainWindow(internet_connection_status_passed)
-main_window.show()
-```
-
-
-The function runs the event loop using:
-```python
-with loop:
-   loop.run_forever()
-```
-
----
-
-## Main Window Operations
-
-
-### Close Event
-`closeEvent` is a method inside of the class `MainWindow` in the file `main_window.py`
-
-The `closeEvent` method is triggered when the user attempts to close the application window. Its purpose is to confirm the user's intention to exit and handle the response accordingly.
-
-### Purpose
-The method displays a dialog box asking the user whether they are sure they want to exit the application. This dialog is created using the following code:
-```python
-reply = QMessageBox.question(
-    self,
-    "Exit",
-    "Are you sure you want to exit?",
-    QMessageBox.Yes | QMessageBox.No,
-    QMessageBox.No,
-)
-```
-
-- **Title**: `"Exit"`
-- **Message**: `"Are you sure you want to exit?"`
-- **Buttons**: `Yes` and `No`, with the default set to `No`.
-
-#### User Response Handling
-
-If the user clicks Yes, the application logs the exit action and closes:
-```python
-if reply == QMessageBox.Yes:
-    logging.getLogger("main").info("Exiting application")
-    event.accept()
-```
-The logger records: `"Exiting application"`.
-`event.accept()` allows the application to close.
-
-
-If the user clicks No, the application ignores the close event and keeps running:
-```python
-else:
-    event.ignore()
-```
-
-This makes sure the user does not accidentally exit the program without confirmation.
-
----
-
-## InputForm Operations
-
-
-
-### Receiving the Submit Button Click
-When the user clicks the "Submit" button, the `submit` method is triggered through the `clicked` signal of the `submit_button`.
-
-```python
-self.submit_button.clicked.connect(self.submit)
-```
-
-This establishes that when the button is clicked, the `submit` method will execute.
-
-
-
-### Triggering Submit
-Inside the `submit` method, user-entered values are retrieved from input fields for processing.
-
-
-```python
-user_id = self.user_id_entry.text()
-fuel_type = self.fuel_type_entry.text()
-fuel_used = self.fuel_used_entry.text()
-```
-
-Here, the inputs are fetched as strings from the GUI components (`user_id_entry`, `fuel_type_entry`, and `fuel_used_entry`).
-
-### Converting user_id to an Integer
-The `user_id` input is attempted to be converted to an integer using `int(user_id)`. If this fails, a `ValueError` is caught, and `user_id` is set to `None`.
-```python
-try:
-    user_id = int(user_id)
-except ValueError:
-    user_id = None
-    self.display_error("Invalid User ID. Must be an integer.")
-```
-
-This ensures the `user_id` is valid before proceeding.
-
----
-
-###  Converting fuel_used to a Float
-The `fuel_used` input is converted to a float. If this fails, a `ValueError` is caught, and `fuel_used` is set to `None`.
-```python
-try:
-    fuel_used = float(fuel_used)
-except ValueError:
-    fuel_used = None
-    self.display_error("Invalid Fuel Used. Must be a number.")
-```
-
-This step ensures the `fuel_used` value can be processed as a number input.
-
----
-
-### Did Conversion Fail?
-If either conversion fails, validation cannot proceed. This is determined by checking if `user_id` or `fuel_used` is `None`.
-
-
-```python
-if user_id is None or fuel_used is None:
-    return  # Early exit due to invalid inputs
-```
-
-An early return prevents further operations when conversions fail.
-
----
-
-### Validating Inputs Using `DataValidator`
-The `DataValidator` validates the inputs (`user_id`, `fuel_type`, `fuel_used`). This ensures all fields are within acceptable ranges and formats.
-
-```python
-if not DataValidator.validate_user_id(user_id):
-    self.display_error("Invalid User ID.")
-    return
-if not DataValidator.validate_fuel_type(fuel_type):
-    self.display_error("Invalid Fuel Type.")
-    return
-if not DataValidator.validate_fuel_used(fuel_used):
-    self.display_error("Invalid Fuel Used.")
-    return
-```
-
-Each input is checked, and if any validation fails, an error message is displayed, and the method exits.
-
----
-
-### Are Any Inputs Invalid?
-If any validation check returns `False`, an appropriate error message is logged, and the process terminates.
-
-
-```python
-if not all([user_id, fuel_type, fuel_used]):
-    self.display_error("One or more inputs are invalid.")
-    return
-```
-
-This makes sure that inputs that are invalid don't make it to the next steps.
-
----
-
-## user_local_temps Equal to None?
-`user_local_temps` determines how emissions are calculated.
-
-#### If Yes (`user_local_temps` is `None`):
-If no temperature data is available, only `user_id`, `fuel_type`, and `fuel_used` are passed to `calculate_emissions`.
-
-
-```python
-if user_local_temps is None:
-    emissions = calculate_emissions(user_id, fuel_type, fuel_used)
-```
-
-#### If No (`user_local_temps` is not `None`):
-When temperature data is available, the `temperature_type` method allows the user to select a unit (Celsius, Fahrenheit, or Kelvin), and the corresponding local temperature is included.
-
-
-```python
-else:
-    temp_type = self.temperature_type()
-    emissions = calculate_emissions(user_id, fuel_type, fuel_used, user_local_temps[temp_type])
-```
+For more information on pytest, refer to the [pytest documentation](https://docs.pytest.org/en/stable/).

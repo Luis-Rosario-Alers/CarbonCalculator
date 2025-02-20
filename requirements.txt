@@ -3,6 +3,7 @@ aiohttp
 aiosqlite
 asyncio
 black
+chardet
 ipinfo
 Matplotlib
 pre-commit
@@ -13,6 +14,7 @@ pytest
 pytest-asyncio
 pytest-cov
 pytest-mock
+pytest-xvfb
 python-dotenv
 qasync
 requests

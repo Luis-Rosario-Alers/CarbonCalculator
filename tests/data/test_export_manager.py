@@ -162,3 +162,29 @@ class TestExportManager:
             "emissions": "0.0",
             "timestamp": "2023-01-01",
         }
+
+    def test_export_to_csv_fetch_data_called(self, mocker):
+        # Arrange
+        mock_fetch = mocker.patch(
+            "src.data.export_manager.ExportManager.fetch_data"
+        )
+        mocker.patch("builtins.open")
+
+        export_manager = ExportManager()
+        # Act
+        export_manager.export_to_csv("test_output.csv")
+        # Assert
+        mock_fetch.assert_called_once()
+
+    def test_export_to_json_fetch_data_called(self, mocker):
+        # Arrange
+        mock_fetch = mocker.patch(
+            "src.data.export_manager.ExportManager.fetch_data"
+        )
+        mocker.patch("builtins.open")
+
+        export_manager = ExportManager()
+        # Act
+        export_manager.export_to_json("test_output.json")
+        # Assert
+        mock_fetch.assert_called_once()

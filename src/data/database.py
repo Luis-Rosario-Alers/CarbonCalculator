@@ -116,7 +116,7 @@ async def load_fuel_data(json_path):
 async def create_fuel_type_database(db_path):
     try:
         async with aiosqlite.connect(db_path) as conn:
-            async with conn.cursor() as cursor:
+            async with await conn.cursor() as cursor:
                 await cursor.execute(
                     """CREATE TABLE IF NOT EXISTS
                     fuel_types (fuel_type TEXT PRIMARY KEY, emissions_factor REAL)"""
@@ -146,6 +146,8 @@ async def initialize_fuel_type_database():
     try:
         setup_databases_folder()
         db_path = os.path.join(databases_folder, "fuel_type_conversions.db")
+        if os.path.exists(db_path):
+            os.remove(db_path)
         json_path = await load_settings()
         if not json_path:
             return 0
