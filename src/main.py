@@ -6,6 +6,7 @@ import sys
 from datetime import datetime
 
 import aiofiles
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication
 from qasync import QEventLoop
 
@@ -101,6 +102,8 @@ def run_main_window(internet_connection_status_passed):
         integrating it with the asyncio loop, and runs the main window of the application.
     """
     logger.info("Running main window")
+
+    QApplication.setAttribute(Qt.AA_ShareOpenGLContexts)
 
     # Create application instance
     app = QApplication([])

@@ -1,9 +1,7 @@
 import logging
-import os
 import sys
 
 from PySide6.QtGui import QIcon
-from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import (
     QApplication,
     QMainWindow,
@@ -15,6 +13,7 @@ from PySide6.QtWidgets import (
 )
 
 from data.database import application_path
+from ui.help_widget import HelpWidget
 from ui.input_forms import InputForms
 from ui.settings_menu import SettingPage
 
@@ -45,20 +44,12 @@ class MainWindow(QMainWindow):
         central_widget = QWidget()
         self.setCentralWidget(central_widget)
         layout = QVBoxLayout(central_widget)
-        loader = QUiLoader()
-        ui_file_path = os.path.normpath(
-            f"{application_path}/resources/assets/ui_files/help_widget.ui"
-        )
-        print(ui_file_path)
-        self.help_widget = loader.load(ui_file_path, self)
-        if self.help_widget is None:
-            logger.error("Failed to load help widget UI file.")
-            raise RuntimeError("Failed to load help widget UI file.")
+
         self.tab_widget = QTabWidget()
 
         self.tab_widget.addTab(InputForms(self), "General")
         self.tab_widget.addTab(SettingPage(self), "Settings")
-        self.tab_widget.addTab(self.help_widget, "Help")
+        self.tab_widget.addTab(HelpWidget(), "Help")
 
         layout.addWidget(self.tab_widget)
 
