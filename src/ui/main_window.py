@@ -1,99 +1,74 @@
 import logging
 import sys
 
-from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import (
-    QApplication,
-    QMainWindow,
-    QMessageBox,
-    QPushButton,
-    QTabWidget,
-    QVBoxLayout,
-    QWidget,
-)
+from PySide6.QtCore import QObject, Signal
+from PySide6.QtWidgets import QApplication, QMainWindow
 
-from data.database import application_path
-from ui.help_widget import HelpWidget
-from ui.input_forms import InputForms
-from ui.settings_menu import SettingPage
+from src.data.database import databasesModel
+from ui.generated_python_ui.ui_main_window import Ui_MainWindow
 
 logger = logging.getLogger("ui")
 
 
-class MainWindow(QMainWindow):
-    def __init__(self, internet_connection_status, parent=None):
-        self.internet_connection_status = internet_connection_status
-        super().__init__(parent)
+# Controller: controls data for the MainWindow
+class MainWindowController(QObject):
+    initialization = Signal()
 
-        self.setWindowTitle("Carbon Calculator")
-        self.setGeometry(100, 100, 400, 300)
-        self.setMaximumSize(400, 300)
-        if sys.platform == "darwin":
-            self.setWindowIcon(
-                QIcon(f"{application_path}/resources/assets/icon.icns")
-            )
-        elif sys.platform == "win32":
-            self.setWindowIcon(
-                QIcon(f"{application_path}/resources/assets/icon.ico")
-            )
-        else:
-            self.setWindowIcon(
-                QIcon(f"{application_path}/resources/assets/icon.png")
-            )
+    def __init__(self, model, view):
+        super().__init__()
+        self.model = model
+        self.view = view
+        self.initialization.emit()
+        logger.info("emitted initialization signal")
 
-        central_widget = QWidget()
-        self.setCentralWidget(central_widget)
-        layout = QVBoxLayout(central_widget)
+    # __connect_signals(self):
 
-        self.tab_widget = QTabWidget()
 
-        self.tab_widget.addTab(InputForms(self), "General")
-        self.tab_widget.addTab(SettingPage(self), "Settings")
-        self.tab_widget.addTab(HelpWidget(), "Help")
+# Model: The app model handles APPLICATION WIDE STATE.
+class AppModel(QObject):
+    def __init__(self):
+        super().__init__()
+        pass
 
-        layout.addWidget(self.tab_widget)
 
-        self.display_internet_connection_status(
-            self.internet_connection_status
-        )
+# View: controls the UI for the Main Window
+class MainWindowView(QMainWindow, Ui_MainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setupUi(self)
+        self.show()
+        logger.info("Showing Main Window")
 
-    def closeEvent(self, event):
-        reply = QMessageBox.question(
-            self,
-            "Exit",
-            "Are you sure you want to exit?",
-            QMessageBox.Yes | QMessageBox.No,
-        )
 
-        if reply == QMessageBox.Yes:
-            logging.getLogger("main").info("Exiting application")
-            event.accept()
-        else:
-            event.ignore()
+# Widget: Ties the View, Controller, and Model together
+class MainWindowWidget(QMainWindow):
+    def __init__(self):
+        super().__init__()
 
-    def display_internet_connection_status(self, has_internet):
-        """Display a message box with the internet connection status."""
-        self.status_msg_box = QMessageBox(self)
-        self.status_msg_box.setWindowTitle("Status")
-        self.ok_button = QPushButton("Ok.")
-        self.status_msg_box.addButton(self.ok_button, QMessageBox.AcceptRole)
+        # Create model and controller
+        self.model = AppModel()
+        self.view = MainWindowView()
+        self.controller = MainWindowController(self.model, self.view)
+        self.databasesModel = databasesModel(self.controller)
 
-        if has_internet:
-            self.status_msg_box.setText("Internet connection found.")
-        elif has_internet is False:
-            self.status_msg_box.setText(
-                "No internet connection found. Some features may not be available."
-            )
-        else:
-            self.status_msg_box.setText(
-                "There was an error checking the internet connection."
-            )
+    """
+    def setup_tab_widgets(self):
+        # Replace mainBody placeholder with stacked widget
+        self.stacked_widget = QStackedWidget()
+        self.horizontalLayout.replaceWidget(self.mainBody, self.stacked_widget)
 
-        self.status_msg_box.exec_()
+        # Create tab widgets and add to stack
+        self.general_tab = GeneralTabWidget(self.model, self.controller)
+        self.visualization_tab = VisualizationTabWidget(self.model, self.controller)
+        self.ai_chat_tab = AIChatTabWidget(self.model, self.controller)
+
+        self.stacked_widget.addWidget(self.general_tab)
+        self.stacked_widget.addWidget(self.visualization_tab)
+        self.stacked_widget.addWidget(self.ai_chat_tab)
+    """
 
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    main_window = MainWindow()
-    main_window.show()
-    sys.exit(app.exec_())
+    main_window = MainWindowWidget()
+    sys.exit(app.exec())
