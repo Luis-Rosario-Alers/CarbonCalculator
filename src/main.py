@@ -1,11 +1,9 @@
-import asyncio
 import logging.config
 import os
 import sys
 from datetime import datetime
 
 from PySide6.QtWidgets import QApplication
-from qasync import QEventLoop
 
 from src.ui.main_window import MainWindowWidget
 
@@ -34,17 +32,21 @@ def main():
     """
     Main entry point for the application.
 
-    This function starts the application by initializing the event loop, running the
-    startup tasks, and then running the main window.
+    This function starts the application by initializing QApplication
+    and then running the main window.
     """
     logger.info("Starting application")
     app = QApplication([])
-    loop = QEventLoop(app)
-    asyncio.set_event_loop(loop)
+
+    # Set a reasonable number of threads in the global thread pool
+    # Default is typically number of cores, but we can adjust if needed
+    # QThreadPool.globalInstance().setMaxThreadCount(4)
+
+    # Create and show the main window
     MainWindowWidget()
 
-    with loop:
-        loop.run_forever()
+    # Run the application event loop
+    sys.exit(app.exec())
 
 
 if __name__ == "__main__":

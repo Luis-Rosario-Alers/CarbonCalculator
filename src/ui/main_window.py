@@ -5,9 +5,9 @@ from PySide6.QtCore import QObject, Signal
 from PySide6.QtWidgets import QApplication, QMainWindow
 
 from src.data.database import databasesModel
-from ui.GeneralTabWIdget import GeneralTabWidget
+from ui.GeneralTabWidget import GeneralTabWidget
 from ui.generated_python_ui.ui_main_window import Ui_MainWindow
-from utils.gui_utilities import connect_async
+from utils.gui_utilities import connect_threaded
 
 logger = logging.getLogger("ui")
 
@@ -24,18 +24,16 @@ class MainWindowController(QObject):
         self.__connect_signals()
 
     def __connect_signals(self):
-        connect_async(
+        connect_threaded(
             self.view, "main_window_closed", self.handle_main_window_closed
         )
 
     def send_initialization_signal(self):
         self.initialization.emit()  # this starts the initialization sequence
 
-    async def handle_main_window_closed(self):
+    def handle_main_window_closed(self):
         logger.debug("emitting application closed signal")
         self.application_closed.emit()
-
-    # __connect_signals(self):
 
 
 # Model: The app model handles APPLICATION WIDE STATE.

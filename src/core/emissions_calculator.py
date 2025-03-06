@@ -1,14 +1,14 @@
 import logging
 
 from data.data_validator import DataValidator
-from data.database import get_emissions_factor, log_calculation
+from data.database import databasesModel
 
-# * EDIT THIS FILE IF YOU NEED TO ADD EXTRA FUNCTIONALITY TO THE EMISSIONS CALCULATOR.
+# * EDIT THIS FILE IF YOU NEED TO ADD EXTRA FUNCTIONALITY TO THE EMISSION CALCULATOR.
 
 logger = logging.getLogger("core")
 
 
-async def calculate_emissions(
+def calculate_emissions(
     user_id: int,
     fuel_type: str,
     fuel_used: float,
@@ -35,9 +35,9 @@ async def calculate_emissions(
         data_validator.validate_temperature_type(temperature_type)
         data_validator.validate_temperature(temperature, temperature_type)
 
-    emissions_factor = await get_emissions_factor(fuel_type)
+    emissions_factor = databasesModel.get_emissions_factor(fuel_type)
 
-    # * Check This ⬇️ if emissions tests have failed
+    # * Check This ⬇️ if emission tests have failed
     if temperature is not None and temperature_type is not None:
         logger.info("Temperature data available, adjusting emissions factor")
         baseline_temperature = [
@@ -54,7 +54,9 @@ async def calculate_emissions(
         emissions = fuel_used * adjusted_emissions_factor
         if not data_validator.validate_emissions(emissions):
             raise ValueError("Invalid emissions data")
-        await log_calculation(user_id, fuel_type, fuel_used, emissions)
+        databasesModel.log_calculation(
+            user_id, fuel_type, fuel_used, emissions
+        )
         return fuel_type, fuel_used, emissions
     else:
         logger.info(
@@ -63,5 +65,7 @@ async def calculate_emissions(
         emissions = fuel_used * emissions_factor
         if not data_validator.validate_emissions(emissions):
             raise ValueError("Invalid emissions data")
-        await log_calculation(user_id, fuel_type, fuel_used, emissions)
+        databasesModel.log_calculation(
+            user_id, fuel_type, fuel_used, emissions
+        )
         return fuel_type, fuel_used, emissions
