@@ -36,12 +36,16 @@ application_path, databases_folder = determine_application_path()
 class databasesModel(QObject):
     databases_initialized = Signal()
 
-    def __init__(self, main_window_controller):
+    def __init__(self):
         super().__init__()
-        self.main_window_controller = main_window_controller
+        self.main_window_controller = None
+
+    def set_controller(self, controller):
+        self.main_window_controller = controller
         self.__connect_signals()
 
     def __connect_signals(self):
+        logger.info("Connecting signals.")
         connect_async(
             self.main_window_controller,
             "initialization",
@@ -258,7 +262,7 @@ class databasesModel(QObject):
         if os.path.exists(databases_folder):
             logger.info("restarting fuel_type database"),
             await self.initialize_fuel_type_database()
-        elif not os.path.exists(databases_folder):
+        else:
             self.setup_databases_folder()
             logger.info("Initializing databases"),
             await asyncio.gather(
@@ -266,6 +270,7 @@ class databasesModel(QObject):
                 self.initialize_user_data_database(),
                 self.initialize_fuel_type_database(),
             )
+        self.databases_initialized.emit()
         logger.info("Databases initialized")
 
     # function to test initialization of all databases
