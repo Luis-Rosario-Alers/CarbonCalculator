@@ -1,7 +1,7 @@
 import logging
 import os
 
-from PySide6.QtCore import QObject, Signal
+from PySide6.QtCore import QObject
 from PySide6.QtSql import QSqlDatabase, QSqlTableModel
 from PySide6.QtWidgets import QTableView, QWidget
 
@@ -21,10 +21,17 @@ class GeneralTabController(QObject):
         self.__connect_signals()
 
     def __connect_signals(self):
+        self.model.databases_model.databases_initialized.connect(
+            self.handle_initialization_of_database_widget
+        )
+        self.model.databases_model.calculation_logged.connect(
+            self.handle_database_widget_update
+        )
+
         connect_threaded(
-            self.model.database_model,
+            self.model.databases_model,
             "databases_initialized",
-            self.handle_database_widget_changed,
+            self.handle_comboboxes_initialization,
         )
         connect_threaded(
             self.application_controller,
@@ -37,28 +44,50 @@ class GeneralTabController(QObject):
             self.handle_calculate_button_clicked,
         )
 
-    def handle_database_widget_changed(self):
+    def handle_initialization_of_database_widget(self):
         self.model.load_database_table_content()
         self.view.load_database_table()
 
+    def handle_comboboxes_initialization(self):
+        fuel_types = self.model.databases_model.get_fuel_types()
+        self.view.initialize_combobox_values(fuel_types)
+
     def handle_calculate_button_clicked(self):
-        logger.debug("GeneralTabWidget: calculate button clicked")
+        (
+            user_id,
+            fuel_type,
+            unit_of_measurement,
+            farming_technique,
+            amount_of_fuel_used,
+            local_temperatures,
+        ) = self.view.get_calculation_info()
+        self.model.calculation_model.calculate_emissions(
+            user_id,
+            fuel_type,
+            amount_of_fuel_used,
+            temperature_type=local_temperatures,
+        )
 
     def handle_application_close(self):
         logger.debug("GeneralTabWidget: closing database connection")
         self.view.close_database_on_application_close()
 
+    def handle_database_widget_update(self):
+        logger.debug("GeneralTabWidget: updating database view")
+        self.view.update_database_table()
+
 
 class GeneralTabModel:
-    def __init__(self, database_model):
-        self.database_model = database_model
+    def __init__(self, application_model):
+        self.application_model = application_model
+        self.databases_model = self.application_model.databases_model
+        self.calculation_model = self.application_model.calculation_model
 
     def load_database_table_content(self):
         pass
 
 
 class GeneralTabView(QWidget, Ui_GeneralWidget):
-    database_widget_changed = Signal()
 
     def __init__(self):
         super().__init__()
@@ -116,13 +145,46 @@ class GeneralTabView(QWidget, Ui_GeneralWidget):
         if self.db_connection and self.db_connection.isOpen():
             self.db_connection.close()
 
+    def initialize_combobox_values(self, fuel_types):
+        self.farmingTechniqueComboBox.clear()
+        farming_techniques = ["conventional", "natural"]
+        self.farmingTechniqueComboBox.addItems(farming_techniques)
+        self.unitOfMeasurementComboBox.clear()
+        units = ["Celsius", "Fahrenheit", "Kelvin"]
+        self.unitOfMeasurementComboBox.addItems(units)
+        self.fuelTypeComboBox.clear()
+        self.fuelTypeComboBox.addItems(fuel_types)
+
+    def get_calculation_info(self):
+        fuel_type = self.fuelTypeComboBox.currentText()
+        unit_of_measurement = self.unitOfMeasurementComboBox.currentText()
+        farming_technique = self.farmingTechniqueComboBox.currentText()
+        amount_of_fuel_used = self.amountOfFuelUsedDoubleSpinBox.value()
+        local_temperatures_check = self.calculateContainerCheckBox.checkState()
+        return (
+            1,
+            fuel_type,
+            unit_of_measurement,
+            farming_technique,
+            amount_of_fuel_used,
+            local_temperatures_check,
+        )
+
+    def update_database_table(self):
+        if self.sql_widget_model:
+            self.sql_widget_model.select()
+            self.sqlTableView.resizeColumnsToContents()
+            logger.info(
+                f"Table updated with {self.sql_widget_model.rowCount()} rows"
+            )
+
 
 class GeneralTabWidget(QWidget):
-    def __init__(self, database_model, application_controller):
+    def __init__(self, application_model, application_controller):
         super().__init__()
-        self.database_model = database_model
+        self.application_model = application_model
         self.application_controller = application_controller
-        self.model = GeneralTabModel(self.database_model)
+        self.model = GeneralTabModel(self.application_model)
         self.view = GeneralTabView()
         self.controller = GeneralTabController(
             self.model, self.view, self.application_controller

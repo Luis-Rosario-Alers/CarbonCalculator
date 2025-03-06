@@ -4,6 +4,7 @@ import sys
 from PySide6.QtCore import QObject, Signal
 from PySide6.QtWidgets import QApplication, QMainWindow
 
+from core.emissions_calculator import calculationModel
 from src.data.database import databasesModel
 from ui.GeneralTabWidget import GeneralTabWidget
 from ui.generated_python_ui.ui_main_window import Ui_MainWindow
@@ -24,8 +25,14 @@ class MainWindowController(QObject):
         self.__connect_signals()
 
     def __connect_signals(self):
+        # Application wide signals
         connect_threaded(
             self.view, "main_window_closed", self.handle_main_window_closed
+        )
+
+        # calculation model signals
+        self.model.calculation_model.calculation_result.connect(
+            self.model.databases_model.log_calculation
         )
 
     def send_initialization_signal(self):
@@ -41,9 +48,11 @@ class AppModel(QObject):
     def __init__(self):
         super().__init__()
         self.databases_model = databasesModel()
+        self.calculation_model = calculationModel()
 
     def setup_models(self, main_window_controller):
         self.databases_model.set_controller(main_window_controller)
+        self.calculation_model.set_controller(main_window_controller)
 
 
 # View: controls the UI for the Main Window
@@ -55,10 +64,9 @@ class MainWindowView(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
 
     def setup_tabs(self, model, controller):
-        general_tab = GeneralTabWidget(model.databases_model, controller)
+        general_tab = GeneralTabWidget(model, controller)
 
         self.stackedWidget.addWidget(general_tab.view)
-
         self.stackedWidget.setCurrentWidget(general_tab.view)
 
         self.menuGeneral.addAction("General").triggered.connect(

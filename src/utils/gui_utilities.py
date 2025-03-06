@@ -27,6 +27,7 @@ class Worker(QRunnable):
         self.args = args
         self.kwargs = kwargs
         self.signals = WorkerSignals()
+        self._ref_holder = []
 
     @Slot()
     def run(self):
@@ -57,9 +58,11 @@ def connect_threaded(widget: QWidget, signal: str, slot: callable) -> None:
 
         # Start the thread
         QThreadPool.globalInstance().start(worker)
+        logger.debug(f"Worker thread started: {worker}")
         return None
 
     # Get the signal by name
     qt_signal = getattr(widget, signal)
+    logger.debug(f"Qt signal connected: {qt_signal}")
     # Connect the wrapper to the signal
     qt_signal.connect(wrapper)

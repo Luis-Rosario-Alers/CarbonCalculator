@@ -33,6 +33,7 @@ application_path, databases_folder = determine_application_path()
 # function to bundle initialization of all databases
 class databasesModel(QObject):
     databases_initialized = Signal()
+    calculation_logged = Signal()
 
     def __init__(self):
         super().__init__()
@@ -62,11 +63,10 @@ class databasesModel(QObject):
             db_path = os.path.join(databases_folder, "emissions.db")
             conn = sqlite3.connect(db_path)
             cursor = conn.cursor()
-            # noinspection SqlNoDataSourceInspection
             cursor.execute(
                 """CREATE TABLE IF NOT EXISTS emissions
                 (user_id INTEGER, fuel_type TEXT, fuel_used REAL,
-                emissions REAL, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+                emissions REAL, farming_technique TEXT, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY(user_id) REFERENCES users(username))"""
             )
             conn.commit()
@@ -119,7 +119,7 @@ class databasesModel(QObject):
             return None
 
     @staticmethod
-    def load_fuel_data(json_path):
+    def load_emissions_variables(json_path):
         try:
             with open(json_path, "r") as file:
                 fuel_data = json.load(file)
@@ -137,7 +137,7 @@ class databasesModel(QObject):
             return None
 
     @staticmethod
-    def create_fuel_type_database(db_path):
+    def create_emissions_variables_database(db_path):
         try:
             conn = sqlite3.connect(db_path)
             cursor = conn.cursor()
@@ -166,12 +166,10 @@ class databasesModel(QObject):
         except Exception as e:
             logger.error(f"Error inserting fuel data: {e}")
 
-    def initialize_fuel_type_database(self):
+    def initialize_emissions_variables_database(self):
         try:
             self.setup_databases_folder()
-            db_path = os.path.join(
-                databases_folder, "fuel_type_conversions.db"
-            )
+            db_path = os.path.join(databases_folder, "emissions_variables.db")
             if os.path.exists(db_path):
                 os.remove(db_path)
             json_path = self.load_settings()
@@ -179,12 +177,12 @@ class databasesModel(QObject):
                 return 0
             logger.debug(f"Loaded json path: {json_path}")
 
-            fuel_data = self.load_fuel_data(json_path)
+            fuel_data = self.load_emissions_variables(json_path)
             if not fuel_data:
                 return 0
             logger.debug(f"Loaded fuel data: {fuel_data}")
 
-            conn = self.create_fuel_type_database(db_path)
+            conn = self.create_emissions_variables_database(db_path)
             if not conn:
                 return 0
             logger.debug("Database initialized")
@@ -226,12 +224,13 @@ class databasesModel(QObject):
                 f"No emissions factor found for fuel type: {fuel_type}"
             )
 
-    @staticmethod
-    def log_calculation(user_id, fuel_type, fuel_used, emissions):
+    def log_calculation(
+        self, user_id, fuel_type, fuel_used, emissions, farming_technique
+    ):
         try:
             logger.info("Logging calculation")
             logger.info(
-                f"User ID: {user_id}, Fuel Type: {fuel_type}, Fuel Used: {fuel_used}, Emissions: {emissions}"
+                f"User ID: {user_id}, Fuel Type: {fuel_type}, Fuel Used: {fuel_used}, Emissions: {emissions}, Farming Technique: {farming_technique}"
             )
             db_path = os.path.join(databases_folder, "emissions.db")
 
@@ -240,21 +239,22 @@ class databasesModel(QObject):
             cursor = conn.cursor()
             cursor.execute(
                 """INSERT INTO emissions
-                (user_id, fuel_type, fuel_used, emissions)
-                VALUES (?, ?, ?, ?)""",
-                (user_id, fuel_type, fuel_used, emissions),
+                (user_id, fuel_type, fuel_used, emissions, farming_technique)
+                VALUES (?, ?, ?, ?, ?)""",
+                (user_id, fuel_type, fuel_used, emissions, farming_technique),
             )
             # Commit the transaction
             conn.commit()
 
             # Return the log for testing purposes
             cursor.execute(
-                "SELECT fuel_type, fuel_used, emissions FROM emissions WHERE user_id = ? AND fuel_type = ? AND "
-                "fuel_used = ? AND emissions = ?",
-                (user_id, fuel_type, fuel_used, emissions),
+                "SELECT fuel_type, fuel_used, emissions, farming_technique FROM emissions WHERE user_id = ? AND fuel_type = ? AND "
+                "fuel_used = ? AND emissions = ? AND farming_technique = ?",
+                (user_id, fuel_type, fuel_used, emissions, farming_technique),
             )
             log = cursor.fetchall()
             conn.close()
+            self.calculation_logged.emit()
             return log
         except sqlite3.Error as e:
             logger.error(f"Database error: {e}")
@@ -266,13 +266,13 @@ class databasesModel(QObject):
         logger.info("Received initialization signal, initializing databases")
         if os.path.exists(databases_folder):
             logger.info("restarting fuel_type database"),
-            self.initialize_fuel_type_database()
+            self.initialize_emissions_variables()
         else:
             self.setup_databases_folder()
             logger.info("Initializing databases"),
             self.initialize_emissions_database()
             self.initialize_user_data_database()
-            self.initialize_fuel_type_database()
+            self.initialize_emissions_variables_database()
 
         # Emit signal that databases are initialized
         self.databases_initialized.emit()
