@@ -227,7 +227,9 @@ class TestDatabase:
         mock_cursor.__aexit__.return_value = None
 
         # Act
-        result = await create_fuel_type_database("test/path/fuel_types.json")
+        result = await create_fuel_type_database(
+            "test/path/emissions_variables.json"
+        )
 
         # Assert
         assert result is mock_conn
@@ -462,11 +464,13 @@ class TestDatabase:
         mock_aiofiles.return_value.__aenter__.return_value = mock_file
 
         # Act
-        result = await load_fuel_data("test/path/fuel_types.json")
+        result = await load_fuel_data("test/path/emissions_variables.json")
 
         # Assert
         assert result == mock_json_data
-        mock_aiofiles.assert_called_once_with("test/path/fuel_types.json", "r")
+        mock_aiofiles.assert_called_once_with(
+            "test/path/emissions_variables.json", "r"
+        )
 
     @pytest.mark.asyncio
     async def test_load_fuel_data_handles_invalid_fuel_data(self, mocker):
@@ -483,7 +487,7 @@ class TestDatabase:
         mock_aiofiles.return_value.__aenter__.return_value = mock_file
         # Act/Assert
         with pytest.raises(ValueError):
-            await load_fuel_data("test/path/fuel_types.json")
+            await load_fuel_data("test/path/emissions_variables.json")
 
     # Returns None when JSON file is not found
     @pytest.mark.asyncio
@@ -493,17 +497,19 @@ class TestDatabase:
         mock_aiofiles.side_effect = FileNotFoundError()
 
         # Act
-        result = await load_fuel_data("nonexistent/path/fuel_types.json")
+        result = await load_fuel_data(
+            "nonexistent/path/emissions_variables.json"
+        )
 
         # Assert
         assert result is None
         mock_aiofiles.assert_called_once_with(
-            "nonexistent/path/fuel_types.json", "r"
+            "nonexistent/path/emissions_variables.json", "r"
         )
 
     async def test_load_fuel_data_handles_invalid_json(self, mocker):
         # Arrange
-        mock_file_path = "test/path/fuel_types.json"
+        mock_file_path = "test/path/emissions_variables.json"
         mock_logger = mocker.patch("src.data.database.logger")
         mock_aiofiles = mocker.patch("aiofiles.open")
         mock_aiofiles.side_effect = json.JSONDecodeError(
@@ -771,7 +777,7 @@ class TestDatabase:
 
         # Act
         result = await insert_fuel_data(
-            "test/path/fuel_types.json", mock_fuel_data
+            "test/path/emissions_variables.json", mock_fuel_data
         )
 
         # Assert
@@ -793,7 +799,7 @@ class TestDatabase:
 
         # Act
         result = await insert_fuel_data(
-            "test/path/fuel_types.json", mock_fuel_data
+            "test/path/emissions_variables.json", mock_fuel_data
         )
 
         # Assert

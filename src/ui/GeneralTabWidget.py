@@ -50,22 +50,27 @@ class GeneralTabController(QObject):
 
     def handle_comboboxes_initialization(self):
         fuel_types = self.model.databases_model.get_fuel_types()
-        self.view.initialize_combobox_values(fuel_types)
+        farming_techniques = (
+            self.model.databases_model.get_farming_techniques()
+        )
+        self.view.initialize_combobox_values(fuel_types, farming_techniques)
 
     def handle_calculate_button_clicked(self):
         (
             user_id,
             fuel_type,
-            unit_of_measurement,
-            farming_technique,
             amount_of_fuel_used,
-            local_temperatures,
+            temperature_value,
+            temperature_type,
+            farming_technique,
         ) = self.view.get_calculation_info()
         self.model.calculation_model.calculate_emissions(
             user_id,
             fuel_type,
             amount_of_fuel_used,
-            temperature_type=local_temperatures,
+            temperature_value,
+            temperature_type,
+            farming_technique,
         )
 
     def handle_application_close(self):
@@ -145,29 +150,29 @@ class GeneralTabView(QWidget, Ui_GeneralWidget):
         if self.db_connection and self.db_connection.isOpen():
             self.db_connection.close()
 
-    def initialize_combobox_values(self, fuel_types):
+    def initialize_combobox_values(self, fuel_types, farming_techniques):
         self.farmingTechniqueComboBox.clear()
-        farming_techniques = ["conventional", "natural"]
         self.farmingTechniqueComboBox.addItems(farming_techniques)
-        self.unitOfMeasurementComboBox.clear()
+        self.temperatureTypesComboBox.clear()
         units = ["Celsius", "Fahrenheit", "Kelvin"]
-        self.unitOfMeasurementComboBox.addItems(units)
+        self.temperatureTypesComboBox.addItems(units)
         self.fuelTypeComboBox.clear()
         self.fuelTypeComboBox.addItems(fuel_types)
 
     def get_calculation_info(self):
         fuel_type = self.fuelTypeComboBox.currentText()
-        unit_of_measurement = self.unitOfMeasurementComboBox.currentText()
         farming_technique = self.farmingTechniqueComboBox.currentText()
         amount_of_fuel_used = self.amountOfFuelUsedDoubleSpinBox.value()
-        local_temperatures_check = self.calculateContainerCheckBox.checkState()
+        temperature_value = self.temperatureDoubleSpinBox.value()
+        temperature_type = self.temperatureTypesComboBox.currentText()
+        # local_temperatures_check = self.calculateContainerCheckBox.checkState()
         return (
             1,
             fuel_type,
-            unit_of_measurement,
-            farming_technique,
             amount_of_fuel_used,
-            local_temperatures_check,
+            temperature_value,
+            temperature_type,
+            farming_technique,
         )
 
     def update_database_table(self):

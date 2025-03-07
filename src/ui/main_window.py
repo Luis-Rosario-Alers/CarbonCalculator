@@ -25,6 +25,7 @@ class MainWindowController(QObject):
         self.__connect_signals()
 
     def __connect_signals(self):
+        logger.debug("Connecting signals in MainWindowController")
         # Application wide signals
         connect_threaded(
             self.view, "main_window_closed", self.handle_main_window_closed
@@ -32,10 +33,11 @@ class MainWindowController(QObject):
 
         # calculation model signals
         self.model.calculation_model.calculation_result.connect(
-            self.model.databases_model.log_calculation
+            self.model.databases_model.log_transaction
         )
 
     def send_initialization_signal(self):
+        logger.debug("emitting initialization signal")
         self.initialization.emit()  # this starts the initialization sequence
 
     def handle_main_window_closed(self):
@@ -51,6 +53,7 @@ class AppModel(QObject):
         self.calculation_model = calculationModel()
 
     def setup_models(self, main_window_controller):
+        logger.debug("Setting up models in AppModel")
         self.databases_model.set_controller(main_window_controller)
         self.calculation_model.set_controller(main_window_controller)
 
@@ -64,6 +67,7 @@ class MainWindowView(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
 
     def setup_tabs(self, model, controller):
+        logger.debug("Setting up tabs in MainWindowView")
         general_tab = GeneralTabWidget(model, controller)
 
         self.stackedWidget.addWidget(general_tab.view)

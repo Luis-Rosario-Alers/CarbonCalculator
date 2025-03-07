@@ -1,53 +1,12 @@
-# -*- coding: utf-8 -*-
-# flake8: noqa
-################################################################################
-## Form generated from reading UI file 'generalTabWidgetGedHjW.ui'
-##
-## Created by: Qt User Interface Compiler version 6.8.2
-##
-## WARNING! All changes made in this file will be lost when recompiling UI file!
-################################################################################
-
-from PySide6.QtCore import (
-    QCoreApplication,
-    QDate,
-    QDateTime,
-    QLocale,
-    QMetaObject,
-    QObject,
-    QPoint,
-    QRect,
-    QSize,
-    Qt,
-    QTime,
-    QUrl,
-)
-from PySide6.QtGui import (
-    QBrush,
-    QColor,
-    QConicalGradient,
-    QCursor,
-    QFont,
-    QFontDatabase,
-    QGradient,
-    QIcon,
-    QImage,
-    QKeySequence,
-    QLinearGradient,
-    QPainter,
-    QPalette,
-    QPixmap,
-    QRadialGradient,
-    QTransform,
-)
+from PySide6.QtCore import QCoreApplication, QMetaObject, QSize, Qt
+from PySide6.QtGui import QFont
 from PySide6.QtWidgets import (
     QAbstractItemView,
-    QApplication,
+    QAbstractSpinBox,
     QCheckBox,
     QComboBox,
     QDoubleSpinBox,
     QHBoxLayout,
-    QHeaderView,
     QLabel,
     QProgressBar,
     QPushButton,
@@ -62,7 +21,7 @@ class Ui_GeneralWidget(object):
     def setupUi(self, GeneralWidget):
         if not GeneralWidget.objectName():
             GeneralWidget.setObjectName("GeneralWidget")
-        GeneralWidget.resize(877, 759)
+        GeneralWidget.resize(862, 759)
         self.horizontalLayout = QHBoxLayout(GeneralWidget)
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.leftBar = QWidget(GeneralWidget)
@@ -94,56 +53,13 @@ class Ui_GeneralWidget(object):
 
         self.farmingTechniqueComboBox = QComboBox(self.farmingTechniqueWidget)
         self.farmingTechniqueComboBox.setObjectName("farmingTechniqueComboBox")
+        self.farmingTechniqueComboBox.setSizeAdjustPolicy(
+            QComboBox.SizeAdjustPolicy.AdjustToContents
+        )
 
         self.horizontalLayout_8.addWidget(self.farmingTechniqueComboBox)
 
-        self.verticalLayout_3.addWidget(
-            self.farmingTechniqueWidget, 0, Qt.AlignmentFlag.AlignRight
-        )
-
-        self.unitOfMeasurementWidget = QWidget(self.farmingVariablesWidget)
-        self.unitOfMeasurementWidget.setObjectName("unitOfMeasurementWidget")
-        self.horizontalLayout_7 = QHBoxLayout(self.unitOfMeasurementWidget)
-        self.horizontalLayout_7.setObjectName("horizontalLayout_7")
-        self.unitOfMeasurementLabel = QLabel(self.unitOfMeasurementWidget)
-        self.unitOfMeasurementLabel.setObjectName("unitOfMeasurementLabel")
-
-        self.horizontalLayout_7.addWidget(self.unitOfMeasurementLabel)
-
-        self.unitOfMeasurementComboBox = QComboBox(
-            self.unitOfMeasurementWidget
-        )
-        self.unitOfMeasurementComboBox.setObjectName(
-            "unitOfMeasurementComboBox"
-        )
-
-        self.horizontalLayout_7.addWidget(self.unitOfMeasurementComboBox)
-
-        self.verticalLayout_3.addWidget(
-            self.unitOfMeasurementWidget, 0, Qt.AlignmentFlag.AlignRight
-        )
-
-        self.fuelTypeWidget = QWidget(self.farmingVariablesWidget)
-        self.fuelTypeWidget.setObjectName("fuelTypeWidget")
-        self.horizontalLayout_5 = QHBoxLayout(self.fuelTypeWidget)
-        self.horizontalLayout_5.setObjectName("horizontalLayout_5")
-        self.fuelTypeLabel = QLabel(self.fuelTypeWidget)
-        self.fuelTypeLabel.setObjectName("fuelTypeLabel")
-
-        self.horizontalLayout_5.addWidget(
-            self.fuelTypeLabel, 0, Qt.AlignmentFlag.AlignRight
-        )
-
-        self.fuelTypeComboBox = QComboBox(self.fuelTypeWidget)
-        self.fuelTypeComboBox.setObjectName("fuelTypeComboBox")
-
-        self.horizontalLayout_5.addWidget(
-            self.fuelTypeComboBox, 0, Qt.AlignmentFlag.AlignRight
-        )
-
-        self.verticalLayout_3.addWidget(
-            self.fuelTypeWidget, 0, Qt.AlignmentFlag.AlignRight
-        )
+        self.verticalLayout_3.addWidget(self.farmingTechniqueWidget)
 
         self.amountOfFuelUsedWidget = QWidget(self.farmingVariablesWidget)
         self.amountOfFuelUsedWidget.setObjectName("amountOfFuelUsedWidget")
@@ -151,6 +67,16 @@ class Ui_GeneralWidget(object):
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")
         self.amountOfFuelUsedLabel = QLabel(self.amountOfFuelUsedWidget)
         self.amountOfFuelUsedLabel.setObjectName("amountOfFuelUsedLabel")
+        sizePolicy = QSizePolicy(
+            QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred
+        )
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(
+            self.amountOfFuelUsedLabel.sizePolicy().hasHeightForWidth()
+        )
+        self.amountOfFuelUsedLabel.setSizePolicy(sizePolicy)
+        self.amountOfFuelUsedLabel.setScaledContents(False)
 
         self.horizontalLayout_4.addWidget(
             self.amountOfFuelUsedLabel, 0, Qt.AlignmentFlag.AlignRight
@@ -162,13 +88,69 @@ class Ui_GeneralWidget(object):
         self.amountOfFuelUsedDoubleSpinBox.setObjectName(
             "amountOfFuelUsedDoubleSpinBox"
         )
+        self.amountOfFuelUsedDoubleSpinBox.setAccelerated(True)
 
-        self.horizontalLayout_4.addWidget(
-            self.amountOfFuelUsedDoubleSpinBox, 0, Qt.AlignmentFlag.AlignRight
+        self.horizontalLayout_4.addWidget(self.amountOfFuelUsedDoubleSpinBox)
+
+        self.fuelTypeComboBox = QComboBox(self.amountOfFuelUsedWidget)
+        self.fuelTypeComboBox.setObjectName("fuelTypeComboBox")
+        sizePolicy1 = QSizePolicy(
+            QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed
+        )
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(
+            self.fuelTypeComboBox.sizePolicy().hasHeightForWidth()
+        )
+        self.fuelTypeComboBox.setSizePolicy(sizePolicy1)
+        self.fuelTypeComboBox.setSizeAdjustPolicy(
+            QComboBox.SizeAdjustPolicy.AdjustToContents
         )
 
+        self.horizontalLayout_4.addWidget(self.fuelTypeComboBox)
+
+        self.verticalLayout_3.addWidget(self.amountOfFuelUsedWidget)
+
+        self.widget = QWidget(self.farmingVariablesWidget)
+        self.widget.setObjectName("widget")
+        self.horizontalLayout_9 = QHBoxLayout(self.widget)
+        self.horizontalLayout_9.setObjectName("horizontalLayout_9")
+        self.label = QLabel(self.widget)
+        self.label.setObjectName("label")
+
+        self.horizontalLayout_9.addWidget(self.label)
+
+        self.temperatureDoubleSpinBox = QDoubleSpinBox(self.widget)
+        self.temperatureDoubleSpinBox.setObjectName("temperatureDoubleSpinBox")
+        sizePolicy2 = QSizePolicy(
+            QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed
+        )
+        sizePolicy2.setHorizontalStretch(0)
+        sizePolicy2.setVerticalStretch(0)
+        sizePolicy2.setHeightForWidth(
+            self.temperatureDoubleSpinBox.sizePolicy().hasHeightForWidth()
+        )
+        self.temperatureDoubleSpinBox.setSizePolicy(sizePolicy2)
+        self.temperatureDoubleSpinBox.setButtonSymbols(
+            QAbstractSpinBox.ButtonSymbols.UpDownArrows
+        )
+        self.temperatureDoubleSpinBox.setAccelerated(True)
+        self.temperatureDoubleSpinBox.setDecimals(1)
+        self.temperatureDoubleSpinBox.setMinimum(-1000.000000000000000)
+        self.temperatureDoubleSpinBox.setMaximum(1000.000000000000000)
+
+        self.horizontalLayout_9.addWidget(self.temperatureDoubleSpinBox)
+
+        self.temperatureTypesComboBox = QComboBox(self.widget)
+        self.temperatureTypesComboBox.setObjectName("temperatureTypesComboBox")
+        self.temperatureTypesComboBox.setSizeAdjustPolicy(
+            QComboBox.SizeAdjustPolicy.AdjustToContents
+        )
+
+        self.horizontalLayout_9.addWidget(self.temperatureTypesComboBox)
+
         self.verticalLayout_3.addWidget(
-            self.amountOfFuelUsedWidget, 0, Qt.AlignmentFlag.AlignRight
+            self.widget, 0, Qt.AlignmentFlag.AlignRight
         )
 
         self.verticalLayout_2.addWidget(self.farmingVariablesWidget)
@@ -194,6 +176,16 @@ class Ui_GeneralWidget(object):
         )
 
         self.horizontalLayout_6.addWidget(self.calculateContainerPushButton)
+
+        self.comboBox = QComboBox(self.calculateContainerWidget)
+        self.comboBox.addItem("")
+        self.comboBox.setObjectName("comboBox")
+        self.comboBox.setTabletTracking(False)
+        self.comboBox.setSizeAdjustPolicy(
+            QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon
+        )
+
+        self.horizontalLayout_6.addWidget(self.comboBox)
 
         self.verticalLayout_2.addWidget(
             self.calculateContainerWidget, 0, Qt.AlignmentFlag.AlignTop
@@ -313,15 +305,15 @@ class Ui_GeneralWidget(object):
 
         self.sqlTableView = QTableView(self.rightBar)
         self.sqlTableView.setObjectName("sqlTableView")
-        sizePolicy = QSizePolicy(
+        sizePolicy3 = QSizePolicy(
             QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Expanding
         )
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
+        sizePolicy3.setHorizontalStretch(0)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(
             self.sqlTableView.sizePolicy().hasHeightForWidth()
         )
-        self.sqlTableView.setSizePolicy(sizePolicy)
+        self.sqlTableView.setSizePolicy(sizePolicy3)
         self.sqlTableView.setMinimumSize(QSize(300, 0))
         self.sqlTableView.setMaximumSize(QSize(16777215, 900))
         self.sqlTableView.setSelectionMode(
@@ -344,15 +336,15 @@ class Ui_GeneralWidget(object):
 
         self.progressBar = QProgressBar(self.progressContainerWidget)
         self.progressBar.setObjectName("progressBar")
-        sizePolicy1 = QSizePolicy(
+        sizePolicy4 = QSizePolicy(
             QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
         )
-        sizePolicy1.setHorizontalStretch(0)
-        sizePolicy1.setVerticalStretch(0)
-        sizePolicy1.setHeightForWidth(
+        sizePolicy4.setHorizontalStretch(0)
+        sizePolicy4.setVerticalStretch(0)
+        sizePolicy4.setHeightForWidth(
             self.progressBar.sizePolicy().hasHeightForWidth()
         )
-        self.progressBar.setSizePolicy(sizePolicy1)
+        self.progressBar.setSizePolicy(sizePolicy4)
         self.progressBar.setValue(0)
 
         self.horizontalLayout_2.addWidget(
@@ -389,18 +381,15 @@ class Ui_GeneralWidget(object):
                 "GeneralWidget", "Farming Technique:", None
             )
         )
-        self.unitOfMeasurementLabel.setText(
-            QCoreApplication.translate(
-                "GeneralWidget", "Unit of Measurement:", None
-            )
-        )
-        self.fuelTypeLabel.setText(
-            QCoreApplication.translate("GeneralWidget", "Fuel Type:", None)
-        )
         self.amountOfFuelUsedLabel.setText(
-            QCoreApplication.translate(
-                "GeneralWidget", "Amount of fuel used:", None
-            )
+            QCoreApplication.translate("GeneralWidget", "Fuel Amount:", None)
+        )
+        self.label.setText(
+            QCoreApplication.translate("GeneralWidget", "Temperature", None)
+        )
+        self.temperatureDoubleSpinBox.setPrefix("")
+        self.temperatureDoubleSpinBox.setSuffix(
+            QCoreApplication.translate("GeneralWidget", "\u00b0", None)
         )
         self.calculateContainerCheckBox.setText(
             QCoreApplication.translate(
@@ -410,6 +399,10 @@ class Ui_GeneralWidget(object):
         self.calculateContainerPushButton.setText(
             QCoreApplication.translate("GeneralWidget", "Calculate", None)
         )
+        self.comboBox.setItemText(
+            0, QCoreApplication.translate("GeneralWidget", "Kg", None)
+        )
+
         self.editDatabasePushButton.setText(
             QCoreApplication.translate("GeneralWidget", "Edit Database", None)
         )

@@ -105,14 +105,14 @@ class TestDataValidator:
         assert mock_validate_integer.call_args[0][0] == 10 * 10**10
 
     def test_validate_emissions_valid(self, data_validator: DataValidator):
-        """Test validate_emissions with valid inputs."""
-        assert data_validator.validate_emissions(0) is True
-        assert data_validator.validate_emissions(10.5) is True
+        """Test validate_emissions_result with valid inputs."""
+        assert data_validator.validate_emissions_result(0) is True
+        assert data_validator.validate_emissions_result(10.5) is True
 
     def test_validate_emissions_invalid(self, data_validator: DataValidator):
-        """Test validate_emissions with invalid inputs."""
-        assert data_validator.validate_emissions(-1) is False
-        assert data_validator.validate_emissions("ten") is False
+        """Test validate_emissions_result with invalid inputs."""
+        assert data_validator.validate_emissions_result(-1) is False
+        assert data_validator.validate_emissions_result("ten") is False
 
     def test_validate_integer_valid(self, data_validator: DataValidator):
         """Test validate_integer with valid inputs."""

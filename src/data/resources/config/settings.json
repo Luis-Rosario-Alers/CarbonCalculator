@@ -1,5 +1,5 @@
 {
     "ip_key": "",
     "weather_key": "",
-    "emissions_factors_path": "C:\\Users\\luisr\\PycharmProjects\\CarbonCalculator\\src\\data\\resources\\config\\conversion_factors\\fuel_types.json"
+    "emissions_factors_path": "C:\\Users\\luisr\\PycharmProjects\\CarbonCalculator\\src\\data\\resources\\config\\conversion_factors\\emissions_variables.json"
 }

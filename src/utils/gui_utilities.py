@@ -34,7 +34,7 @@ class Worker(QRunnable):
         try:
             result = self.fn(*self.args, **self.kwargs)
         except Exception as e:
-            logger.error(f"Error in worker thread: {str(e)}")
+            logger.error(f"Error in worker thread: {str(e)} Thread: {self}")
             self.signals.error.emit((e, type(e), e.__traceback__))
         else:
             self.signals.result.emit(result)

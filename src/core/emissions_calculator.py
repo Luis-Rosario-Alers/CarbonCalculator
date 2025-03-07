@@ -13,8 +13,8 @@ logger = logging.getLogger("core")
 class calculationModel(QObject):
     calculation_completed = Signal()
     calculation_result = Signal(
-        int, str, float, float, str
-    )  # user_id, fuel_type, fuel_used, emissions, farming_technique
+        int, str, float, float, float, str
+    )  # user_id, fuel_type, fuel_used, emissions, temperature, farming_technique
 
     def __init__(self):
         super().__init__()
@@ -39,10 +39,9 @@ class calculationModel(QObject):
         """
         Calculate the emissions based on the fuel type, fuel used, and optional temperature data.
 
-        Parameters: user_id (str): The ID of the user. fuel_type (str): The type of fuel used. fuel_used (float): The
-        amount of fuel used. temperature (float, optional): The temperature at which the fuel is used. Defaults to None.
-        temperature_type (int, optional): The type of temperature provided (0 for Celsius, 1 for Fahrenheit,
-        2 for Kelvin). Defaults to None.
+        Parameters: user_id (str): The ID of the user. Fuel_type (str): The type of fuel used. Fuel_used (float): The
+        amount of fuel used. Temperature (float, optional): The temperature at which the fuel is used. Defaults to None.
+        Temperature_type (string, optional): The type of temperatures provided (Celsius, Fahrenheit, Kelvin). Defaults to None.
 
         Returns:
         tuple: A tuple containing user_id, fuel_type, fuel_used, and calculated emissions.
@@ -56,28 +55,43 @@ class calculationModel(QObject):
             data_validator.validate_temperature_type(temperature_type)
             data_validator.validate_temperature(temperature, temperature_type)
 
-        emissions_factor = databasesModel.get_emissions_factor(fuel_type)
+        fuel_type_emissions_variable = (
+            databasesModel.get_fuel_type_emissions_modifier(fuel_type)
+        )
+        farming_technique_emissions_variable = (
+            databasesModel.get_farming_technique_info(
+                "emissions_modifier", farming_technique
+            )
+        )
 
         # * Check This ⬇️ if emission tests have failed
         if temperature is not None and temperature_type is not None:
             logger.info(
                 "Temperature data available, adjusting emissions factor"
             )
-            baseline_temperature = [
-                20.0,  # Celsius
-                68.0,  # Fahrenheit
-                293.15,  # Kelvin
-            ]
+            baseline_temperature = {
+                "Celsius": 20.0,
+                "Fahrenheit": 68.0,
+                "Kelvin": 293.15,
+            }
+            baseline_temperature = (
+                baseline_temperature.get(temperature_type, None)
+                if temperature_type
+                else logger.debug("Invalid temperature type")
+            )
             temp_deviation = (
-                temperature - baseline_temperature[temperature_type]
-            ) / baseline_temperature[temperature_type]
+                temperature - baseline_temperature
+            ) / baseline_temperature
 
-            adjusted_emissions_factor = emissions_factor * (
+            adjusted_emissions_factor = fuel_type_emissions_variable * (
                 1 + temp_deviation**2
             )
-
-            emissions = fuel_used * adjusted_emissions_factor
-            if not data_validator.validate_emissions(emissions):
+            emissions = (
+                fuel_used
+                * adjusted_emissions_factor
+                * farming_technique_emissions_variable
+            )
+            if not data_validator.validate_emissions_result(emissions):
                 raise ValueError("Invalid emissions data")
             self.calculation_completed.emit()
             self.calculation_result.emit(
@@ -88,11 +102,15 @@ class calculationModel(QObject):
             logger.info(
                 "Temperature data not available, using standard emissions factor"
             )
-            emissions = fuel_used * emissions_factor
-            if not data_validator.validate_emissions(emissions):
+            emissions = (
+                fuel_used
+                * fuel_type_emissions_variable
+                * farming_technique_emissions_variable
+            )
+            if not data_validator.validate_emissions_result(emissions):
                 raise ValueError("Invalid emissions data")
             self.calculation_completed.emit()
             self.calculation_result.emit(
-                user_id, fuel_type, fuel_used, emissions
+                user_id, fuel_type, fuel_used, emissions, farming_technique
             )
-            return fuel_type, fuel_used, emissions
+            return fuel_type, fuel_used, emissions, farming_technique

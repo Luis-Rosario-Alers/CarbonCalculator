@@ -49,7 +49,7 @@ class DataValidator:
         return True
 
     @staticmethod
-    def validate_emissions(emissions):
+    def validate_emissions_result(emissions):
         if not isinstance(emissions, (int, float)) or emissions < 0:
             logger.error("emissions is not int or float")
             return False
