@@ -69,13 +69,13 @@ class calculationModel(QObject):
             logger.info(
                 "Temperature data available, adjusting emissions factor"
             )
-            baseline_temperature = {
+            baseline_temperatures = {
                 "Celsius": 20.0,
                 "Fahrenheit": 68.0,
                 "Kelvin": 293.15,
             }
             baseline_temperature = (
-                baseline_temperature.get(temperature_type, None)
+                baseline_temperatures.get(temperature_type, None)
                 if temperature_type
                 else logger.debug("Invalid temperature type")
             )
@@ -95,9 +95,13 @@ class calculationModel(QObject):
                 raise ValueError("Invalid emissions data")
             self.calculation_completed.emit()
             self.calculation_result.emit(
-                user_id, fuel_type, fuel_used, emissions
+                user_id,
+                fuel_type,
+                fuel_used,
+                emissions,
+                temperature,
+                farming_technique,
             )
-            return fuel_type, fuel_used, emissions
         else:
             logger.info(
                 "Temperature data not available, using standard emissions factor"
@@ -111,6 +115,10 @@ class calculationModel(QObject):
                 raise ValueError("Invalid emissions data")
             self.calculation_completed.emit()
             self.calculation_result.emit(
-                user_id, fuel_type, fuel_used, emissions, farming_technique
+                user_id,
+                fuel_type,
+                fuel_used,
+                emissions,
+                temperature,
+                farming_technique,
             )
-            return fuel_type, fuel_used, emissions, farming_technique

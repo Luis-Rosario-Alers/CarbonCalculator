@@ -1,28 +1,34 @@
 {
   "fuel_types": [
-  {
+    {
       "fuel_type": "gasoline",
-      "emissions_factor": 2.31
+      "emissions_modifier": 2.31,
+      "unit_of_measurement": "kg CO2e/liter"
     },
     {
       "fuel_type": "diesel",
-      "emissions_factor": 2.68
+      "emissions_modifier": 2.68,
+      "unit_of_measurement": "kg CO2e/liter"
     },
     {
       "fuel_type": "natural gas",
-      "emissions_factor": 2.75
+      "emissions_modifier": 2.75,
+      "unit_of_measurement": "kg CO2e/m3"
     },
     {
-        "fuel_type": "propane",
-        "emissions_factor": 1.55
+      "fuel_type": "propane",
+      "emissions_modifier": 1.55,
+      "unit_of_measurement": "kg CO2e/liter"
     },
     {
-        "fuel_type": "ethanol",
-        "emissions_factor": 1.94
+      "fuel_type": "ethanol",
+      "emissions_modifier": 1.94,
+      "unit_of_measurement": "kg CO2e/liter"
     },
     {
-        "fuel_type": "biodiesel",
-        "emissions_factor": 2.45
+      "fuel_type": "biodiesel",
+      "emissions_modifier": 2.45,
+      "unit_of_measurement": "kg CO2e/liter"
     }
   ],
   "farming_techniques": [
@@ -46,5 +52,5 @@
       "technique": "regenerative",
       "emissions_modifier": 0.6
     }
-]
+  ]
 }

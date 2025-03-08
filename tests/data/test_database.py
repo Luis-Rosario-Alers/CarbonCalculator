@@ -401,11 +401,11 @@ class TestDatabase:
         mock_create_db.assert_not_called()
         mock_insert.assert_not_called()
 
-    # Successfully reads settings.json and returns existing emissions_factors_path
+    # Successfully reads settings.json and returns existing emission_modifiers_path
     @pytest.mark.asyncio
     async def test_load_settings_returns_existing_path(self, mocker):
         # Arrange
-        mock_settings = {"emissions_factors_path": "/test/path"}
+        mock_settings = {"emission_modifiers_path": "/test/path"}
         mock_file = mocker.AsyncMock()
         mock_file.read.return_value = json.dumps(mock_settings)
 

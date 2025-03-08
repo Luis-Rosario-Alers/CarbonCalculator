@@ -31,6 +31,65 @@ application_path, databases_folder = determine_application_path()
 
 
 # function to bundle initialization of all databases
+def get_emissions_history(user_id=None, farming_technique=None, limit=50):
+    """Get emissions' history with optional filtering
+
+    Args:
+        user_id: Optional. Filter by user_id
+        farming_technique: Optional. Filter by farming technique
+        limit: Maximum number of records to return
+
+    Returns:
+        List of emission records
+    """
+    try:
+        db_path = os.path.join(databases_folder, "emissions.db")
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+
+        query = "SELECT user_id, fuel_type, fuel_used, emissions, temperature, farming_technique, timestamp FROM emissions"
+        params = []
+        where_clauses = []
+
+        if user_id is not None:
+            where_clauses.append("user_id = ?")
+            params.append(user_id)
+
+        if farming_technique is not None:
+            where_clauses.append("farming_technique = ?")
+            params.append(farming_technique)
+
+        if where_clauses:
+            query += " WHERE " + " AND ".join(where_clauses)
+
+        query += " ORDER BY timestamp DESC LIMIT ?"
+        params.append(limit)
+
+        cursor.execute(query, params)
+        rows = cursor.fetchall()
+
+        # Convert to a list of dictionaries for easier handling
+        columns = [
+            "user_id",
+            "fuel_type",
+            "fuel_used",
+            "emissions",
+            "temperature",
+            "farming_technique",
+            "timestamp",
+        ]
+        result = []
+        for row in rows:
+            result.append(dict(zip(columns, row)))
+
+        conn.close()
+        return result
+
+    except sqlite3.Error as e:
+        logger.error(f"Error getting emissions history: {e}")
+        return []
+
+
 class databasesModel(QObject):
     databases_initialized = Signal()
     calculation_logged = Signal()
@@ -105,12 +164,12 @@ class databasesModel(QObject):
         try:
             with open(settings_path, "r") as file:
                 settings = json.load(file)
-                json_path = settings.get("emissions_factors_path")
+                json_path = settings.get("emission_modifiers_path")
                 if not json_path:
                     json_path = os.path.join(
                         default_factors_path, "emissions_variables.json"
                     )
-                    settings["emissions_factors_path"] = json_path
+                    settings["emission_modifiers_path"] = json_path
                     with open(settings_path, "w") as settings_file:
                         settings_file.write(json.dumps(settings, indent=4))
                 return json_path
@@ -125,7 +184,7 @@ class databasesModel(QObject):
                 data = json.load(file)
                 # Validate fuel types
                 if not all(
-                    "fuel_type" in fuel and "emissions_factor" in fuel
+                    "fuel_type" in fuel and "emissions_modifier" in fuel
                     for fuel in data.get("fuel_types", [])
                 ):
                     raise ValueError("Invalid fuel data")
@@ -142,6 +201,9 @@ class databasesModel(QObject):
         except FileNotFoundError:
             logger.error(f"File not found: {json_path}")
             return None
+        except Exception as e:
+            logger.error(f"Unexpected error loading emissions variables: {e}")
+            return None
 
     @staticmethod
     def create_emissions_variables_database(db_path):
@@ -153,7 +215,7 @@ class databasesModel(QObject):
             # Create fuel types table
             cursor.execute(
                 """CREATE TABLE IF NOT EXISTS
-                fuel_types (fuel_type TEXT PRIMARY KEY, emissions_factor REAL)"""
+                fuel_types (fuel_type TEXT PRIMARY KEY, emissions_modifier REAL)"""
             )
 
             # Create farming techniques table in the same database
@@ -176,7 +238,7 @@ class databasesModel(QObject):
             for fuel in fuel_data:
                 cursor.execute(
                     "INSERT OR REPLACE INTO fuel_types VALUES (?, ?)",
-                    (fuel["fuel_type"], fuel["emissions_factor"]),
+                    (fuel["fuel_type"], fuel["emissions_modifier"]),
                 )
             conn.commit()
         except Exception as e:
@@ -328,7 +390,7 @@ class databasesModel(QObject):
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
         cursor.execute(
-            "SELECT emissions_factor FROM fuel_types WHERE fuel_type = ?",
+            "SELECT emissions_modifier FROM fuel_types WHERE fuel_type = ?",
             (fuel_type,),
         )
         row = cursor.fetchone()
@@ -337,12 +399,12 @@ class databasesModel(QObject):
             return row[0]
         else:
             raise ValueError(
-                f"No emissions factor found for fuel type: {fuel_type}"
+                f"No emissions modifier found for fuel type: {fuel_type}"
             )
 
     @staticmethod
     def get_emissions_modifier(farming_technique: str) -> float:
-        """Get the emissions modifier for a specific farming technique"""
+        """Get the emission modifier for a specific farming technique"""
         db_path = os.path.join(databases_folder, "emissions_variables.db")
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
@@ -400,77 +462,22 @@ class databasesModel(QObject):
             cursor.execute(
                 "SELECT fuel_type, fuel_used, emissions, temperature, farming_technique FROM emissions WHERE user_id = ? AND fuel_type = ? AND "
                 "fuel_used = ? AND emissions = ? AND temperature = ? AND farming_technique = ?",
-                (user_id, fuel_type, fuel_used, emissions, farming_technique),
+                (
+                    user_id,
+                    fuel_type,
+                    fuel_used,
+                    emissions,
+                    temperature,
+                    farming_technique,
+                ),
             )
-            log = cursor.fetchall()
             conn.close()
             self.calculation_logged.emit()
-            return log
         except sqlite3.Error as e:
             logger.error(f"Database error: {e}")
             logger.error(e)
         except ValueError as e:
             logger.error(f"Value error: {e}")
-
-    def get_emissions_history(
-        self, user_id=None, farming_technique=None, limit=50
-    ):
-        """Get emissions' history with optional filtering
-
-        Args:
-            user_id: Optional. Filter by user_id
-            farming_technique: Optional. Filter by farming technique
-            limit: Maximum number of records to return
-
-        Returns:
-            List of emission records
-        """
-        try:
-            db_path = os.path.join(databases_folder, "emissions.db")
-            conn = sqlite3.connect(db_path)
-            cursor = conn.cursor()
-
-            query = "SELECT user_id, fuel_type, fuel_used, emissions, temperature, farming_technique, timestamp FROM emissions"
-            params = []
-            where_clauses = []
-
-            if user_id is not None:
-                where_clauses.append("user_id = ?")
-                params.append(user_id)
-
-            if farming_technique is not None:
-                where_clauses.append("farming_technique = ?")
-                params.append(farming_technique)
-
-            if where_clauses:
-                query += " WHERE " + " AND ".join(where_clauses)
-
-            query += " ORDER BY timestamp DESC LIMIT ?"
-            params.append(limit)
-
-            cursor.execute(query, params)
-            rows = cursor.fetchall()
-
-            # Convert to a list of dictionaries for easier handling
-            columns = [
-                "user_id",
-                "fuel_type",
-                "fuel_used",
-                "emissions",
-                "temperature",
-                "farming_technique",
-                "timestamp",
-            ]
-            result = []
-            for row in rows:
-                result.append(dict(zip(columns, row)))
-
-            conn.close()
-            return result
-
-        except sqlite3.Error as e:
-            logger.error(f"Error getting emissions history: {e}")
-            return []
 
     def database_initialization(self):
         logger.info("Received initialization signal, initializing databases")

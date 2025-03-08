@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>862</width>
-    <height>759</height>
+    <width>965</width>
+    <height>755</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,18 +16,45 @@
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
     <widget class="QWidget" name="leftBar" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="maximumSize">
       <size>
-       <width>300</width>
+       <width>16777215</width>
        <height>16777215</height>
       </size>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
        <widget class="QWidget" name="farmingVariablesWidget" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>300</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="contextMenuPolicy">
+         <enum>Qt::ContextMenuPolicy::DefaultContextMenu</enum>
+        </property>
         <layout class="QVBoxLayout" name="verticalLayout_3">
          <item>
           <widget class="QLabel" name="farmingVariablesLabel">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="font">
             <font>
              <pointsize>10</pointsize>
@@ -41,17 +68,17 @@
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignmentFlag::AlignLeft">
           <widget class="QWidget" name="farmingTechniqueWidget" native="true">
            <layout class="QHBoxLayout" name="horizontalLayout_8">
-            <item>
+            <item alignment="Qt::AlignmentFlag::AlignLeft">
              <widget class="QLabel" name="farmingTechniqueLabel">
               <property name="text">
                <string>Farming Technique:</string>
               </property>
              </widget>
             </item>
-            <item>
+            <item alignment="Qt::AlignmentFlag::AlignLeft">
              <widget class="QComboBox" name="farmingTechniqueComboBox">
               <property name="sizeAdjustPolicy">
                <enum>QComboBox::SizeAdjustPolicy::AdjustToContents</enum>
@@ -61,7 +88,7 @@
            </layout>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignmentFlag::AlignLeft">
           <widget class="QWidget" name="amountOfFuelUsedWidget" native="true">
            <layout class="QHBoxLayout" name="horizontalLayout_4">
             <item alignment="Qt::AlignmentFlag::AlignRight">
@@ -100,20 +127,23 @@
               </property>
              </widget>
             </item>
+            <item>
+             <widget class="QComboBox" name="fuelUnitOfMeasurementComboBox"/>
+            </item>
            </layout>
           </widget>
          </item>
-         <item alignment="Qt::AlignmentFlag::AlignRight">
+         <item alignment="Qt::AlignmentFlag::AlignLeft">
           <widget class="QWidget" name="widget" native="true">
            <layout class="QHBoxLayout" name="horizontalLayout_9">
-            <item>
+            <item alignment="Qt::AlignmentFlag::AlignLeft">
              <widget class="QLabel" name="label">
               <property name="text">
                <string>Temperature</string>
               </property>
              </widget>
             </item>
-            <item>
+            <item alignment="Qt::AlignmentFlag::AlignLeft">
              <widget class="QDoubleSpinBox" name="temperatureDoubleSpinBox">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -144,7 +174,7 @@
               </property>
              </widget>
             </item>
-            <item>
+            <item alignment="Qt::AlignmentFlag::AlignLeft">
              <widget class="QComboBox" name="temperatureTypesComboBox">
               <property name="sizeAdjustPolicy">
                <enum>QComboBox::SizeAdjustPolicy::AdjustToContents</enum>
@@ -159,6 +189,12 @@
       </item>
       <item alignment="Qt::AlignmentFlag::AlignTop">
        <widget class="QWidget" name="calculateContainerWidget" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <layout class="QHBoxLayout" name="horizontalLayout_6">
          <item>
           <widget class="QCheckBox" name="calculateContainerCheckBox">
@@ -174,19 +210,20 @@
            </property>
           </widget>
          </item>
-         <item>
-          <widget class="QComboBox" name="comboBox">
+         <item alignment="Qt::AlignmentFlag::AlignLeft">
+          <widget class="QComboBox" name="calculationUnitOfMeasurementComboBox">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="tabletTracking">
             <bool>false</bool>
            </property>
            <property name="sizeAdjustPolicy">
-            <enum>QComboBox::SizeAdjustPolicy::AdjustToMinimumContentsLengthWithIcon</enum>
+            <enum>QComboBox::SizeAdjustPolicy::AdjustToContents</enum>
            </property>
-           <item>
-            <property name="text">
-             <string>Kg</string>
-            </property>
-           </item>
           </widget>
          </item>
         </layout>
@@ -252,6 +289,12 @@
    </item>
    <item>
     <widget class="QWidget" name="mainBody" native="true">
+     <property name="sizeIncrement">
+      <size>
+       <width>10</width>
+       <height>0</height>
+      </size>
+     </property>
      <property name="font">
       <font>
        <underline>false</underline>
@@ -325,7 +368,7 @@
        <widget class="QTableView" name="sqlTableView">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Ignored" vsizetype="Expanding">
-          <horstretch>0</horstretch>
+          <horstretch>199</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
@@ -339,6 +382,12 @@
          <size>
           <width>16777215</width>
           <height>900</height>
+         </size>
+        </property>
+        <property name="sizeIncrement">
+         <size>
+          <width>0</width>
+          <height>0</height>
          </size>
         </property>
         <property name="selectionMode">

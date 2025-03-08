@@ -1,5 +1,5 @@
 {
     "ip_key": "",
     "weather_key": "",
-    "emissions_factors_path": ""
+    "emission_modifiers_path": ""
 }

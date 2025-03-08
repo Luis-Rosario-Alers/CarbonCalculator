@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from PySide6.QtCore import QCoreApplication, QMetaObject, QSize, Qt
 from PySide6.QtGui import QFont
 from PySide6.QtWidgets import (
@@ -21,20 +23,46 @@ class Ui_GeneralWidget(object):
     def setupUi(self, GeneralWidget):
         if not GeneralWidget.objectName():
             GeneralWidget.setObjectName("GeneralWidget")
-        GeneralWidget.resize(862, 759)
+        GeneralWidget.resize(965, 755)
         self.horizontalLayout = QHBoxLayout(GeneralWidget)
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.leftBar = QWidget(GeneralWidget)
         self.leftBar.setObjectName("leftBar")
-        self.leftBar.setMaximumSize(QSize(300, 16777215))
+        sizePolicy = QSizePolicy(
+            QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred
+        )
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(
+            self.leftBar.sizePolicy().hasHeightForWidth()
+        )
+        self.leftBar.setSizePolicy(sizePolicy)
+        self.leftBar.setMaximumSize(QSize(16777215, 16777215))
         self.verticalLayout_2 = QVBoxLayout(self.leftBar)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.farmingVariablesWidget = QWidget(self.leftBar)
         self.farmingVariablesWidget.setObjectName("farmingVariablesWidget")
+        sizePolicy1 = QSizePolicy(
+            QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Preferred
+        )
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(
+            self.farmingVariablesWidget.sizePolicy().hasHeightForWidth()
+        )
+        self.farmingVariablesWidget.setSizePolicy(sizePolicy1)
+        self.farmingVariablesWidget.setMinimumSize(QSize(300, 0))
+        self.farmingVariablesWidget.setContextMenuPolicy(
+            Qt.ContextMenuPolicy.DefaultContextMenu
+        )
         self.verticalLayout_3 = QVBoxLayout(self.farmingVariablesWidget)
         self.verticalLayout_3.setObjectName("verticalLayout_3")
         self.farmingVariablesLabel = QLabel(self.farmingVariablesWidget)
         self.farmingVariablesLabel.setObjectName("farmingVariablesLabel")
+        sizePolicy.setHeightForWidth(
+            self.farmingVariablesLabel.sizePolicy().hasHeightForWidth()
+        )
+        self.farmingVariablesLabel.setSizePolicy(sizePolicy)
         font = QFont()
         font.setPointSize(10)
         self.farmingVariablesLabel.setFont(font)
@@ -49,7 +77,9 @@ class Ui_GeneralWidget(object):
         self.farmingTechniqueLabel = QLabel(self.farmingTechniqueWidget)
         self.farmingTechniqueLabel.setObjectName("farmingTechniqueLabel")
 
-        self.horizontalLayout_8.addWidget(self.farmingTechniqueLabel)
+        self.horizontalLayout_8.addWidget(
+            self.farmingTechniqueLabel, 0, Qt.AlignmentFlag.AlignLeft
+        )
 
         self.farmingTechniqueComboBox = QComboBox(self.farmingTechniqueWidget)
         self.farmingTechniqueComboBox.setObjectName("farmingTechniqueComboBox")
@@ -57,9 +87,13 @@ class Ui_GeneralWidget(object):
             QComboBox.SizeAdjustPolicy.AdjustToContents
         )
 
-        self.horizontalLayout_8.addWidget(self.farmingTechniqueComboBox)
+        self.horizontalLayout_8.addWidget(
+            self.farmingTechniqueComboBox, 0, Qt.AlignmentFlag.AlignLeft
+        )
 
-        self.verticalLayout_3.addWidget(self.farmingTechniqueWidget)
+        self.verticalLayout_3.addWidget(
+            self.farmingTechniqueWidget, 0, Qt.AlignmentFlag.AlignLeft
+        )
 
         self.amountOfFuelUsedWidget = QWidget(self.farmingVariablesWidget)
         self.amountOfFuelUsedWidget.setObjectName("amountOfFuelUsedWidget")
@@ -67,11 +101,6 @@ class Ui_GeneralWidget(object):
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")
         self.amountOfFuelUsedLabel = QLabel(self.amountOfFuelUsedWidget)
         self.amountOfFuelUsedLabel.setObjectName("amountOfFuelUsedLabel")
-        sizePolicy = QSizePolicy(
-            QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Preferred
-        )
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(
             self.amountOfFuelUsedLabel.sizePolicy().hasHeightForWidth()
         )
@@ -94,22 +123,33 @@ class Ui_GeneralWidget(object):
 
         self.fuelTypeComboBox = QComboBox(self.amountOfFuelUsedWidget)
         self.fuelTypeComboBox.setObjectName("fuelTypeComboBox")
-        sizePolicy1 = QSizePolicy(
+        sizePolicy2 = QSizePolicy(
             QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed
         )
-        sizePolicy1.setHorizontalStretch(0)
-        sizePolicy1.setVerticalStretch(0)
-        sizePolicy1.setHeightForWidth(
+        sizePolicy2.setHorizontalStretch(0)
+        sizePolicy2.setVerticalStretch(0)
+        sizePolicy2.setHeightForWidth(
             self.fuelTypeComboBox.sizePolicy().hasHeightForWidth()
         )
-        self.fuelTypeComboBox.setSizePolicy(sizePolicy1)
+        self.fuelTypeComboBox.setSizePolicy(sizePolicy2)
         self.fuelTypeComboBox.setSizeAdjustPolicy(
             QComboBox.SizeAdjustPolicy.AdjustToContents
         )
 
         self.horizontalLayout_4.addWidget(self.fuelTypeComboBox)
 
-        self.verticalLayout_3.addWidget(self.amountOfFuelUsedWidget)
+        self.fuelUnitOfMeasurementComboBox = QComboBox(
+            self.amountOfFuelUsedWidget
+        )
+        self.fuelUnitOfMeasurementComboBox.setObjectName(
+            "fuelUnitOfMeasurementComboBox"
+        )
+
+        self.horizontalLayout_4.addWidget(self.fuelUnitOfMeasurementComboBox)
+
+        self.verticalLayout_3.addWidget(
+            self.amountOfFuelUsedWidget, 0, Qt.AlignmentFlag.AlignLeft
+        )
 
         self.widget = QWidget(self.farmingVariablesWidget)
         self.widget.setObjectName("widget")
@@ -118,19 +158,21 @@ class Ui_GeneralWidget(object):
         self.label = QLabel(self.widget)
         self.label.setObjectName("label")
 
-        self.horizontalLayout_9.addWidget(self.label)
+        self.horizontalLayout_9.addWidget(
+            self.label, 0, Qt.AlignmentFlag.AlignLeft
+        )
 
         self.temperatureDoubleSpinBox = QDoubleSpinBox(self.widget)
         self.temperatureDoubleSpinBox.setObjectName("temperatureDoubleSpinBox")
-        sizePolicy2 = QSizePolicy(
+        sizePolicy3 = QSizePolicy(
             QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed
         )
-        sizePolicy2.setHorizontalStretch(0)
-        sizePolicy2.setVerticalStretch(0)
-        sizePolicy2.setHeightForWidth(
+        sizePolicy3.setHorizontalStretch(0)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(
             self.temperatureDoubleSpinBox.sizePolicy().hasHeightForWidth()
         )
-        self.temperatureDoubleSpinBox.setSizePolicy(sizePolicy2)
+        self.temperatureDoubleSpinBox.setSizePolicy(sizePolicy3)
         self.temperatureDoubleSpinBox.setButtonSymbols(
             QAbstractSpinBox.ButtonSymbols.UpDownArrows
         )
@@ -139,7 +181,9 @@ class Ui_GeneralWidget(object):
         self.temperatureDoubleSpinBox.setMinimum(-1000.000000000000000)
         self.temperatureDoubleSpinBox.setMaximum(1000.000000000000000)
 
-        self.horizontalLayout_9.addWidget(self.temperatureDoubleSpinBox)
+        self.horizontalLayout_9.addWidget(
+            self.temperatureDoubleSpinBox, 0, Qt.AlignmentFlag.AlignLeft
+        )
 
         self.temperatureTypesComboBox = QComboBox(self.widget)
         self.temperatureTypesComboBox.setObjectName("temperatureTypesComboBox")
@@ -147,16 +191,27 @@ class Ui_GeneralWidget(object):
             QComboBox.SizeAdjustPolicy.AdjustToContents
         )
 
-        self.horizontalLayout_9.addWidget(self.temperatureTypesComboBox)
+        self.horizontalLayout_9.addWidget(
+            self.temperatureTypesComboBox, 0, Qt.AlignmentFlag.AlignLeft
+        )
 
         self.verticalLayout_3.addWidget(
-            self.widget, 0, Qt.AlignmentFlag.AlignRight
+            self.widget, 0, Qt.AlignmentFlag.AlignLeft
         )
 
         self.verticalLayout_2.addWidget(self.farmingVariablesWidget)
 
         self.calculateContainerWidget = QWidget(self.leftBar)
         self.calculateContainerWidget.setObjectName("calculateContainerWidget")
+        sizePolicy4 = QSizePolicy(
+            QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Preferred
+        )
+        sizePolicy4.setHorizontalStretch(0)
+        sizePolicy4.setVerticalStretch(0)
+        sizePolicy4.setHeightForWidth(
+            self.calculateContainerWidget.sizePolicy().hasHeightForWidth()
+        )
+        self.calculateContainerWidget.setSizePolicy(sizePolicy4)
         self.horizontalLayout_6 = QHBoxLayout(self.calculateContainerWidget)
         self.horizontalLayout_6.setObjectName("horizontalLayout_6")
         self.calculateContainerCheckBox = QCheckBox(
@@ -177,15 +232,26 @@ class Ui_GeneralWidget(object):
 
         self.horizontalLayout_6.addWidget(self.calculateContainerPushButton)
 
-        self.comboBox = QComboBox(self.calculateContainerWidget)
-        self.comboBox.addItem("")
-        self.comboBox.setObjectName("comboBox")
-        self.comboBox.setTabletTracking(False)
-        self.comboBox.setSizeAdjustPolicy(
-            QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon
+        self.calculationUnitOfMeasurementComboBox = QComboBox(
+            self.calculateContainerWidget
+        )
+        self.calculationUnitOfMeasurementComboBox.setObjectName(
+            "calculationUnitOfMeasurementComboBox"
+        )
+        sizePolicy2.setHeightForWidth(
+            self.calculationUnitOfMeasurementComboBox.sizePolicy().hasHeightForWidth()
+        )
+        self.calculationUnitOfMeasurementComboBox.setSizePolicy(sizePolicy2)
+        self.calculationUnitOfMeasurementComboBox.setTabletTracking(False)
+        self.calculationUnitOfMeasurementComboBox.setSizeAdjustPolicy(
+            QComboBox.SizeAdjustPolicy.AdjustToContents
         )
 
-        self.horizontalLayout_6.addWidget(self.comboBox)
+        self.horizontalLayout_6.addWidget(
+            self.calculationUnitOfMeasurementComboBox,
+            0,
+            Qt.AlignmentFlag.AlignLeft,
+        )
 
         self.verticalLayout_2.addWidget(
             self.calculateContainerWidget, 0, Qt.AlignmentFlag.AlignTop
@@ -305,15 +371,15 @@ class Ui_GeneralWidget(object):
 
         self.sqlTableView = QTableView(self.rightBar)
         self.sqlTableView.setObjectName("sqlTableView")
-        sizePolicy3 = QSizePolicy(
+        sizePolicy5 = QSizePolicy(
             QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Expanding
         )
-        sizePolicy3.setHorizontalStretch(0)
-        sizePolicy3.setVerticalStretch(0)
-        sizePolicy3.setHeightForWidth(
+        sizePolicy5.setHorizontalStretch(0)
+        sizePolicy5.setVerticalStretch(0)
+        sizePolicy5.setHeightForWidth(
             self.sqlTableView.sizePolicy().hasHeightForWidth()
         )
-        self.sqlTableView.setSizePolicy(sizePolicy3)
+        self.sqlTableView.setSizePolicy(sizePolicy5)
         self.sqlTableView.setMinimumSize(QSize(300, 0))
         self.sqlTableView.setMaximumSize(QSize(16777215, 900))
         self.sqlTableView.setSelectionMode(
@@ -336,15 +402,15 @@ class Ui_GeneralWidget(object):
 
         self.progressBar = QProgressBar(self.progressContainerWidget)
         self.progressBar.setObjectName("progressBar")
-        sizePolicy4 = QSizePolicy(
+        sizePolicy6 = QSizePolicy(
             QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
         )
-        sizePolicy4.setHorizontalStretch(0)
-        sizePolicy4.setVerticalStretch(0)
-        sizePolicy4.setHeightForWidth(
+        sizePolicy6.setHorizontalStretch(0)
+        sizePolicy6.setVerticalStretch(0)
+        sizePolicy6.setHeightForWidth(
             self.progressBar.sizePolicy().hasHeightForWidth()
         )
-        self.progressBar.setSizePolicy(sizePolicy4)
+        self.progressBar.setSizePolicy(sizePolicy6)
         self.progressBar.setValue(0)
 
         self.horizontalLayout_2.addWidget(
@@ -399,10 +465,6 @@ class Ui_GeneralWidget(object):
         self.calculateContainerPushButton.setText(
             QCoreApplication.translate("GeneralWidget", "Calculate", None)
         )
-        self.comboBox.setItemText(
-            0, QCoreApplication.translate("GeneralWidget", "Kg", None)
-        )
-
         self.editDatabasePushButton.setText(
             QCoreApplication.translate("GeneralWidget", "Edit Database", None)
         )

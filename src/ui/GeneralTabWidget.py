@@ -1,7 +1,7 @@
 import logging
 import os
 
-from PySide6.QtCore import QObject
+from PySide6.QtCore import QObject, Signal
 from PySide6.QtSql import QSqlDatabase, QSqlTableModel
 from PySide6.QtWidgets import QTableView, QWidget
 
@@ -13,6 +13,8 @@ logger = logging.getLogger("ui")
 
 
 class GeneralTabController(QObject):
+    calculation_requested = Signal(int, str, float, float, str, str)
+
     def __init__(self, model, view, application_controller):
         super().__init__()
         self.model = model
@@ -68,9 +70,9 @@ class GeneralTabController(QObject):
             user_id,
             fuel_type,
             amount_of_fuel_used,
-            temperature_value,
-            temperature_type,
-            farming_technique,
+            temperature=temperature_value,
+            temperature_type=temperature_type,
+            farming_technique=farming_technique,
         )
 
     def handle_application_close(self):

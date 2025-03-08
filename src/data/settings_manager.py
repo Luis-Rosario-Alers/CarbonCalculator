@@ -13,7 +13,7 @@ class SettingsManager:
         self.default_settings = {
             "ip_key": "",
             "weather_key": "",
-            "emissions_factors_path": "",
+            "emission_modifiers_path": "",
         }
         self._load_settings()
 
