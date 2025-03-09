@@ -12,8 +12,8 @@
     },
     {
       "fuel_type": "natural gas",
-      "emissions_modifier": 2.75,
-      "unit_of_measurement": "kg CO2e/m3"
+      "emissions_modifier": 0.002,
+      "unit_of_measurement": "kg CO2e/liter-equivalent"
     },
     {
       "fuel_type": "propane",

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+
 from PySide6.QtCore import QCoreApplication, QMetaObject, QSize, Qt
 from PySide6.QtGui import QFont
 from PySide6.QtWidgets import (
@@ -23,7 +24,7 @@ class Ui_GeneralWidget(object):
     def setupUi(self, GeneralWidget):
         if not GeneralWidget.objectName():
             GeneralWidget.setObjectName("GeneralWidget")
-        GeneralWidget.resize(965, 755)
+        GeneralWidget.resize(959, 755)
         self.horizontalLayout = QHBoxLayout(GeneralWidget)
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.leftBar = QWidget(GeneralWidget)
@@ -105,7 +106,9 @@ class Ui_GeneralWidget(object):
             self.amountOfFuelUsedLabel.sizePolicy().hasHeightForWidth()
         )
         self.amountOfFuelUsedLabel.setSizePolicy(sizePolicy)
+        self.amountOfFuelUsedLabel.setMinimumSize(QSize(75, 0))
         self.amountOfFuelUsedLabel.setScaledContents(False)
+        self.amountOfFuelUsedLabel.setIndent(4)
 
         self.horizontalLayout_4.addWidget(
             self.amountOfFuelUsedLabel, 0, Qt.AlignmentFlag.AlignRight
@@ -117,26 +120,41 @@ class Ui_GeneralWidget(object):
         self.amountOfFuelUsedDoubleSpinBox.setObjectName(
             "amountOfFuelUsedDoubleSpinBox"
         )
-        self.amountOfFuelUsedDoubleSpinBox.setAccelerated(True)
-
-        self.horizontalLayout_4.addWidget(self.amountOfFuelUsedDoubleSpinBox)
-
-        self.fuelTypeComboBox = QComboBox(self.amountOfFuelUsedWidget)
-        self.fuelTypeComboBox.setObjectName("fuelTypeComboBox")
         sizePolicy2 = QSizePolicy(
-            QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed
+            QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed
         )
         sizePolicy2.setHorizontalStretch(0)
         sizePolicy2.setVerticalStretch(0)
         sizePolicy2.setHeightForWidth(
+            self.amountOfFuelUsedDoubleSpinBox.sizePolicy().hasHeightForWidth()
+        )
+        self.amountOfFuelUsedDoubleSpinBox.setSizePolicy(sizePolicy2)
+        self.amountOfFuelUsedDoubleSpinBox.setAccelerated(True)
+        self.amountOfFuelUsedDoubleSpinBox.setMinimum(-1000.000000000000000)
+        self.amountOfFuelUsedDoubleSpinBox.setMaximum(1000.000000000000000)
+
+        self.horizontalLayout_4.addWidget(
+            self.amountOfFuelUsedDoubleSpinBox, 0, Qt.AlignmentFlag.AlignLeft
+        )
+
+        self.fuelTypeComboBox = QComboBox(self.amountOfFuelUsedWidget)
+        self.fuelTypeComboBox.setObjectName("fuelTypeComboBox")
+        sizePolicy3 = QSizePolicy(
+            QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed
+        )
+        sizePolicy3.setHorizontalStretch(0)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(
             self.fuelTypeComboBox.sizePolicy().hasHeightForWidth()
         )
-        self.fuelTypeComboBox.setSizePolicy(sizePolicy2)
+        self.fuelTypeComboBox.setSizePolicy(sizePolicy3)
         self.fuelTypeComboBox.setSizeAdjustPolicy(
             QComboBox.SizeAdjustPolicy.AdjustToContents
         )
 
-        self.horizontalLayout_4.addWidget(self.fuelTypeComboBox)
+        self.horizontalLayout_4.addWidget(
+            self.fuelTypeComboBox, 0, Qt.AlignmentFlag.AlignLeft
+        )
 
         self.fuelUnitOfMeasurementComboBox = QComboBox(
             self.amountOfFuelUsedWidget
@@ -144,8 +162,13 @@ class Ui_GeneralWidget(object):
         self.fuelUnitOfMeasurementComboBox.setObjectName(
             "fuelUnitOfMeasurementComboBox"
         )
+        self.fuelUnitOfMeasurementComboBox.setSizeAdjustPolicy(
+            QComboBox.SizeAdjustPolicy.AdjustToContents
+        )
 
-        self.horizontalLayout_4.addWidget(self.fuelUnitOfMeasurementComboBox)
+        self.horizontalLayout_4.addWidget(
+            self.fuelUnitOfMeasurementComboBox, 0, Qt.AlignmentFlag.AlignLeft
+        )
 
         self.verticalLayout_3.addWidget(
             self.amountOfFuelUsedWidget, 0, Qt.AlignmentFlag.AlignLeft
@@ -164,15 +187,15 @@ class Ui_GeneralWidget(object):
 
         self.temperatureDoubleSpinBox = QDoubleSpinBox(self.widget)
         self.temperatureDoubleSpinBox.setObjectName("temperatureDoubleSpinBox")
-        sizePolicy3 = QSizePolicy(
+        sizePolicy4 = QSizePolicy(
             QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed
         )
-        sizePolicy3.setHorizontalStretch(0)
-        sizePolicy3.setVerticalStretch(0)
-        sizePolicy3.setHeightForWidth(
+        sizePolicy4.setHorizontalStretch(0)
+        sizePolicy4.setVerticalStretch(0)
+        sizePolicy4.setHeightForWidth(
             self.temperatureDoubleSpinBox.sizePolicy().hasHeightForWidth()
         )
-        self.temperatureDoubleSpinBox.setSizePolicy(sizePolicy3)
+        self.temperatureDoubleSpinBox.setSizePolicy(sizePolicy4)
         self.temperatureDoubleSpinBox.setButtonSymbols(
             QAbstractSpinBox.ButtonSymbols.UpDownArrows
         )
@@ -203,15 +226,15 @@ class Ui_GeneralWidget(object):
 
         self.calculateContainerWidget = QWidget(self.leftBar)
         self.calculateContainerWidget.setObjectName("calculateContainerWidget")
-        sizePolicy4 = QSizePolicy(
+        sizePolicy5 = QSizePolicy(
             QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Preferred
         )
-        sizePolicy4.setHorizontalStretch(0)
-        sizePolicy4.setVerticalStretch(0)
-        sizePolicy4.setHeightForWidth(
+        sizePolicy5.setHorizontalStretch(0)
+        sizePolicy5.setVerticalStretch(0)
+        sizePolicy5.setHeightForWidth(
             self.calculateContainerWidget.sizePolicy().hasHeightForWidth()
         )
-        self.calculateContainerWidget.setSizePolicy(sizePolicy4)
+        self.calculateContainerWidget.setSizePolicy(sizePolicy5)
         self.horizontalLayout_6 = QHBoxLayout(self.calculateContainerWidget)
         self.horizontalLayout_6.setObjectName("horizontalLayout_6")
         self.calculateContainerCheckBox = QCheckBox(
@@ -238,10 +261,10 @@ class Ui_GeneralWidget(object):
         self.calculationUnitOfMeasurementComboBox.setObjectName(
             "calculationUnitOfMeasurementComboBox"
         )
-        sizePolicy2.setHeightForWidth(
+        sizePolicy3.setHeightForWidth(
             self.calculationUnitOfMeasurementComboBox.sizePolicy().hasHeightForWidth()
         )
-        self.calculationUnitOfMeasurementComboBox.setSizePolicy(sizePolicy2)
+        self.calculationUnitOfMeasurementComboBox.setSizePolicy(sizePolicy3)
         self.calculationUnitOfMeasurementComboBox.setTabletTracking(False)
         self.calculationUnitOfMeasurementComboBox.setSizeAdjustPolicy(
             QComboBox.SizeAdjustPolicy.AdjustToContents
@@ -301,6 +324,7 @@ class Ui_GeneralWidget(object):
 
         self.mainBody = QWidget(GeneralWidget)
         self.mainBody.setObjectName("mainBody")
+        self.mainBody.setSizeIncrement(QSize(10, 0))
         font1 = QFont()
         font1.setUnderline(False)
         font1.setStrikeOut(False)
@@ -371,17 +395,18 @@ class Ui_GeneralWidget(object):
 
         self.sqlTableView = QTableView(self.rightBar)
         self.sqlTableView.setObjectName("sqlTableView")
-        sizePolicy5 = QSizePolicy(
+        sizePolicy6 = QSizePolicy(
             QSizePolicy.Policy.Ignored, QSizePolicy.Policy.Expanding
         )
-        sizePolicy5.setHorizontalStretch(0)
-        sizePolicy5.setVerticalStretch(0)
-        sizePolicy5.setHeightForWidth(
+        sizePolicy6.setHorizontalStretch(199)
+        sizePolicy6.setVerticalStretch(0)
+        sizePolicy6.setHeightForWidth(
             self.sqlTableView.sizePolicy().hasHeightForWidth()
         )
-        self.sqlTableView.setSizePolicy(sizePolicy5)
+        self.sqlTableView.setSizePolicy(sizePolicy6)
         self.sqlTableView.setMinimumSize(QSize(300, 0))
         self.sqlTableView.setMaximumSize(QSize(16777215, 900))
+        self.sqlTableView.setSizeIncrement(QSize(0, 0))
         self.sqlTableView.setSelectionMode(
             QAbstractItemView.SelectionMode.NoSelection
         )
@@ -402,15 +427,15 @@ class Ui_GeneralWidget(object):
 
         self.progressBar = QProgressBar(self.progressContainerWidget)
         self.progressBar.setObjectName("progressBar")
-        sizePolicy6 = QSizePolicy(
+        sizePolicy7 = QSizePolicy(
             QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
         )
-        sizePolicy6.setHorizontalStretch(0)
-        sizePolicy6.setVerticalStretch(0)
-        sizePolicy6.setHeightForWidth(
+        sizePolicy7.setHorizontalStretch(0)
+        sizePolicy7.setVerticalStretch(0)
+        sizePolicy7.setHeightForWidth(
             self.progressBar.sizePolicy().hasHeightForWidth()
         )
-        self.progressBar.setSizePolicy(sizePolicy6)
+        self.progressBar.setSizePolicy(sizePolicy7)
         self.progressBar.setValue(0)
 
         self.horizontalLayout_2.addWidget(
@@ -459,7 +484,7 @@ class Ui_GeneralWidget(object):
         )
         self.calculateContainerCheckBox.setText(
             QCoreApplication.translate(
-                "GeneralWidget", "Local Temperatures", None
+                "GeneralWidget", "Real-Time temperatures", None
             )
         )
         self.calculateContainerPushButton.setText(

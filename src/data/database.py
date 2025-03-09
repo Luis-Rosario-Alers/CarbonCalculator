@@ -426,16 +426,19 @@ class databasesModel(QObject):
         self,
         user_id,
         fuel_type,
+        fuel_unit,
         fuel_used,
         emissions,
         temperature,
+        temperature_type,
         farming_technique=None,
+        calculation_unit=None,
     ):
         try:
             logger.info("Logging calculation")
             logger.info(
-                f"User ID: {user_id}, Fuel Type: {fuel_type}, Fuel Used: {fuel_used}, "
-                f"Emissions: {emissions}, Farming Technique: {farming_technique}"
+                f"User ID: {user_id}, Fuel Type: {fuel_type}, Fuel Used: {fuel_used} {fuel_unit}, "
+                f"Emissions: {emissions} {calculation_unit}, Farming Technique: {farming_technique}"
             )
             db_path = os.path.join(databases_folder, "emissions.db")
 
@@ -449,9 +452,9 @@ class databasesModel(QObject):
                 (
                     user_id,
                     fuel_type,
-                    fuel_used,
-                    emissions,
-                    temperature,
+                    f"{fuel_used} {fuel_unit}",
+                    f"{emissions:.2f} {calculation_unit}",
+                    f"{temperature}°{temperature_type[:1]}",
                     farming_technique,
                 ),
             )

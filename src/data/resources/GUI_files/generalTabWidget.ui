@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>965</width>
+    <width>959</width>
     <height>755</height>
    </rect>
   </property>
@@ -99,22 +99,43 @@
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
+              <property name="minimumSize">
+               <size>
+                <width>75</width>
+                <height>0</height>
+               </size>
+              </property>
               <property name="text">
                <string>Fuel Amount:</string>
               </property>
               <property name="scaledContents">
                <bool>false</bool>
               </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QDoubleSpinBox" name="amountOfFuelUsedDoubleSpinBox">
-              <property name="accelerated">
-               <bool>true</bool>
+              <property name="indent">
+               <number>4</number>
               </property>
              </widget>
             </item>
-            <item>
+            <item alignment="Qt::AlignmentFlag::AlignLeft">
+             <widget class="QDoubleSpinBox" name="amountOfFuelUsedDoubleSpinBox">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="accelerated">
+               <bool>true</bool>
+              </property>
+              <property name="minimum">
+               <double>-1000.000000000000000</double>
+              </property>
+              <property name="maximum">
+               <double>1000.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item alignment="Qt::AlignmentFlag::AlignLeft">
              <widget class="QComboBox" name="fuelTypeComboBox">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -127,8 +148,12 @@
               </property>
              </widget>
             </item>
-            <item>
-             <widget class="QComboBox" name="fuelUnitOfMeasurementComboBox"/>
+            <item alignment="Qt::AlignmentFlag::AlignLeft">
+             <widget class="QComboBox" name="fuelUnitOfMeasurementComboBox">
+              <property name="sizeAdjustPolicy">
+               <enum>QComboBox::SizeAdjustPolicy::AdjustToContents</enum>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>

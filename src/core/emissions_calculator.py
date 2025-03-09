@@ -4,6 +4,7 @@ from PySide6.QtCore import QObject, Signal
 
 from data.data_validator import DataValidator
 from data.database import databasesModel
+from src.services.unit_conversions_service import UnitConversionsService
 
 # * EDIT THIS FILE IF YOU NEED TO ADD EXTRA FUNCTIONALITY TO THE EMISSION CALCULATOR.
 
@@ -13,8 +14,16 @@ logger = logging.getLogger("core")
 class calculationModel(QObject):
     calculation_completed = Signal()
     calculation_result = Signal(
-        int, str, float, float, float, str
-    )  # user_id, fuel_type, fuel_used, emissions, temperature, farming_technique
+        int,
+        str,
+        str,
+        float,
+        float,
+        float,
+        str,
+        str,
+        str,
+    )  # user_id, fuel_type, fuel_unit, fuel_used, emissions, temperature, farming_technique, calculation_unit
 
     def __init__(self):
         super().__init__()
@@ -31,10 +40,12 @@ class calculationModel(QObject):
         self,
         user_id: int,
         fuel_type: str,
+        fuel_unit: str,
         fuel_used: float,
         temperature=None,
         temperature_type=None,
         farming_technique=None,
+        calculation_unit=None,
     ):
         """
         Calculate the emissions based on the fuel type, fuel used, and optional temperature data.
@@ -49,15 +60,21 @@ class calculationModel(QObject):
         Raises:
         ValueError: If any of the inputs are invalid or if the calculated emissions data is invalid.
         """
-        data_validator = DataValidator()
         # Validate temperature type and temperature values
         if temperature_type is not None and temperature is not None:
-            data_validator.validate_temperature_type(temperature_type)
-            data_validator.validate_temperature(temperature, temperature_type)
+            DataValidator.validate_temperature_type(temperature_type)
+            DataValidator.validate_temperature(temperature, temperature_type)
 
         fuel_type_emissions_variable = (
             databasesModel.get_fuel_type_emissions_modifier(fuel_type)
         )
+
+        converted_fuel_amount = (
+            UnitConversionsService.convert_volume_to_volume(
+                fuel_used, fuel_unit
+            )
+        )
+
         farming_technique_emissions_variable = (
             databasesModel.get_farming_technique_info(
                 "emissions_modifier", farming_technique
@@ -87,20 +104,26 @@ class calculationModel(QObject):
                 1 + temp_deviation**2
             )
             emissions = (
-                fuel_used
+                converted_fuel_amount
                 * adjusted_emissions_factor
                 * farming_technique_emissions_variable
             )
-            if not data_validator.validate_emissions_result(emissions):
+            if not DataValidator.validate_emissions_result(emissions):
                 raise ValueError("Invalid emissions data")
+            emissions = UnitConversionsService.convert_calculation_result_to_desired_unit(
+                emissions, calculation_unit
+            )
             self.calculation_completed.emit()
             self.calculation_result.emit(
                 user_id,
                 fuel_type,
+                fuel_unit,
                 fuel_used,
                 emissions,
                 temperature,
+                temperature_type,
                 farming_technique,
+                calculation_unit,
             )
         else:
             logger.info(
@@ -111,14 +134,20 @@ class calculationModel(QObject):
                 * fuel_type_emissions_variable
                 * farming_technique_emissions_variable
             )
-            if not data_validator.validate_emissions_result(emissions):
+            if not DataValidator.validate_emissions_result(emissions):
                 raise ValueError("Invalid emissions data")
+            emissions = UnitConversionsService.convert_to_desired_unit(
+                emissions, calculation_unit
+            )
             self.calculation_completed.emit()
             self.calculation_result.emit(
                 user_id,
                 fuel_type,
+                fuel_unit,
                 fuel_used,
                 emissions,
                 temperature,
+                temperature_type,
                 farming_technique,
+                calculation_unit,
             )
