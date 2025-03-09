@@ -3,9 +3,11 @@ import os
 
 from PySide6.QtCore import QObject, Signal
 from PySide6.QtSql import QSqlDatabase, QSqlTableModel
-from PySide6.QtWidgets import QTableView, QWidget
+from PySide6.QtWidgets import QFileDialog, QTableView, QWidget
 
 from data.database import databases_folder
+from data.export_manager import ExportManager
+from data.import_manager import ImportManager
 from src.ui.generated_python_ui.ui_generalTabWidget import Ui_GeneralWidget
 from src.utils.gui_utilities import connect_threaded
 
@@ -23,6 +25,7 @@ class GeneralTabController(QObject):
         self.__connect_signals()
 
     def __connect_signals(self):
+        logger.debug("Connecting signals in GeneralTabController")
         self.model.databases_model.databases_initialized.connect(
             self.handle_initialization_of_database_widget
         )
@@ -35,7 +38,18 @@ class GeneralTabController(QObject):
         self.view.calculateContainerCheckBox.toggled.connect(
             self.handle_real_time_temperatures_check_box_changed
         )
+        self.view.importPushButton.clicked.connect(
+            self.handle_import_button_clicked
+        )
+        self.view.exportPushButton.clicked.connect(
+            self.handle_export_button_clicked
+        )
 
+        connect_threaded(
+            self.application_controller,
+            "initialization",
+            self.handle_real_time_temperatures_api_call,
+        )
         connect_threaded(
             self.model.databases_model,
             "databases_initialized",
@@ -51,6 +65,43 @@ class GeneralTabController(QObject):
             "clicked",
             self.handle_calculate_button_clicked,
         )
+
+    def handle_real_time_temperatures_api_call(self):
+        logger.debug("GeneralTabWidget: calling real-time temperature API")
+        raise NotImplementedError("Real-time temperature API not implemented")
+        # something like this?
+        # user_location_service = UserLocationService()
+        # user_location_service.get_user_location()
+
+    def handle_import_button_clicked(self):
+        logger.debug("GeneralTabWidget: import button clicked")
+        input_path, file_type = self.view.get_import_file_path()
+        if file_type:
+            logger.debug(f"GeneralTabWidget: importing {file_type} file")
+            if file_type == "json":
+                import_manager = ImportManager(input_path)
+                import_manager.import_from_json()
+                self.view.update_database_table()
+            elif file_type == "csv":
+                import_manager = ImportManager(input_path)
+                import_manager.import_from_csv()
+                self.view.update_database_table()
+            else:
+                logger.error("GeneralTabWidget: Unsupported file type")
+
+    def handle_export_button_clicked(self):
+        logger.debug("GeneralTabWidget: export button clicked")
+        output_path, selected_filter = self.view.get_export_file_path()
+        if output_path:
+            logger.debug(f"GeneralTabWidget: exporting {selected_filter} file")
+            if selected_filter == "json":
+                export_manager = ExportManager()
+                export_manager.export_to_json(output_path)
+            elif selected_filter == "csv":
+                export_manager = ExportManager()
+                export_manager.export_to_csv(output_path)
+            else:
+                logger.error("GeneralTabWidget: Unsupported file type")
 
     def handle_initialization_of_database_widget(self):
         self.model.load_database_table_content()
@@ -224,7 +275,7 @@ class GeneralTabView(QWidget, Ui_GeneralWidget):
             logger.debug(
                 "Real-time temperature collection is not implemented yet."
             )
-            pass  # TODO: implement real-time temperature collection for this
+            # TODO: implement real-time temperature collection for this
         else:
             return (
                 1,
@@ -255,6 +306,58 @@ class GeneralTabView(QWidget, Ui_GeneralWidget):
         suffix = fuel_unit_suffixes.get(fuel_unit, "")
         self.amountOfFuelUsedDoubleSpinBox.setSuffix(suffix)
         logger.debug(f"Updated fuel unit suffix to {suffix}")
+
+    def get_import_file_path(self):
+        input_path, selected_filter = QFileDialog.getOpenFileName(
+            self,
+            "Select file",
+            os.path.expanduser("~"),
+            "CSV Files (*.csv);;JSON Files (*.json)",
+        )
+
+        if not input_path:
+            return None, None
+
+        if (
+            input_path.lower().endswith(".json")
+            or "json" in selected_filter.lower()
+        ):
+            file_type = "json"
+        elif (
+            input_path.lower().endswith(".csv")
+            or "csv" in selected_filter.lower()
+        ):
+            file_type = "csv"
+        else:
+            file_type = None
+
+        return input_path, file_type
+
+    def get_export_file_path(self):
+        output_path, selected_filter = QFileDialog.getSaveFileName(
+            self,
+            "Select file",
+            os.path.expanduser("~"),
+            "CSV Files (*.csv);;JSON Files (*.json)",
+        )
+
+        if not output_path:
+            return None, None
+
+        if (
+            output_path.lower().endswith(".json")
+            or "json" in selected_filter.lower()
+        ):
+            file_type = "json"
+        elif (
+            output_path.lower().endswith(".csv")
+            or "csv" in selected_filter.lower()
+        ):
+            file_type = "csv"
+        else:
+            file_type = None
+
+        return output_path, file_type
 
 
 class GeneralTabWidget(QWidget):

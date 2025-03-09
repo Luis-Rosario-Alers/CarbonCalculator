@@ -21,7 +21,9 @@ class ImportManager:
         db_path = os.path.join(databases_folder, "emissions.db")
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
-        cursor.executemany("INSERT INTO emissions VALUES (?,?,?,?,?)", data)
+        cursor.executemany(
+            "INSERT INTO emissions VALUES (?,?,?,?,?,?,?)", data
+        )
         conn.commit()
         conn.close()
 
@@ -34,11 +36,13 @@ class ImportManager:
             "fuel_type",
             "fuel_used",
             "emissions",
+            "temperature",
+            "farming_technique",
             "timestamp",
         }
         for entry in data_dicts:
             # Checks for missing keys by subtracting required
-            # keys: 5 and entry.keys: 5 and then
+            # keys and entry.keys, then
             # assigns the difference of those 2 values to missing keys.
             missing_keys = required_keys - entry.keys()
             if len(missing_keys) > 0:
@@ -55,6 +59,8 @@ class ImportManager:
                 int(entry["user_id"]),
                 entry["fuel_type"],
                 float(entry["fuel_used"]),
+                float(entry["temperature"]),
+                entry["farming_technique"],
                 float(entry["emissions"]),
                 entry["timestamp"],
             )
@@ -109,6 +115,8 @@ class ImportManager:
                         "fuel_type",
                         "fuel_used",
                         "emissions",
+                        "temperature",
+                        "farming_technique",
                         "timestamp",
                     }
 
@@ -139,6 +147,8 @@ class ImportManager:
                             row["fuel_type"],
                             float(row["fuel_used"]),
                             float(row["emissions"]),
+                            float(row["temperature"]),
+                            row["farming_technique"],
                             row["timestamp"],
                         )
                         for row in data_dicts

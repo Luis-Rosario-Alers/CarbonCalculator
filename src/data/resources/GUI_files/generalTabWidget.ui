@@ -224,7 +224,7 @@
          <item>
           <widget class="QCheckBox" name="calculateContainerCheckBox">
            <property name="text">
-            <string>Local Temperatures</string>
+            <string>Real-Time temperatures</string>
            </property>
           </widget>
          </item>
