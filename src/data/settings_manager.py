@@ -14,6 +14,8 @@ class SettingsManager:
             "ip_key": "",
             "weather_key": "",
             "emission_modifiers_path": "",
+            "Preferred Temperature Measurement Unit": "",
+            "Preferred Calculation Unit of Measurement": "",
         }
         self._load_settings()
 
@@ -30,9 +32,7 @@ class SettingsManager:
             json.dump(self.settings, f, indent=4)
 
     def get_setting(self, key):
-        return self.settings.get(
-            key, self.default_settings.get(key)
-        )  # If key is not found in settings, return default setting
+        return self.settings.get(key, self.default_settings.get(key))
 
     def update_settings(self, **kwargs):
         self.settings.update(kwargs)

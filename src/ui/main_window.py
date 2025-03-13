@@ -4,11 +4,12 @@ import sys
 from PySide6.QtCore import QObject, Signal
 from PySide6.QtWidgets import QApplication, QMainWindow
 
-from core.emissions_calculator import calculationModel
+from src.core.emissions_calculator import calculationModel
 from src.data.database import databasesModel
-from ui.GeneralTabWidget import GeneralTabWidget
-from ui.generated_python_ui.ui_main_window import Ui_MainWindow
-from utils.gui_utilities import connect_threaded
+from src.ui.GeneralTabWidget import GeneralTabWidget
+from src.ui.generated_python_ui.ui_main_window import Ui_MainWindow
+from src.ui.VisualizationTabWidget import VisualizationTabWidget
+from src.utils.gui_utilities import connect_threaded
 
 logger = logging.getLogger("ui")
 
@@ -25,7 +26,9 @@ class MainWindowController(QObject):
         self.__connect_signals()
 
     def __connect_signals(self):
-        logger.debug("Connecting signals in MainWindowController")
+        logger.debug(
+            "Main Window Controller: Connecting signals in MainWindowController"
+        )
         # Application wide signals
         connect_threaded(
             self.view, "main_window_closed", self.handle_main_window_closed
@@ -37,11 +40,13 @@ class MainWindowController(QObject):
         )
 
     def send_initialization_signal(self):
-        logger.debug("emitting initialization signal")
+        logger.debug("Main Window Controller: emitting initialization signal")
         self.initialization.emit()  # this starts the initialization sequence
 
     def handle_main_window_closed(self):
-        logger.debug("emitting application closed signal")
+        logger.debug(
+            "Main Window Controller: emitting application closed signal"
+        )
         self.application_closed.emit()
 
 
@@ -53,7 +58,7 @@ class AppModel(QObject):
         self.calculation_model = calculationModel()
 
     def setup_models(self, main_window_controller):
-        logger.debug("Setting up models in AppModel")
+        logger.debug("Main Window Model: Setting up models in AppModel")
         self.databases_model.set_controller(main_window_controller)
         self.calculation_model.set_controller(main_window_controller)
 
@@ -67,20 +72,27 @@ class MainWindowView(QMainWindow, Ui_MainWindow):
         self.setupUi(self)
 
     def setup_tabs(self, model, controller):
-        logger.debug("Setting up tabs in MainWindowView")
+        logger.debug("Main Window View: Setting up tabs in MainWindowView")
         general_tab = GeneralTabWidget(model, controller)
+        visualization_tab = VisualizationTabWidget(model, controller)
 
+        # add all widgets to stacked widget
         self.stackedWidget.addWidget(general_tab.view)
+        self.stackedWidget.addWidget(visualization_tab.view)
+        # set default to the general widget
         self.stackedWidget.setCurrentWidget(general_tab.view)
 
         self.menuGeneral.addAction("General").triggered.connect(
             lambda: self.stackedWidget.setCurrentWidget(general_tab.view)
         )
+        self.menuVisualization.addAction("Visualization").triggered.connect(
+            lambda: self.stackedWidget.setCurrentWidget(visualization_tab.view)
+        )
 
     def closeEvent(self, event):
         self.main_window_closed.emit()
         event.accept()
-        logger.info("Main window closed")
+        logger.info("Main Window View: Closing...")
 
 
 # Widget: Ties the View, Controller, and Model together

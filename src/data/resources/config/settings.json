@@ -1,5 +1,16 @@
 {
-    "ip_key": "",
-    "weather_key": "",
+    "API Keys": {
+        "OpenWeatherMap API Key": "",
+        "IP Geolocation API Key": ""
+    },
+    "Paths": {
+        "emission_modifiers_path": ""
+    },
+    "Preferences": {
+        "Temperature Measurement Unit": "Celsius",
+        "Calculation Unit of Measurement": "Metric",
+        "Language": "en",
+        "Theme": "Light"
+    },
     "emission_modifiers_path": ""
 }

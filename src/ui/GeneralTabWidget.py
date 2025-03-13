@@ -9,6 +9,7 @@ from data.database import databases_folder
 from data.export_manager import ExportManager
 from data.import_manager import ImportManager
 from src.ui.generated_python_ui.ui_generalTabWidget import Ui_GeneralWidget
+from src.ui.SettingsWidget import settingsWidget
 from src.utils.gui_utilities import connect_threaded
 
 logger = logging.getLogger("ui")
@@ -43,6 +44,9 @@ class GeneralTabController(QObject):
         )
         self.view.exportPushButton.clicked.connect(
             self.handle_export_button_clicked
+        )
+        self.view.settingsPushButton.clicked.connect(
+            self.handle_settings_button_clicked
         )
 
         connect_threaded(
@@ -174,6 +178,12 @@ class GeneralTabController(QObject):
             logger.debug("GeneralTabWidget: disabling temperature controls")
             self.view.temperatureDoubleSpinBox.setEnabled(False)
             self.view.temperatureTypesComboBox.setEnabled(False)
+
+    def handle_settings_button_clicked(self):
+        logger.debug("GeneralTabWidget: settings button clicked")
+        self.settingsWindow = settingsWidget(
+            self.application_controller, self.model
+        )
 
 
 class GeneralTabModel:

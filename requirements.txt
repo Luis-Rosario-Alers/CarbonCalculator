@@ -5,7 +5,8 @@ asyncio
 black
 chardet
 ipinfo
-Matplotlib
+pandas
+plotly
 pre-commit
 psutil
 pyinstaller
