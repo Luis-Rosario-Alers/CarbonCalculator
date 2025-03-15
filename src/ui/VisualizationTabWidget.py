@@ -1,6 +1,5 @@
 import logging
 
-import plotly.express as px
 from PySide6.QtCore import QObject, Signal
 from PySide6.QtWidgets import QWidget
 
@@ -19,13 +18,26 @@ class VisualizationTabController(QObject):
         self.application_controller = application_controller
         self.model = model
         self.view = view
+        self.__connect_signals()
+
+    def __connect_signals(self):
+        self.update_requested.connect(self.handle_visualization_update)
+        self.model.databases_model.calculation_logged.connect(
+            self.handle_visualization_update
+        )
+
+    def handle_visualization_update(self):
+        pass
 
 
 class VisualizationTabModel:
     def __init__(self, application_model):
         self.application_model = application_model
         self.databases_model = self.application_model.databases_model
-        # TODO: add settings instance here for changes on visualization based on settings
+
+    def update_visualization_model_params(self):
+        # TODO: Implement UI elements for params collection
+        pass
 
 
 class VisualizationTabView(QWidget, Ui_visualizationTab):
@@ -36,11 +48,11 @@ class VisualizationTabView(QWidget, Ui_visualizationTab):
         logger.debug("Visualization Tab View: UI setup complete")
 
     def setupVisualizationGraph(self):
-        fig = px.line(
-            data_frame=[(3, 10), (2, 5), (1, 3)],
-            title="Emissions Graph",
-        )
-        fig.show()
+        pass  # TODO: implement data check for this function
+
+    def update_plot(self, data, title="Emissions Graph", arguments=None):
+        pass
+        # TODO: add parameters to change figure type
 
 
 class VisualizationTabWidget(QWidget):

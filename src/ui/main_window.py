@@ -9,7 +9,6 @@ from src.data.database import databasesModel
 from src.ui.GeneralTabWidget import GeneralTabWidget
 from src.ui.generated_python_ui.ui_main_window import Ui_MainWindow
 from src.ui.VisualizationTabWidget import VisualizationTabWidget
-from src.utils.gui_utilities import connect_threaded
 
 logger = logging.getLogger("ui")
 
@@ -30,9 +29,7 @@ class MainWindowController(QObject):
             "Main Window Controller: Connecting signals in MainWindowController"
         )
         # Application wide signals
-        connect_threaded(
-            self.view, "main_window_closed", self.handle_main_window_closed
-        )
+        self.view.main_window_closed.connect(self.handle_main_window_closed)
 
         # calculation model signals
         self.model.calculation_model.calculation_result.connect(

@@ -6,10 +6,10 @@ black
 chardet
 ipinfo
 pandas
-plotly
 pre-commit
 psutil
 pyinstaller
+pyqtgraph
 PySide6
 pytest
 pytest-asyncio

@@ -1,3 +1,4 @@
+import inspect
 import json
 import logging
 import os
@@ -31,59 +32,41 @@ application_path, databases_folder = determine_application_path()
 
 
 # function to bundle initialization of all databases
-def get_emissions_history(user_id=None, farming_technique=None, limit=50):
-    """Get emissions' history with optional filtering
-
-    Args:
-        user_id: Optional. Filter by user_id
-        farming_technique: Optional. Filter by farming technique
-        limit: Maximum number of records to return
-
-    Returns:
-        List of emission records
+def get_emissions_history(
+    user_id=True,
+    fuel_type=None,
+    fuel_used=None,
+    emissions=None,
+    temperature=None,
+    farming_technique=None,
+    timestamp=True,
+    time_limit=50,
+):
+    """
+    Get emissions' history with optional filtering
     """
     try:
         db_path = os.path.join(databases_folder, "emissions.db")
-        conn = sqlite3.connect(db_path)
-        cursor = conn.cursor()
+        with sqlite3.connect(db_path) as conn:
+            cursor = conn.cursor()
+            query = "SELECT * FROM emissions WHERE 1=1"
+            params = []
 
-        query = "SELECT user_id, fuel_type, fuel_used, emissions, temperature, farming_technique, timestamp FROM emissions"
-        params = []
-        where_clauses = []
+            frame = inspect.currentframe()
+            args_dict = inspect.getargvalues(frame).locals
 
-        if user_id is not None:
-            where_clauses.append("user_id = ?")
-            params.append(user_id)
+            for param_name, param_value in args_dict.items():
+                if (
+                    param_value is not None
+                    and param_name != "self"
+                    and not time_limit
+                ):
+                    query += f" AND {param_name} LIKE ?"
+                    params.append(f"%{param_value}%")
 
-        if farming_technique is not None:
-            where_clauses.append("farming_technique = ?")
-            params.append(farming_technique)
-
-        if where_clauses:
-            query += " WHERE " + " AND ".join(where_clauses)
-
-        query += " ORDER BY timestamp DESC LIMIT ?"
-        params.append(limit)
-
-        cursor.execute(query, params)
-        rows = cursor.fetchall()
-
-        # Convert to a list of dictionaries for easier handling
-        columns = [
-            "user_id",
-            "fuel_type",
-            "fuel_used",
-            "emissions",
-            "temperature",
-            "farming_technique",
-            "timestamp",
-        ]
-        result = []
-        for row in rows:
-            result.append(dict(zip(columns, row)))
-
-        conn.close()
-        return result
+            cursor.execute(query, params)
+            results = cursor.fetchall()
+            results[:1000]
 
     except sqlite3.Error as e:
         logger.error(f"Error getting emissions history: {e}")
@@ -500,3 +483,4 @@ class databasesModel(QObject):
 
     # function to test initialization of all databases
     # database_initialization()
+    get_emissions_history()

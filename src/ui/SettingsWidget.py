@@ -1,7 +1,6 @@
 from PySide6.QtWidgets import QWidget
 
 from src.data.settings_manager import SettingsManager
-from src.ui.generated_python_ui.ui_settings import Ui_settingsWidget
 
 
 class settingsController:
@@ -27,7 +26,7 @@ class settingsModel:
             pass
 
 
-class settingsView(QWidget, Ui_settingsWidget):
+class settingsView(QWidget):
     def __init__(self):
         super().__init__()
         self.setupUi(self)

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>973</width>
+    <width>1123</width>
     <height>836</height>
    </rect>
   </property>
@@ -15,51 +15,12 @@
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
-    <widget class="QWidget" name="leftBar" native="true">
-     <property name="maximumSize">
-      <size>
-       <width>300</width>
-       <height>16777215</height>
-      </size>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_2">
+    <widget class="QWidget" name="mainBody" native="true">
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
       <item>
-       <widget class="QWidget" name="widget_6" native="true">
-        <layout class="QHBoxLayout" name="horizontalLayout_4">
-         <item>
-          <widget class="QLabel" name="label">
-           <property name="text">
-            <string>TextLabel</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item>
-       <widget class="QWidget" name="widget_7" native="true">
-        <layout class="QHBoxLayout" name="horizontalLayout_5">
-         <item>
-          <widget class="QLabel" name="label_2">
-           <property name="text">
-            <string>TextLabel</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item alignment="Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignBottom">
-       <widget class="QWidget" name="moreButtonsContainerWidget" native="true">
-        <layout class="QVBoxLayout" name="verticalLayout_4"/>
-       </widget>
+       <widget class="PlotWidget" name="chartPlotWidget"/>
       </item>
      </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QWidget" name="mainBody" native="true">
-     <layout class="QHBoxLayout" name="horizontalLayout_3"/>
     </widget>
    </item>
    <item>
@@ -197,29 +158,29 @@
                     <property name="currentIndex">
                      <number>0</number>
                     </property>
-                    <widget class="QWidget" name="tab">
+                    <widget class="QWidget" name="graphTypeTab">
                      <attribute name="title">
-                      <string>Tab 1</string>
+                      <string>Graph Type</string>
                      </attribute>
                     </widget>
-                    <widget class="QWidget" name="tab_2">
+                    <widget class="QWidget" name="dataFiltersTab">
                      <attribute name="title">
-                      <string>Tab 2</string>
+                      <string>Data Filters</string>
                      </attribute>
                     </widget>
-                    <widget class="QWidget" name="tab_3">
+                    <widget class="QWidget" name="groupingTab">
                      <attribute name="title">
-                      <string>Tab 3</string>
+                      <string>Grouping</string>
                      </attribute>
                     </widget>
-                    <widget class="QWidget" name="tab_4">
+                    <widget class="QWidget" name="appearanceTab">
                      <attribute name="title">
-                      <string>Tab 4</string>
+                      <string>Appearance</string>
                      </attribute>
                     </widget>
-                    <widget class="QWidget" name="tab_5">
+                    <widget class="QWidget" name="exportTab">
                      <attribute name="title">
-                      <string>Tab 5</string>
+                      <string>Export</string>
                      </attribute>
                     </widget>
                    </widget>
@@ -257,6 +218,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>PlotWidget</class>
+   <extends>QGraphicsView</extends>
+   <header>pyqtgraph</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

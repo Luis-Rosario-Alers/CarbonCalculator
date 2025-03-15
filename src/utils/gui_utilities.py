@@ -1,19 +1,9 @@
 import logging
 
-from PySide6.QtCore import QObject, QRunnable, QThreadPool, Signal, Slot
+from PySide6.QtCore import QRunnable, QThreadPool, Slot
 from PySide6.QtWidgets import QWidget
 
 logger = logging.getLogger("Utils")
-
-
-class WorkerSignals(QObject):
-    """
-    Defines the signals available from a running worker thread.
-    """
-
-    finished = Signal()
-    error = Signal(tuple)
-    result = Signal(object)
 
 
 class Worker(QRunnable):
@@ -26,20 +16,14 @@ class Worker(QRunnable):
         self.fn = fn
         self.args = args
         self.kwargs = kwargs
-        self.signals = WorkerSignals()
         self._ref_holder = []
 
     @Slot()
     def run(self):
         try:
-            result = self.fn(*self.args, **self.kwargs)
+            self.fn(*self.args, **self.kwargs)
         except Exception as e:
             logger.error(f"Error in worker thread: {str(e)} Thread: {self}")
-            self.signals.error.emit((e, type(e), e.__traceback__))
-        else:
-            self.signals.result.emit(result)
-        finally:
-            self.signals.finished.emit()
 
 
 def connect_threaded(widget: QWidget, signal: str, slot: callable) -> None:
