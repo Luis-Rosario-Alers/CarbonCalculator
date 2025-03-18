@@ -17,19 +17,20 @@ logger = logging.getLogger("ui")
 class MainWindowController(QObject):
     initialization = Signal()
     application_closed = Signal()
+    tab_changed = Signal(int)
 
     def __init__(self, model, view):
         super().__init__()
         self.model = model
         self.view = view
-        self.__connect_signals()
 
-    def __connect_signals(self):
+    def connect_signals(self):
         logger.debug(
             "Main Window Controller: Connecting signals in MainWindowController"
         )
         # Application wide signals
         self.view.main_window_closed.connect(self.handle_main_window_closed)
+        self.view.stackedWidget.currentChanged.connect(self.handle_tab_changed)
 
         # calculation model signals
         self.model.calculation_model.calculation_result.connect(
@@ -45,6 +46,10 @@ class MainWindowController(QObject):
             "Main Window Controller: emitting application closed signal"
         )
         self.application_closed.emit()
+
+    def handle_tab_changed(self, index):
+        logger.debug(f"Tab changed to index {index}")
+        self.tab_changed.emit(index)
 
 
 # Model: The app model handles APPLICATION WIDE STATE.
@@ -66,24 +71,30 @@ class MainWindowView(QMainWindow, Ui_MainWindow):
 
     def __init__(self):
         super().__init__()
+        self.GeneralTabWidget = None
+        self.VisualizationTabWidget = None
         self.setupUi(self)
 
     def setup_tabs(self, model, controller):
         logger.debug("Main Window View: Setting up tabs in MainWindowView")
-        general_tab = GeneralTabWidget(model, controller)
-        visualization_tab = VisualizationTabWidget(model, controller)
+        self.GeneralTabWidget = GeneralTabWidget(model, controller)
+        self.VisualizationTabWidget = VisualizationTabWidget(model, controller)
 
-        # add all widgets to stacked widget
-        self.stackedWidget.addWidget(general_tab.view)
-        self.stackedWidget.addWidget(visualization_tab.view)
+        self.stackedWidget.insertWidget(0, self.GeneralTabWidget.view)
+        self.stackedWidget.insertWidget(1, self.VisualizationTabWidget.view)
+
         # set default to the general widget
-        self.stackedWidget.setCurrentWidget(general_tab.view)
+        self.stackedWidget.setCurrentWidget(self.GeneralTabWidget.view)
 
         self.menuGeneral.addAction("General").triggered.connect(
-            lambda: self.stackedWidget.setCurrentWidget(general_tab.view)
+            lambda: self.stackedWidget.setCurrentWidget(
+                self.GeneralTabWidget.view
+            )
         )
         self.menuVisualization.addAction("Visualization").triggered.connect(
-            lambda: self.stackedWidget.setCurrentWidget(visualization_tab.view)
+            lambda: self.stackedWidget.setCurrentWidget(
+                self.VisualizationTabWidget.view
+            )
         )
 
     def closeEvent(self, event):
@@ -107,7 +118,7 @@ class MainWindowWidget(QMainWindow):
         self.view.setup_tabs(
             self.model, self.controller
         )  # setups up all tabs for application
-
+        self.controller.connect_signals()
         self.controller.send_initialization_signal()  # send signal to initialize all models
         self.view.show()
 
@@ -118,12 +129,12 @@ class MainWindowWidget(QMainWindow):
         self.horizontalLayout.replaceWidget(self.mainBody, self.stacked_widget)
 
         # Create tab widgets and add to stack
-        self.general_tab = GeneralTabWidget(self.model, self.controller)
-        self.visualization_tab = VisualizationTabWidget(self.model, self.controller)
+        self.GeneralTabWidget = GeneralTabWidget(self.model, self.controller)
+        self.VisualizationTabWidget = VisualizationTabWidget(self.model, self.controller)
         self.ai_chat_tab = AIChatTabWidget(self.model, self.controller)
 
-        self.stacked_widget.addWidget(self.general_tab)
-        self.stacked_widget.addWidget(self.visualization_tab)
+        self.stacked_widget.addWidget(self.GeneralTabWidget)
+        self.stacked_widget.addWidget(self.VisualizationTabWidget)
         self.stacked_widget.addWidget(self.ai_chat_tab)
     """
 

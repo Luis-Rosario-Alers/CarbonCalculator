@@ -1,8 +1,13 @@
 from pyqtgraph import PlotWidget
-from PySide6.QtCore import QCoreApplication, QMetaObject, QSize, Qt
+from PySide6.QtCore import QCoreApplication, QDate, QMetaObject, QSize, Qt
+from PySide6.QtGui import QFont
 from PySide6.QtWidgets import (
+    QComboBox,
+    QDateTimeEdit,
+    QFrame,
     QHBoxLayout,
     QLabel,
+    QLineEdit,
     QPushButton,
     QSizePolicy,
     QSpacerItem,
@@ -16,7 +21,7 @@ class Ui_visualizationTab(object):
     def setupUi(self, visualizationTab):
         if not visualizationTab.objectName():
             visualizationTab.setObjectName("visualizationTab")
-        visualizationTab.resize(1123, 836)
+        visualizationTab.resize(973, 836)
         self.horizontalLayout = QHBoxLayout(visualizationTab)
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.mainBody = QWidget(visualizationTab)
@@ -25,6 +30,8 @@ class Ui_visualizationTab(object):
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
         self.chartPlotWidget = PlotWidget(self.mainBody)
         self.chartPlotWidget.setObjectName("chartPlotWidget")
+        self.chartPlotWidget.setFrameShape(QFrame.Shape.WinPanel)
+        self.chartPlotWidget.setFrameShadow(QFrame.Shadow.Plain)
 
         self.horizontalLayout_3.addWidget(self.chartPlotWidget)
 
@@ -122,6 +129,175 @@ class Ui_visualizationTab(object):
         self.tabWidget.addTab(self.graphTypeTab, "")
         self.dataFiltersTab = QWidget()
         self.dataFiltersTab.setObjectName("dataFiltersTab")
+        self.verticalLayout_2 = QVBoxLayout(self.dataFiltersTab)
+        self.verticalLayout_2.setObjectName("verticalLayout_2")
+        self.dataFiltersContainerWidget = QWidget(self.dataFiltersTab)
+        self.dataFiltersContainerWidget.setObjectName(
+            "dataFiltersContainerWidget"
+        )
+        self.verticalLayout_4 = QVBoxLayout(self.dataFiltersContainerWidget)
+        self.verticalLayout_4.setObjectName("verticalLayout_4")
+        self.emissionsUnitContainerWidget = QWidget(
+            self.dataFiltersContainerWidget
+        )
+        self.emissionsUnitContainerWidget.setObjectName(
+            "emissionsUnitContainerWidget"
+        )
+        self.horizontalLayout_4 = QHBoxLayout(
+            self.emissionsUnitContainerWidget
+        )
+        self.horizontalLayout_4.setObjectName("horizontalLayout_4")
+        self.emissionsUnitLabel = QLabel(self.emissionsUnitContainerWidget)
+        self.emissionsUnitLabel.setObjectName("emissionsUnitLabel")
+
+        self.horizontalLayout_4.addWidget(
+            self.emissionsUnitLabel, 0, Qt.AlignmentFlag.AlignLeft
+        )
+
+        self.emissionsUnitComboBox = QComboBox(
+            self.emissionsUnitContainerWidget
+        )
+        self.emissionsUnitComboBox.setObjectName("emissionsUnitComboBox")
+
+        self.horizontalLayout_4.addWidget(self.emissionsUnitComboBox)
+
+        self.verticalLayout_4.addWidget(self.emissionsUnitContainerWidget)
+
+        self.userIDContainerWidget = QWidget(self.dataFiltersContainerWidget)
+        self.userIDContainerWidget.setObjectName("userIDContainerWidget")
+        self.horizontalLayout_5 = QHBoxLayout(self.userIDContainerWidget)
+        self.horizontalLayout_5.setObjectName("horizontalLayout_5")
+        self.userIDContainerLabel = QLabel(self.userIDContainerWidget)
+        self.userIDContainerLabel.setObjectName("userIDContainerLabel")
+
+        self.horizontalLayout_5.addWidget(
+            self.userIDContainerLabel, 0, Qt.AlignmentFlag.AlignLeft
+        )
+
+        self.userIDLineEdit = QLineEdit(self.userIDContainerWidget)
+        self.userIDLineEdit.setObjectName("userIDLineEdit")
+
+        self.horizontalLayout_5.addWidget(
+            self.userIDLineEdit, 0, Qt.AlignmentFlag.AlignRight
+        )
+
+        self.verticalLayout_4.addWidget(self.userIDContainerWidget)
+
+        self.fuelTypeContainerWidget = QWidget(self.dataFiltersContainerWidget)
+        self.fuelTypeContainerWidget.setObjectName("fuelTypeContainerWidget")
+        self.horizontalLayout_7 = QHBoxLayout(self.fuelTypeContainerWidget)
+        self.horizontalLayout_7.setObjectName("horizontalLayout_7")
+        self.fuelTypeContainerLabel = QLabel(self.fuelTypeContainerWidget)
+        self.fuelTypeContainerLabel.setObjectName("fuelTypeContainerLabel")
+
+        self.horizontalLayout_7.addWidget(self.fuelTypeContainerLabel)
+
+        self.fuelTypeContainerComboBox = QComboBox(
+            self.fuelTypeContainerWidget
+        )
+        self.fuelTypeContainerComboBox.setObjectName(
+            "fuelTypeContainerComboBox"
+        )
+
+        self.horizontalLayout_7.addWidget(self.fuelTypeContainerComboBox)
+
+        self.verticalLayout_4.addWidget(self.fuelTypeContainerWidget)
+
+        self.timeFrameContainerWidget = QWidget(
+            self.dataFiltersContainerWidget
+        )
+        self.timeFrameContainerWidget.setObjectName("timeFrameContainerWidget")
+        self.horizontalLayout_10 = QHBoxLayout(self.timeFrameContainerWidget)
+        self.horizontalLayout_10.setObjectName("horizontalLayout_10")
+        self.timeFrameLabel = QLabel(self.timeFrameContainerWidget)
+        self.timeFrameLabel.setObjectName("timeFrameLabel")
+        self.timeFrameLabel.setFrameShape(QFrame.Shape.WinPanel)
+        self.timeFrameLabel.setFrameShadow(QFrame.Shadow.Raised)
+        self.timeFrameLabel.setTextFormat(Qt.TextFormat.RichText)
+        self.timeFrameLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.horizontalLayout_10.addWidget(self.timeFrameLabel)
+
+        self.verticalLayout_4.addWidget(self.timeFrameContainerWidget)
+
+        self.startTimeFrameContainerWidget = QWidget(
+            self.dataFiltersContainerWidget
+        )
+        self.startTimeFrameContainerWidget.setObjectName(
+            "startTimeFrameContainerWidget"
+        )
+        self.horizontalLayout_8 = QHBoxLayout(
+            self.startTimeFrameContainerWidget
+        )
+        self.horizontalLayout_8.setObjectName("horizontalLayout_8")
+        self.startTimeFramelLabel = QLabel(self.startTimeFrameContainerWidget)
+        self.startTimeFramelLabel.setObjectName("startTimeFramelLabel")
+        font = QFont()
+        font.setFamilies(["Nirmala UI"])
+        font.setPointSize(14)
+        font.setBold(False)
+        font.setItalic(False)
+        font.setUnderline(False)
+        font.setStrikeOut(False)
+        font.setKerning(True)
+        font.setStyleStrategy(QFont.PreferDefault)
+        self.startTimeFramelLabel.setFont(font)
+        self.startTimeFramelLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.horizontalLayout_8.addWidget(self.startTimeFramelLabel)
+
+        self.startTimeFrameDataTimeEdit = QDateTimeEdit(
+            self.startTimeFrameContainerWidget
+        )
+        self.startTimeFrameDataTimeEdit.setObjectName(
+            "startTimeFrameDataTimeEdit"
+        )
+        self.startTimeFrameDataTimeEdit.setDate(QDate(2025, 1, 1))
+        self.startTimeFrameDataTimeEdit.setTimeSpec(Qt.TimeSpec.LocalTime)
+
+        self.horizontalLayout_8.addWidget(self.startTimeFrameDataTimeEdit)
+
+        self.verticalLayout_4.addWidget(
+            self.startTimeFrameContainerWidget,
+            0,
+            Qt.AlignmentFlag.AlignHCenter,
+        )
+
+        self.endTimeFrameContainerWidget = QWidget(
+            self.dataFiltersContainerWidget
+        )
+        self.endTimeFrameContainerWidget.setObjectName(
+            "endTimeFrameContainerWidget"
+        )
+        self.horizontalLayout_9 = QHBoxLayout(self.endTimeFrameContainerWidget)
+        self.horizontalLayout_9.setObjectName("horizontalLayout_9")
+        self.endTimeFrameLabel = QLabel(self.endTimeFrameContainerWidget)
+        self.endTimeFrameLabel.setObjectName("endTimeFrameLabel")
+        font1 = QFont()
+        font1.setFamilies(["Nirmala UI"])
+        font1.setPointSize(14)
+        self.endTimeFrameLabel.setFont(font1)
+        self.endTimeFrameLabel.setMouseTracking(True)
+        self.endTimeFrameLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.horizontalLayout_9.addWidget(self.endTimeFrameLabel)
+
+        self.endTimeFrameDataTimeEdit = QDateTimeEdit(
+            self.endTimeFrameContainerWidget
+        )
+        self.endTimeFrameDataTimeEdit.setObjectName("endTimeFrameDataTimeEdit")
+        self.endTimeFrameDataTimeEdit.setDate(QDate(2025, 1, 1))
+
+        self.horizontalLayout_9.addWidget(self.endTimeFrameDataTimeEdit)
+
+        self.verticalLayout_4.addWidget(
+            self.endTimeFrameContainerWidget, 0, Qt.AlignmentFlag.AlignHCenter
+        )
+
+        self.verticalLayout_2.addWidget(
+            self.dataFiltersContainerWidget, 0, Qt.AlignmentFlag.AlignTop
+        )
+
         self.tabWidget.addTab(self.dataFiltersTab, "")
         self.groupingTab = QWidget()
         self.groupingTab.setObjectName("groupingTab")
@@ -153,7 +329,7 @@ class Ui_visualizationTab(object):
 
         self.retranslateUi(visualizationTab)
 
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(1)
 
         QMetaObject.connectSlotsByName(visualizationTab)
 
@@ -188,6 +364,41 @@ class Ui_visualizationTab(object):
         self.tabWidget.setTabText(
             self.tabWidget.indexOf(self.graphTypeTab),
             QCoreApplication.translate("visualizationTab", "Graph Type", None),
+        )
+        self.emissionsUnitLabel.setText(
+            QCoreApplication.translate(
+                "visualizationTab", "Emissions Unit", None
+            )
+        )
+        self.userIDContainerLabel.setText(
+            QCoreApplication.translate("visualizationTab", "User ID", None)
+        )
+        self.fuelTypeContainerLabel.setText(
+            QCoreApplication.translate("visualizationTab", "Fuel Type", None)
+        )
+        self.timeFrameLabel.setText(
+            QCoreApplication.translate(
+                "visualizationTab",
+                '<html><head/><body><p><span style=" font-size:12pt; font-weight:700;">Time Frame</span></p></body></html>',
+                None,
+            )
+        )
+        self.startTimeFramelLabel.setText(
+            QCoreApplication.translate(
+                "visualizationTab",
+                '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">\n'
+                '<html><head><meta name="qrichtext" content="1" /><meta charset="utf-8" /><style type="text/css">\n'
+                "p, li { white-space: pre-wrap; }\n"
+                "hr { height: 1px; border-width: 0; }\n"
+                'li.unchecked::marker { content: "\\2610"; }\n'
+                'li.checked::marker { content: "\\2612"; }\n'
+                "</style></head><body style=\" font-family:'Nirmala UI'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
+                '<p align="center" style=" margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;"><span style=" font-size:14pt;">Start</span></p></body></html>',
+                None,
+            )
+        )
+        self.endTimeFrameLabel.setText(
+            QCoreApplication.translate("visualizationTab", "End", None)
         )
         self.tabWidget.setTabText(
             self.tabWidget.indexOf(self.dataFiltersTab),

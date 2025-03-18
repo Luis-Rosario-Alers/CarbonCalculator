@@ -1,53 +1,8 @@
-# -*- coding: utf-8 -*-
-# flake8: noqa
-################################################################################
-## Form generated from reading UI file 'main_windowSHdQrd.ui'
-##
-## Created by: Qt User Interface Compiler version 6.8.2
-##
-## WARNING! All changes made in this file will be lost when recompiling UI file!
-################################################################################
-
-from PySide6.QtCore import (
-    QCoreApplication,
-    QDate,
-    QDateTime,
-    QLocale,
-    QMetaObject,
-    QObject,
-    QPoint,
-    QRect,
-    QSize,
-    Qt,
-    QTime,
-    QUrl,
-)
-from PySide6.QtGui import (
-    QAction,
-    QBrush,
-    QColor,
-    QConicalGradient,
-    QCursor,
-    QFont,
-    QFontDatabase,
-    QGradient,
-    QIcon,
-    QImage,
-    QKeySequence,
-    QLinearGradient,
-    QPainter,
-    QPalette,
-    QPixmap,
-    QRadialGradient,
-    QTransform,
-)
+from PySide6.QtCore import QCoreApplication, QMetaObject, QRect
 from PySide6.QtWidgets import (
-    QApplication,
     QHBoxLayout,
-    QMainWindow,
     QMenu,
     QMenuBar,
-    QSizePolicy,
     QStackedWidget,
     QStatusBar,
     QWidget,
@@ -78,7 +33,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName("menubar")
-        self.menubar.setGeometry(QRect(0, 0, 1222, 30))
+        self.menubar.setGeometry(QRect(0, 0, 1222, 33))
         self.menuGeneral = QMenu(self.menubar)
         self.menuGeneral.setObjectName("menuGeneral")
         self.menuVisualization = QMenu(self.menubar)

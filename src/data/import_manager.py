@@ -22,7 +22,7 @@ class ImportManager:
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
         cursor.executemany(
-            "INSERT INTO emissions VALUES (?,?,?,?,?,?,?)", data
+            "INSERT INTO emissions VALUES (?,?,?,?,?,?,?,?)", data
         )
         conn.commit()
         conn.close()
@@ -36,6 +36,7 @@ class ImportManager:
             "fuel_type",
             "fuel_used",
             "emissions",
+            "emissions_unit",
             "temperature",
             "farming_technique",
             "timestamp",
@@ -59,9 +60,10 @@ class ImportManager:
                 int(entry["user_id"]),
                 entry["fuel_type"],
                 float(entry["fuel_used"]),
+                float(entry["emissions"]),
+                entry["emissions_unit"],
                 float(entry["temperature"]),
                 entry["farming_technique"],
-                float(entry["emissions"]),
                 entry["timestamp"],
             )
             for entry in data_dicts
@@ -115,6 +117,7 @@ class ImportManager:
                         "fuel_type",
                         "fuel_used",
                         "emissions",
+                        "emissions_unit",
                         "temperature",
                         "farming_technique",
                         "timestamp",
@@ -147,6 +150,7 @@ class ImportManager:
                             row["fuel_type"],
                             float(row["fuel_used"]),
                             float(row["emissions"]),
+                            row["emissions_unit"],
                             float(row["temperature"]),
                             row["farming_technique"],
                             row["timestamp"],

@@ -23,7 +23,7 @@ class calculationModel(QObject):
         str,
         str,
         str,
-    )  # user_id, fuel_type, fuel_unit, fuel_used, emissions, temperature, farming_technique, calculation_unit
+    )  # user_id, fuel_type, fuel_unit, fuel_used, emissions, temperature, farming_technique, emissions_unit
 
     def __init__(self):
         super().__init__()

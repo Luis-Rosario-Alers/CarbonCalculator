@@ -17,6 +17,7 @@ logger = logging.getLogger("ui")
 
 class GeneralTabController(QObject):
     calculation_requested = Signal(int, str, float, float, str, str)
+    combobox_information = Signal(list, list)
 
     def __init__(self, model, view, application_controller):
         super().__init__()
@@ -124,6 +125,8 @@ class GeneralTabController(QObject):
             "Metric Tons",
         ]
         temperature_types = ["Celsius", "Fahrenheit", "Kelvin"]
+        self.combobox_information.emit(fuel_types, calculation_units)
+        logger.debug("General Tab Controller: Emitted combobox_information.")
         self.view.initialize_combobox_values(
             fuel_types,
             farming_techniques,
@@ -181,9 +184,7 @@ class GeneralTabController(QObject):
 
     def handle_settings_button_clicked(self):
         logger.debug("GeneralTabWidget: settings button clicked")
-        self.settingsWindow = settingsWidget(
-            self.application_controller, self.model
-        )
+        settingsWidget(self.application_controller, self.model)
 
 
 class GeneralTabModel:
@@ -371,7 +372,9 @@ class GeneralTabView(QWidget, Ui_GeneralWidget):
 
 
 class GeneralTabWidget(QWidget):
-    def __init__(self, application_model, application_controller):
+    def __init__(
+        self, application_model: object, application_controller: object
+    ) -> None:
         super().__init__()
         self.application_model = application_model
         self.application_controller = application_controller

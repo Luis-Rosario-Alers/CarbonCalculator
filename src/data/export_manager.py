@@ -25,7 +25,7 @@ class ExportManager:
         cursor = conn.cursor()
 
         cursor.execute(
-            "SELECT user_id, fuel_type, fuel_used, emissions, temperature, farming_technique, timestamp FROM emissions"
+            "SELECT user_id, fuel_type, fuel_used, emissions, emissions_unit, temperature, farming_technique, timestamp FROM emissions"
         )
         data = cursor.fetchall()
         conn.close()
@@ -41,9 +41,10 @@ class ExportManager:
                 "fuel_type": row[1],
                 "fuel_used": row[2],
                 "emissions": row[3],
-                "temperature": row[4],
-                "farming_technique": row[5],
-                "timestamp": row[6],
+                "emissions_unit": row[4],
+                "temperature": row[5],
+                "farming_technique": row[6],
+                "timestamp": row[7],
             }
             for row in data
         ]
@@ -65,6 +66,7 @@ class ExportManager:
                     "fuel_type",
                     "fuel_used",
                     "emissions",
+                    "emissions_unit",
                     "temperature",
                     "farming_technique",
                     "timestamp",

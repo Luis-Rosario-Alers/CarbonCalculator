@@ -1,4 +1,3 @@
-import inspect
 import json
 import logging
 import os
@@ -29,48 +28,6 @@ def determine_application_path():
 
 
 application_path, databases_folder = determine_application_path()
-
-
-# function to bundle initialization of all databases
-def get_emissions_history(
-    user_id=True,
-    fuel_type=None,
-    fuel_used=None,
-    emissions=None,
-    temperature=None,
-    farming_technique=None,
-    timestamp=True,
-    time_limit=50,
-):
-    """
-    Get emissions' history with optional filtering
-    """
-    try:
-        db_path = os.path.join(databases_folder, "emissions.db")
-        with sqlite3.connect(db_path) as conn:
-            cursor = conn.cursor()
-            query = "SELECT * FROM emissions WHERE 1=1"
-            params = []
-
-            frame = inspect.currentframe()
-            args_dict = inspect.getargvalues(frame).locals
-
-            for param_name, param_value in args_dict.items():
-                if (
-                    param_value is not None
-                    and param_name != "self"
-                    and not time_limit
-                ):
-                    query += f" AND {param_name} LIKE ?"
-                    params.append(f"%{param_value}%")
-
-            cursor.execute(query, params)
-            results = cursor.fetchall()
-            results[:1000]
-
-    except sqlite3.Error as e:
-        logger.error(f"Error getting emissions history: {e}")
-        return []
 
 
 class databasesModel(QObject):
@@ -108,7 +65,7 @@ class databasesModel(QObject):
             cursor.execute(
                 """CREATE TABLE IF NOT EXISTS emissions
                 (user_id INTEGER, fuel_type TEXT, fuel_used REAL,
-                emissions REAL, temperature REAL, farming_technique TEXT, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+                emissions REAL, emissions_unit TEXT, temperature REAL, farming_technique TEXT, timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY(user_id) REFERENCES users(username))"""
             )
             conn.commit()
@@ -385,26 +342,6 @@ class databasesModel(QObject):
                 f"No emissions modifier found for fuel type: {fuel_type}"
             )
 
-    @staticmethod
-    def get_emissions_modifier(farming_technique: str) -> float:
-        """Get the emission modifier for a specific farming technique"""
-        db_path = os.path.join(databases_folder, "emissions_variables.db")
-        conn = sqlite3.connect(db_path)
-        cursor = conn.cursor()
-        cursor.execute(
-            "SELECT emissions_modifier FROM farming_techniques WHERE technique = ?",
-            (farming_technique,),
-        )
-        row = cursor.fetchone()
-        conn.close()
-        if row:
-            return row[0]
-        else:
-            logger.warning(
-                f"No emissions modifier found for farming technique: {farming_technique}, using default 1.0"
-            )
-            return 1.0  # Default modifier if technique not found
-
     def log_transaction(
         self,
         user_id,
@@ -415,13 +352,13 @@ class databasesModel(QObject):
         temperature,
         temperature_type,
         farming_technique=None,
-        calculation_unit=None,
+        emissions_unit=None,
     ):
         try:
             logger.info("Logging calculation")
             logger.info(
                 f"User ID: {user_id}, Fuel Type: {fuel_type}, Fuel Used: {fuel_used} {fuel_unit}, "
-                f"Emissions: {emissions} {calculation_unit}, Farming Technique: {farming_technique}"
+                f"Emissions: {emissions} {emissions_unit}, Farming Technique: {farming_technique}"
             )
             db_path = os.path.join(databases_folder, "emissions.db")
 
@@ -430,13 +367,14 @@ class databasesModel(QObject):
             cursor = conn.cursor()
             cursor.execute(
                 """INSERT INTO emissions
-                (user_id, fuel_type, fuel_used, emissions, temperature, farming_technique)
-                VALUES (?, ?, ?, ?, ?, ?)""",
+                (user_id, fuel_type, fuel_used, emissions, emissions_unit, temperature, farming_technique)
+                VALUES (?, ?, ?, ?, ?, ?, ?)""",
                 (
                     user_id,
                     fuel_type,
                     f"{fuel_used} {fuel_unit}",
-                    f"{emissions:.2f} {calculation_unit}",
+                    f"{emissions:.2f}",
+                    f"{emissions_unit}",
                     f"{temperature}°{temperature_type[:1]}",
                     farming_technique,
                 ),
@@ -446,13 +384,14 @@ class databasesModel(QObject):
 
             # Return the log for testing purposes
             cursor.execute(
-                "SELECT fuel_type, fuel_used, emissions, temperature, farming_technique FROM emissions WHERE user_id = ? AND fuel_type = ? AND "
-                "fuel_used = ? AND emissions = ? AND temperature = ? AND farming_technique = ?",
+                "SELECT fuel_type, fuel_used, emissions, emissions_unit, temperature, farming_technique FROM emissions WHERE user_id = ? AND fuel_type = ? AND "
+                "fuel_used = ? AND emissions = ? AND emissions_unit = ? AND temperature = ? AND farming_technique = ?",
                 (
                     user_id,
                     fuel_type,
                     fuel_used,
                     emissions,
+                    emissions_unit,
                     temperature,
                     farming_technique,
                 ),
@@ -464,6 +403,60 @@ class databasesModel(QObject):
             logger.error(e)
         except ValueError as e:
             logger.error(f"Value error: {e}")
+
+    @staticmethod
+    def get_emissions_history(
+        time_frame=None,
+        time_limit=None,
+        user_id=None,
+        fuel_type=None,
+        emissions_unit=None,
+    ):
+        """
+        Get Emissions' History with optional filtering
+        :param emissions_unit: The unit of measurement for emissions (e.g., kg CO2e)
+        :param user_id: The ID of the user whose emissions history is being queried
+        :param fuel_type: The type of fuel used (e.g., diesel, gasoline)
+        :param time_frame: The time frame for the emissions history (e.g., Days, Months, Years)
+        :param time_limit: The limit for the time frame (e.g., 30 for 30 days)
+        :returns: Emissions History for filter parameters
+        """
+        try:
+            db_path = os.path.join(databases_folder, "emissions.db")
+            with sqlite3.connect(db_path) as conn:
+                cursor = conn.cursor()
+                query = "SELECT * FROM emissions WHERE 1=1"
+                params = []
+
+                if time_frame is not None:
+                    if time_frame == "Years":
+                        query += " AND timestamp >= datetime('now', ?)"
+                        params.append(f"-{time_limit * 365} days")
+                    elif time_frame == "Months":
+                        query += " AND timestamp >= datetime('now', ?)"
+                        params.append(f"-{time_limit * 30} days")
+                    elif time_frame == "Days":
+                        query += " AND timestamp >= datetime('now', ?)"
+                        params.append(f"-{time_limit} days")
+                else:
+                    pass
+
+                if isinstance(user_id, int):
+                    query += " AND user_id = ?"
+                    params.append(user_id)
+                if isinstance(fuel_type, str):
+                    query += " AND fuel_type = ?"
+                    params.append(fuel_type)
+                if isinstance(emissions_unit, str):
+                    query += " AND emissions_unit = ?"
+                    params.append(emissions_unit)
+
+                cursor.execute(query, params)
+                results = cursor.fetchall()
+                return results
+        except sqlite3.Error as e:
+            logger.error(f"Error getting emissions history: {e}")
+            return []
 
     def database_initialization(self):
         logger.info("Received initialization signal, initializing databases")
