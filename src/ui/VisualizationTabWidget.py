@@ -20,14 +20,14 @@ class VisualizationTabController(QObject):
         self.model = model
         self.view = view
         self.update_pending = True
+        self.emissions_unit = None
+        self.user_id = None
+        self.fuel_type = None
         self.__connect_signals()
 
     def __connect_signals(self):
         self.model.databases_model.calculation_logged.connect(
             self.handle_pending_update
-        )
-        self.application_controller.initialization.connect(
-            self.handle_update_visualization
         )
         self.application_controller.tab_changed.connect(
             self.handle_tab_changed
@@ -37,17 +37,23 @@ class VisualizationTabController(QObject):
             self.handle_initialization_of_settings_comboboxes
         )
 
+        # NOTE: Please keep the order of these signals because they rely on the sequence in which they are connected.
+        self.view.emissionsUnitComboBox.currentIndexChanged.connect(
+            self.handle_filter_changed
+        )
+
+        self.view.fuelTypeComboBox.currentIndexChanged.connect(
+            self.handle_filter_changed
+        )
+
+        self.view.userIDLineEdit.textChanged.connect(
+            self.handle_filter_changed
+        )
+
     def handle_update_visualization(self):
-        if self.update_pending:
-            logger.debug("Updating Visualization")
-            unit = (
-                self.view.emissionsUnitComboBox.currentText()
-            )  # TODO: Replace this with user preference
-            data = self.model.databases_model.get_emissions_history(
-                emissions_unit=unit
-            )
-            timestamps = []
+        def plot_data(data=None, user_id="", color=""):  # helper function
             emissions = []
+            timestamps = []
             for data_points in data:
                 # convert time to int
                 timestamp_str = data_points[7]
@@ -59,8 +65,43 @@ class VisualizationTabController(QObject):
             data_frame = pd.DataFrame(
                 {"time": timestamps, "emissions": emissions}
             )
-            self.view.update_plot_units(unit)
-            self.view.update_plot(data_frame)
+            self.view.update_plot_units(self.emissions_unit)
+            self.view.update_plot(data_frame, color, user_id)
+            self.update_pending = False
+
+        if self.update_pending:
+            logger.debug(
+                "Visualization Tab Controller: Updating Visualization"
+            )
+            self.emissions_unit = self.view.emissionsUnitComboBox.currentText()
+            self.fuel_type = self.view.fuelTypeComboBox.currentText()
+            self.user_id = self.view.userIDLineEdit.text()
+
+            if self.user_id:
+                logger.debug(
+                    "Visualization Tab Controller: user id is selected"
+                )
+                data = self.model.databases_model.get_emissions_history(
+                    emissions_unit=self.emissions_unit,
+                    fuel_type=self.fuel_type,
+                    user_id=self.user_id,
+                )
+                plot_data(data=data, user_id=self.user_id)
+            else:
+                logger.debug(
+                    "Visualization Tab Controller: no user id selected"
+                )
+                user_ids = self.model.databases_model.get_all_user_ids()
+
+                colors = ["r", "g", "b", "c", "m", "y"]
+                for i, user_id in enumerate(user_ids):
+                    data = self.model.databases_model.get_emissions_history(
+                        emissions_unit=self.emissions_unit,
+                        fuel_type=self.fuel_type,
+                        user_id=str(user_id),
+                    )
+                    color = colors[i % len(colors)]
+                    plot_data(data=data, user_id=user_id, color=color)
             self.update_pending = False
         else:
             logger.debug(
@@ -80,7 +121,16 @@ class VisualizationTabController(QObject):
     def handle_initialization_of_settings_comboboxes(
         self, fuel_types, calculation_units
     ):
+        logger.debug(
+            "Visualization Tab Controller: Initializing settings comboboxes."
+        )
         self.view.initialize_settings_comboboxes(fuel_types, calculation_units)
+
+    def handle_filter_changed(self):
+        logger.debug("Visualization Tab Controller: Filter changed.")
+        self.update_pending = True
+        self.view.chartPlotWidget.clear()
+        self.handle_update_visualization()
 
 
 class VisualizationTabModel:
@@ -98,8 +148,18 @@ class VisualizationTabView(QWidget, Ui_visualizationTab):
         super().__init__()
         self.setupUi(self)
 
-    def update_plot(self, data):
-        self.chartPlotWidget.plot(data.time, data.emissions)
+    def update_plot(self, data, color, user_id):
+        if color:
+            self.chartPlotWidget.plot(
+                data.time,
+                data.emissions,
+                name=f"User ID: {user_id}",
+                pen=color,
+            )
+        else:
+            self.chartPlotWidget.plot(
+                data.time, data.emissions, name=f"User ID: {user_id}"
+            )
         # TODO: add parameters to change figure type
 
     def update_plot_units(self, unit):
@@ -135,8 +195,20 @@ class VisualizationTabView(QWidget, Ui_visualizationTab):
 
     def initialize_settings_comboboxes(self, fuel_types, calculation_units):
         logger.debug("Visualization Tab View: initializing combo boxes")
+        self.emissionsUnitComboBox.blockSignals(True)
+        self.fuelTypeComboBox.blockSignals(True)
+
         self.emissionsUnitComboBox.addItems(calculation_units)
-        self.fuelTypeContainerComboBox.addItems(fuel_types)
+        self.fuelTypeComboBox.addItems(fuel_types)
+
+        self.emissionsUnitComboBox.blockSignals(False)
+        self.fuelTypeComboBox.blockSignals(False)
+        logger.debug(
+            f"Visualization Tab View: {self.emissionsUnitComboBox.count()}"
+        )
+        logger.debug(
+            f"Visualization Tab View: {self.fuelTypeComboBox.count()}"
+        )
 
 
 class VisualizationTabWidget(QWidget):

@@ -192,14 +192,10 @@ class Ui_visualizationTab(object):
 
         self.horizontalLayout_7.addWidget(self.fuelTypeContainerLabel)
 
-        self.fuelTypeContainerComboBox = QComboBox(
-            self.fuelTypeContainerWidget
-        )
-        self.fuelTypeContainerComboBox.setObjectName(
-            "fuelTypeContainerComboBox"
-        )
+        self.fuelTypeComboBox = QComboBox(self.fuelTypeContainerWidget)
+        self.fuelTypeComboBox.setObjectName("fuelTypeComboBox")
 
-        self.horizontalLayout_7.addWidget(self.fuelTypeContainerComboBox)
+        self.horizontalLayout_7.addWidget(self.fuelTypeComboBox)
 
         self.verticalLayout_4.addWidget(self.fuelTypeContainerWidget)
 

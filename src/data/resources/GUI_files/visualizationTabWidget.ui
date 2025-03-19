@@ -221,7 +221,7 @@
                              </widget>
                             </item>
                             <item>
-                             <widget class="QComboBox" name="fuelTypeContainerComboBox"/>
+                             <widget class="QComboBox" name="fuelTypeComboBox"/>
                             </item>
                            </layout>
                           </widget>

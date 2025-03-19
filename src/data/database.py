@@ -441,7 +441,7 @@ class databasesModel(QObject):
                 else:
                     pass
 
-                if isinstance(user_id, int):
+                if isinstance(user_id, str):
                     query += " AND user_id = ?"
                     params.append(user_id)
                 if isinstance(fuel_type, str):
@@ -457,6 +457,16 @@ class databasesModel(QObject):
         except sqlite3.Error as e:
             logger.error(f"Error getting emissions history: {e}")
             return []
+
+    @staticmethod
+    def get_all_user_ids():
+        """Get all unique user IDs from the database"""
+        db_path = os.path.join(databases_folder, "emissions.db")
+        with sqlite3.connect(db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT DISTINCT user_id FROM emissions")
+            user_ids = [row[0] for row in cursor.fetchall()]
+            return user_ids
 
     def database_initialization(self):
         logger.info("Received initialization signal, initializing databases")
