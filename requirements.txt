@@ -5,7 +5,6 @@ asyncio
 black
 chardet
 ipinfo
-pandas
 pre-commit
 psutil
 pyinstaller
