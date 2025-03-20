@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>393</width>
-    <height>710</height>
+    <width>351</width>
+    <height>546</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -30,10 +30,10 @@
         </property>
         <layout class="QVBoxLayout" name="verticalLayout_3">
          <item alignment="Qt::AlignmentFlag::AlignHCenter">
-          <widget class="QWidget" name="widget_2" native="true">
+          <widget class="QWidget" name="pathsContainerWidget" native="true">
            <layout class="QVBoxLayout" name="verticalLayout_5">
             <item>
-             <widget class="QLabel" name="label_2">
+             <widget class="QLabel" name="pathsLabel">
               <property name="text">
                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Paths&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
@@ -66,7 +66,7 @@
           </widget>
          </item>
          <item alignment="Qt::AlignmentFlag::AlignHCenter">
-          <widget class="QWidget" name="widget_3" native="true">
+          <widget class="QWidget" name="apiKeysContainerWidget" native="true">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -84,7 +84,7 @@
            </property>
            <layout class="QHBoxLayout" name="horizontalLayout_2">
             <item>
-             <widget class="QLabel" name="label_3">
+             <widget class="QLabel" name="apiKeysLabel">
               <property name="text">
                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;API Keys&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
@@ -107,7 +107,11 @@
              </widget>
             </item>
             <item>
-             <widget class="QLineEdit" name="ipInfoAPIKeyLineEdit"/>
+             <widget class="QLineEdit" name="ipInfoAPIKeyLineEdit">
+              <property name="placeholderText">
+               <string>add key here...</string>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>
@@ -123,16 +127,32 @@
              </widget>
             </item>
             <item>
-             <widget class="QLineEdit" name="openWeatherMapAPIKeyLineEdit"/>
+             <widget class="QLineEdit" name="openWeatherMapAPIKeyLineEdit">
+              <property name="frame">
+               <bool>true</bool>
+              </property>
+              <property name="placeholderText">
+               <string>add key here...</string>
+              </property>
+              <property name="clearButtonEnabled">
+               <bool>false</bool>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>
          </item>
          <item alignment="Qt::AlignmentFlag::AlignHCenter">
-          <widget class="QWidget" name="widget" native="true">
+          <widget class="QWidget" name="preferencesContainerWidget" native="true">
            <layout class="QVBoxLayout" name="verticalLayout_4">
             <item alignment="Qt::AlignmentFlag::AlignBottom">
-             <widget class="QLabel" name="label">
+             <widget class="QLabel" name="preferencesLabel">
+              <property name="frameShape">
+               <enum>QFrame::Shape::NoFrame</enum>
+              </property>
+              <property name="lineWidth">
+               <number>1</number>
+              </property>
               <property name="text">
                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;Preferences&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
@@ -154,14 +174,14 @@
            </property>
            <layout class="QHBoxLayout" name="horizontalLayout_7">
             <item alignment="Qt::AlignmentFlag::AlignHCenter">
-             <widget class="QLabel" name="preferredTemperatureMeasuremenLabel">
+             <widget class="QLabel" name="preferredTemperatureMeasurementLabel">
               <property name="text">
                <string>Preferred Temperature Measurement</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QComboBox" name="preferredTemperatureMeasuremenComboBox"/>
+             <widget class="QComboBox" name="preferredTemperatureMeasurementComboBox"/>
             </item>
            </layout>
           </widget>
@@ -187,42 +207,42 @@
           </widget>
          </item>
          <item alignment="Qt::AlignmentFlag::AlignRight">
-          <widget class="QWidget" name="widget_4" native="true">
+          <widget class="QWidget" name="languageContainerWidget" native="true">
            <layout class="QHBoxLayout" name="horizontalLayout_9">
             <item alignment="Qt::AlignmentFlag::AlignLeft">
-             <widget class="QLabel" name="label_4">
+             <widget class="QLabel" name="languageLabel">
               <property name="text">
                <string>Language:</string>
               </property>
              </widget>
             </item>
             <item alignment="Qt::AlignmentFlag::AlignLeft">
-             <widget class="QComboBox" name="comboBox"/>
+             <widget class="QComboBox" name="languageComboBox"/>
             </item>
            </layout>
           </widget>
          </item>
          <item alignment="Qt::AlignmentFlag::AlignRight">
-          <widget class="QWidget" name="widget_5" native="true">
+          <widget class="QWidget" name="themeContainerWidget" native="true">
            <layout class="QHBoxLayout" name="horizontalLayout_10">
             <item>
-             <widget class="QLabel" name="label_5">
+             <widget class="QLabel" name="themeLabel">
               <property name="text">
                <string>Theme:</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QComboBox" name="comboBox_2"/>
+             <widget class="QComboBox" name="themeComboBox"/>
             </item>
            </layout>
           </widget>
          </item>
          <item>
-          <widget class="QWidget" name="widget_6" native="true">
+          <widget class="QWidget" name="temperatureUseContainerWidget" native="true">
            <layout class="QHBoxLayout" name="horizontalLayout_11">
             <item alignment="Qt::AlignmentFlag::AlignRight">
-             <widget class="QCheckBox" name="checkBox">
+             <widget class="QCheckBox" name="temperatureUseCheckBox">
               <property name="text">
                <string>Use temperature in calculations</string>
               </property>
@@ -234,31 +254,7 @@
            </layout>
           </widget>
          </item>
-         <item>
-          <spacer name="verticalSpacer">
-           <property name="orientation">
-            <enum>Qt::Orientation::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>40</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
         </layout>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QWidget" name="rightBar" native="true">
-     <layout class="QVBoxLayout" name="verticalLayout_2">
-      <item alignment="Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTop">
-       <widget class="QWidget" name="returnWidget" native="true">
-        <layout class="QHBoxLayout" name="horizontalLayout_3"/>
        </widget>
       </item>
      </layout>

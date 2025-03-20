@@ -2,13 +2,15 @@ import logging
 import sys
 
 from PySide6.QtCore import QObject, Signal
-from PySide6.QtWidgets import QApplication, QMainWindow
+from PySide6.QtWidgets import QApplication, QMainWindow, QWidget
 
 from src.core.emissions_calculator import calculationModel
 from src.data.database import databasesModel
 from src.ui.GeneralTabWidget import GeneralTabWidget
 from src.ui.generated_python_ui.ui_main_window import Ui_MainWindow
 from src.ui.VisualizationTabWidget import VisualizationTabWidget
+from ui.FeedbackTabWidget import FeedbackTabWidget
+from ui.HelpTabWidget import HelpTabWidget
 
 logger = logging.getLogger("ui")
 
@@ -71,6 +73,8 @@ class MainWindowView(QMainWindow, Ui_MainWindow):
 
     def __init__(self):
         super().__init__()
+        self.FeedbackTabWidget = None
+        self.HelpTabWidget = None
         self.GeneralTabWidget = None
         self.VisualizationTabWidget = None
         self.setupUi(self)
@@ -79,9 +83,14 @@ class MainWindowView(QMainWindow, Ui_MainWindow):
         logger.debug("Main Window View: Setting up tabs in MainWindowView")
         self.GeneralTabWidget = GeneralTabWidget(model, controller)
         self.VisualizationTabWidget = VisualizationTabWidget(model, controller)
+        self.HelpTabWidget = HelpTabWidget(controller, model)
+        self.FeedbackTabWidget = FeedbackTabWidget(controller, model)
 
         self.stackedWidget.insertWidget(0, self.GeneralTabWidget.view)
         self.stackedWidget.insertWidget(1, self.VisualizationTabWidget.view)
+        self.stackedWidget.insertWidget(2, QWidget())  # TODO: AI CHAT
+        self.stackedWidget.insertWidget(3, self.HelpTabWidget.view)
+        self.stackedWidget.insertWidget(4, self.FeedbackTabWidget.view)
 
         # set default to the general widget
         self.stackedWidget.setCurrentWidget(self.GeneralTabWidget.view)
@@ -94,6 +103,19 @@ class MainWindowView(QMainWindow, Ui_MainWindow):
         self.menuVisualization.addAction("Visualization").triggered.connect(
             lambda: self.stackedWidget.setCurrentWidget(
                 self.VisualizationTabWidget.view
+            )
+        )
+        self.menuAI_chat.addAction("AI Chat").triggered.connect(
+            lambda: self.stackedWidget.setCurrentWidget(QWidget())
+        )
+        self.menuHelp.addAction("Help").triggered.connect(
+            lambda: self.stackedWidget.setCurrentWidget(
+                self.HelpTabWidget.view
+            )
+        )
+        self.menuFeedback.addAction("Feedback").triggered.connect(
+            lambda: self.stackedWidget.setCurrentWidget(
+                self.FeedbackTabWidget.view
             )
         )
 

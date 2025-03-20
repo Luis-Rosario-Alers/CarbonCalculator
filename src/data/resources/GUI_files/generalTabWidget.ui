@@ -6,12 +6,18 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>959</width>
+    <width>962</width>
     <height>755</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>General</string>
+  </property>
+  <property name="autoFillBackground">
+   <bool>true</bool>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
@@ -277,8 +283,15 @@
             </property>
             <item>
              <widget class="QPushButton" name="editDatabasePushButton">
+              <property name="styleSheet">
+               <string notr="true"/>
+              </property>
               <property name="text">
                <string>Edit Database</string>
+              </property>
+              <property name="icon">
+               <iconset resource="icons.qrc">
+                <normaloff>:/icons/svgs/solid/database.svg</normaloff>:/icons/svgs/solid/database.svg</iconset>
               </property>
              </widget>
             </item>
@@ -287,12 +300,20 @@
               <property name="text">
                <string>Import</string>
               </property>
+              <property name="icon">
+               <iconset resource="icons.qrc">
+                <normaloff>:/icons/svgs/solid/file-import.svg</normaloff>:/icons/svgs/solid/file-import.svg</iconset>
+              </property>
              </widget>
             </item>
             <item>
              <widget class="QPushButton" name="exportPushButton">
               <property name="text">
                <string>Export</string>
+              </property>
+              <property name="icon">
+               <iconset resource="icons.qrc">
+                <normaloff>:/icons/svgs/solid/file-export.svg</normaloff>:/icons/svgs/solid/file-export.svg</iconset>
               </property>
              </widget>
             </item>
@@ -335,6 +356,9 @@
           <strikeout>false</strikeout>
           <kerning>false</kerning>
          </font>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::Shape::NoFrame</enum>
         </property>
         <property name="text">
          <string>main body</string>
@@ -457,6 +481,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="icons.qrc"/>
+ </resources>
  <connections/>
 </ui>

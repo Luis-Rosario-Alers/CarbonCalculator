@@ -148,8 +148,8 @@ class ImportManager:
                         (
                             int(row["user_id"]),
                             row["fuel_type"],
-                            float(row["fuel_used"]),
-                            float(row["emissions"]),
+                            row["fuel_used"],
+                            row["emissions"],
                             row["emissions_unit"],
                             float(row["temperature"]),
                             row["farming_technique"],

@@ -1,14 +1,12 @@
-# -*- coding: utf-8 -*-
-
-
 from PySide6.QtCore import QCoreApplication, QMetaObject, QSize, Qt
-from PySide6.QtGui import QFont
+from PySide6.QtGui import QFont, QIcon
 from PySide6.QtWidgets import (
     QAbstractItemView,
     QAbstractSpinBox,
     QCheckBox,
     QComboBox,
     QDoubleSpinBox,
+    QFrame,
     QHBoxLayout,
     QLabel,
     QProgressBar,
@@ -24,7 +22,9 @@ class Ui_GeneralWidget(object):
     def setupUi(self, GeneralWidget):
         if not GeneralWidget.objectName():
             GeneralWidget.setObjectName("GeneralWidget")
-        GeneralWidget.resize(959, 755)
+        GeneralWidget.resize(962, 755)
+        GeneralWidget.setAutoFillBackground(True)
+        GeneralWidget.setStyleSheet("")
         self.horizontalLayout = QHBoxLayout(GeneralWidget)
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.leftBar = QWidget(GeneralWidget)
@@ -292,16 +292,41 @@ class Ui_GeneralWidget(object):
         self.verticalLayout_4.setContentsMargins(5, 5, 5, 5)
         self.editDatabasePushButton = QPushButton(self.moreWidget)
         self.editDatabasePushButton.setObjectName("editDatabasePushButton")
+        self.editDatabasePushButton.setStyleSheet("")
+        icon = QIcon()
+        icon.addFile(
+            ":/icons/svgs/solid/database.svg",
+            QSize(),
+            QIcon.Mode.Normal,
+            QIcon.State.Off,
+        )
+        self.editDatabasePushButton.setIcon(icon)
 
         self.verticalLayout_4.addWidget(self.editDatabasePushButton)
 
         self.importPushButton = QPushButton(self.moreWidget)
         self.importPushButton.setObjectName("importPushButton")
+        icon1 = QIcon()
+        icon1.addFile(
+            ":/icons/svgs/solid/file-import.svg",
+            QSize(),
+            QIcon.Mode.Normal,
+            QIcon.State.Off,
+        )
+        self.importPushButton.setIcon(icon1)
 
         self.verticalLayout_4.addWidget(self.importPushButton)
 
         self.exportPushButton = QPushButton(self.moreWidget)
         self.exportPushButton.setObjectName("exportPushButton")
+        icon2 = QIcon()
+        icon2.addFile(
+            ":/icons/svgs/solid/file-export.svg",
+            QSize(),
+            QIcon.Mode.Normal,
+            QIcon.State.Off,
+        )
+        self.exportPushButton.setIcon(icon2)
 
         self.verticalLayout_4.addWidget(self.exportPushButton)
 
@@ -338,6 +363,7 @@ class Ui_GeneralWidget(object):
         font2.setStrikeOut(False)
         font2.setKerning(False)
         self.mainBodyPlaceholderLabel.setFont(font2)
+        self.mainBodyPlaceholderLabel.setFrameShape(QFrame.Shape.NoFrame)
         self.mainBodyPlaceholderLabel.setAlignment(
             Qt.AlignmentFlag.AlignCenter
         )

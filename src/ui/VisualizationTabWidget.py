@@ -93,7 +93,18 @@ class VisualizationTabController(QObject):
                 )
                 user_ids = self.model.databases_model.get_all_user_ids()
 
-                colors = ["r", "g", "b", "c", "m", "y"]
+                colors = [
+                    "#1f77b4",
+                    "#ff7f0e",
+                    "#2ca02c",
+                    "#d62728",
+                    "#9467bd",
+                    "#8c564b",
+                    "#e377c2",
+                    "#7f7f7f",
+                    "#bcbd22",
+                    "#17becf",
+                ] * ((len(user_ids) + 9) // 10)
                 for i, user_id in enumerate(user_ids):
                     data = self.model.databases_model.get_emissions_history(
                         emissions_unit=self.emissions_unit,
@@ -119,12 +130,15 @@ class VisualizationTabController(QObject):
         self.update_pending = True
 
     def handle_initialization_of_settings_comboboxes(
-        self, fuel_types, calculation_units
+        self, combobox_information
     ):
         logger.debug(
             "Visualization Tab Controller: Initializing settings comboboxes."
         )
-        self.view.initialize_settings_comboboxes(fuel_types, calculation_units)
+        self.view.initialize_settings_comboboxes(
+            combobox_information["fuel_types"],
+            combobox_information["calculation_units"],
+        )
 
     def handle_filter_changed(self):
         logger.debug("Visualization Tab Controller: Filter changed.")
@@ -147,6 +161,7 @@ class VisualizationTabView(QWidget, Ui_visualizationTab):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        self.color_cache = {}
 
     def update_plot(self, data, color, user_id):
         if color:
@@ -156,10 +171,15 @@ class VisualizationTabView(QWidget, Ui_visualizationTab):
                 name=f"User ID: {user_id}",
                 pen=color,
             )
+            self.color_cache.update({user_id: color})
         else:
-            self.chartPlotWidget.plot(
-                data.time, data.emissions, name=f"User ID: {user_id}"
-            )
+            if len(self.color_cache) >= 1:
+                self.chartPlotWidget.plot(
+                    data.time,
+                    data.emissions,
+                    name=f"User ID: {user_id}",
+                    pen=self.color_cache.get(int(user_id)),
+                )
         # TODO: add parameters to change figure type
 
     def update_plot_units(self, unit):

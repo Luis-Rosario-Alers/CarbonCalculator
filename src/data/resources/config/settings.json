@@ -4,13 +4,13 @@
         "IP Geolocation API Key": ""
     },
     "Paths": {
-        "emission_modifiers_path": ""
+        "emissions_modifiers_path": ""
     },
     "Preferences": {
         "Temperature Measurement Unit": "Celsius",
-        "Calculation Unit of Measurement": "Metric",
-        "Language": "en",
-        "Theme": "Light"
-    },
-    "emission_modifiers_path": ""
+        "Calculation Unit of Measurement": "Kilograms",
+        "Language": "English",
+        "Theme": "Light",
+        "Use Temperature": true
+    }
 }

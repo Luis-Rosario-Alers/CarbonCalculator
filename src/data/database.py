@@ -104,12 +104,13 @@ class databasesModel(QObject):
         try:
             with open(settings_path, "r") as file:
                 settings = json.load(file)
-                json_path = settings.get("emission_modifiers_path")
+                paths = settings.get("Paths")
+                json_path = paths.get("emissions_modifiers_path")
                 if not json_path:
                     json_path = os.path.join(
                         default_factors_path, "emissions_variables.json"
                     )
-                    settings["emission_modifiers_path"] = json_path
+                    settings["Paths"]["emissions_modifiers_path"] = json_path
                     with open(settings_path, "w") as settings_file:
                         settings_file.write(json.dumps(settings, indent=4))
                 return json_path
