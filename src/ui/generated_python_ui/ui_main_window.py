@@ -63,7 +63,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(
-            QCoreApplication.translate("MainWindow", "MainWindow", None)
+            QCoreApplication.translate("MainWindow", "Carbon Calculator", None)
         )
         self.menuGeneral.setTitle(
             QCoreApplication.translate("MainWindow", "General", None)
