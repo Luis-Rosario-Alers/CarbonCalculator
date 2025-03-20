@@ -17,6 +17,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+import src.ui.generated_python_ui.icons_rc  # noqa
+
 
 class Ui_GeneralWidget(object):
     def setupUi(self, GeneralWidget):

@@ -2,6 +2,8 @@ from PySide6.QtCore import QCoreApplication, QMetaObject, QSize, Qt
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel, QVBoxLayout, QWidget
 
+import src.ui.generated_python_ui.icons_rc  # noqa
+
 
 class Ui_helpTabWidget(object):
     def setupUi(self, helpTabWidget):
