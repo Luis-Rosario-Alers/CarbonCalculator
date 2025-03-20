@@ -1,7 +1,6 @@
 import logging
 import os
-
-import aiosqlite
+import sqlite3
 
 from data.database import databases_folder
 
@@ -12,14 +11,14 @@ logger = logging.getLogger("data")
 
 class DataValidator:
     @staticmethod
-    async def validate_fuel_type(fuel_type: str) -> bool:
+    def validate_fuel_type(fuel_type: str) -> bool:
         logger.info("validating fuel_type")
         db_path = os.path.join(databases_folder, "fuel_type_conversions.db")
 
-        async with aiosqlite.connect(db_path) as conn:
-            cursor = await conn.cursor()
-            await cursor.execute("SELECT fuel_type FROM fuel_types")
-            fuel_types = await cursor.fetchone()
+        with sqlite3.connect(db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT fuel_type FROM fuel_types")
+            fuel_types = cursor.fetchone()
             logger.info("fuel_type_conversions.db accessed")
             if fuel_type in fuel_types:
                 logger.info(f"fuel_type accessed: {fuel_type}")
@@ -49,7 +48,7 @@ class DataValidator:
         return True
 
     @staticmethod
-    def validate_emissions(emissions):
+    def validate_emissions_result(emissions):
         if not isinstance(emissions, (int, float)) or emissions < 0:
             logger.error("emissions is not int or float")
             return False
@@ -65,29 +64,25 @@ class DataValidator:
 
     @staticmethod
     def validate_temperature_type(temperature_type):
-        if (
-            not isinstance(temperature_type, int)
-            or temperature_type < 0
-            or temperature_type > 2
-        ):
+        if not isinstance(temperature_type, str):
             raise ValueError(
                 f"{temperature_type} is not a valid temperature type"
             )
-        return True
+        return
 
     @staticmethod
     def validate_temperature(temperature, temperature_type):
-        if not isinstance(temperature, (int, float)) or isinstance(
-            temperature, bool
+        if not isinstance(temperature, (int, float)) or not isinstance(
+            temperature_type, str
         ):
             raise ValueError(f"{temperature} is not a valid temperature")
-        if temperature_type == 0:  # Celsius
+        if temperature_type == "Celsius":  # Celsius
             if temperature < -273.15:
                 raise ValueError(f"{temperature} is not a valid temperature")
-        elif temperature_type == 1:  # Fahrenheit
+        elif temperature_type == "Fahrenheit":  # Fahrenheit
             if temperature < -459.67:
                 raise ValueError(f"{temperature} is not a valid temperature")
-        elif temperature_type == 2:  # Kelvin
+        elif temperature_type == "Kelvin":  # Kelvin
             if temperature <= 0:
                 raise ValueError(f"{temperature} is not a valid temperature")
         return True  # if all checks pass

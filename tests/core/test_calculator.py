@@ -106,7 +106,7 @@ class TestCalculator:
     ):
         # Arrange
         mock_data_validator = mocker.patch(
-            "src.core.emissions_calculator.DataValidator.validate_emissions"
+            "src.core.emissions_calculator.DataValidator.validate_emissions_result"
         )
         mock_data_validator.return_value = False
         mock_emissions_factor = mocker.patch(
@@ -124,7 +124,7 @@ class TestCalculator:
     ):
         # Arrange
         mock_data_validator = mocker.patch(
-            "src.core.emissions_calculator.DataValidator.validate_emissions"
+            "src.core.emissions_calculator.DataValidator.validate_emissions_result"
         )
         mock_data_validator.return_value = False
         mock_emissions_factor = mocker.patch(

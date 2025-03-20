@@ -5,10 +5,11 @@ asyncio
 black
 chardet
 ipinfo
-Matplotlib
+pandas
 pre-commit
 psutil
 pyinstaller
+pyqtgraph
 PySide6
 pytest
 pytest-asyncio
