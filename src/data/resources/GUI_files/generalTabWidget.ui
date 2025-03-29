@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>962</width>
-    <height>755</height>
+    <width>1004</width>
+    <height>685</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -228,10 +228,16 @@
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout_6">
          <item>
-          <widget class="QCheckBox" name="calculateContainerCheckBox">
-           <property name="text">
-            <string>Real-Time temperatures</string>
-           </property>
+          <widget class="QWidget" name="realTimeTemperaturesControlContainerWidget" native="true">
+           <layout class="QVBoxLayout" name="verticalLayout_7">
+            <item>
+             <widget class="QCheckBox" name="realTimeTemperatureCheckBox">
+              <property name="text">
+               <string>Real-Time temperatures</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </widget>
          </item>
          <item>
@@ -290,7 +296,7 @@
                <string>Edit Database</string>
               </property>
               <property name="icon">
-               <iconset resource="icons.qrc">
+               <iconset>
                 <normaloff>:/icons/svgs/solid/database.svg</normaloff>:/icons/svgs/solid/database.svg</iconset>
               </property>
              </widget>
@@ -301,7 +307,7 @@
                <string>Import</string>
               </property>
               <property name="icon">
-               <iconset resource="icons.qrc">
+               <iconset>
                 <normaloff>:/icons/svgs/solid/file-import.svg</normaloff>:/icons/svgs/solid/file-import.svg</iconset>
               </property>
              </widget>
@@ -312,7 +318,7 @@
                <string>Export</string>
               </property>
               <property name="icon">
-               <iconset resource="icons.qrc">
+               <iconset>
                 <normaloff>:/icons/svgs/solid/file-export.svg</normaloff>:/icons/svgs/solid/file-export.svg</iconset>
               </property>
              </widget>

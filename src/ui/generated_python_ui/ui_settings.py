@@ -17,7 +17,7 @@ class Ui_settingsWidget(object):
     def setupUi(self, settingsWidget):
         if not settingsWidget.objectName():
             settingsWidget.setObjectName("settingsWidget")
-        settingsWidget.resize(351, 546)
+        settingsWidget.resize(370, 546)
         self.horizontalLayout = QHBoxLayout(settingsWidget)
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.leftBar = QWidget(settingsWidget)
@@ -301,6 +301,35 @@ class Ui_settingsWidget(object):
             self.themeContainerWidget, 0, Qt.AlignmentFlag.AlignRight
         )
 
+        self.fetchLocalTemperaturesOnStartupContainerWIdget = QWidget(
+            self.leftBarMainWidget
+        )
+        self.fetchLocalTemperaturesOnStartupContainerWIdget.setObjectName(
+            "fetchLocalTemperaturesOnStartupContainerWIdget"
+        )
+        self.horizontalLayout_3 = QHBoxLayout(
+            self.fetchLocalTemperaturesOnStartupContainerWIdget
+        )
+        self.horizontalLayout_3.setObjectName("horizontalLayout_3")
+        self.fetchLocalTemperaturesOnStartupCheckBox = QCheckBox(
+            self.fetchLocalTemperaturesOnStartupContainerWIdget
+        )
+        self.fetchLocalTemperaturesOnStartupCheckBox.setObjectName(
+            "fetchLocalTemperaturesOnStartupCheckBox"
+        )
+
+        self.horizontalLayout_3.addWidget(
+            self.fetchLocalTemperaturesOnStartupCheckBox,
+            0,
+            Qt.AlignmentFlag.AlignRight,
+        )
+
+        self.verticalLayout_3.addWidget(
+            self.fetchLocalTemperaturesOnStartupContainerWIdget,
+            0,
+            Qt.AlignmentFlag.AlignRight,
+        )
+
         self.temperatureUseContainerWidget = QWidget(self.leftBarMainWidget)
         self.temperatureUseContainerWidget.setObjectName(
             "temperatureUseContainerWidget"
@@ -401,6 +430,11 @@ class Ui_settingsWidget(object):
         )
         self.themeLabel.setText(
             QCoreApplication.translate("settingsWidget", "Theme:", None)
+        )
+        self.fetchLocalTemperaturesOnStartupCheckBox.setText(
+            QCoreApplication.translate(
+                "settingsWidget", "Fetch local temperatures on startup", None
+            )
         )
         self.temperatureUseCheckBox.setText(
             QCoreApplication.translate(

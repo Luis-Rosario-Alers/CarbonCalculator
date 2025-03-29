@@ -6,11 +6,16 @@ from PySide6.QtCore import QObject, Signal
 from PySide6.QtSql import QSqlDatabase, QSqlTableModel
 from PySide6.QtWidgets import QFileDialog, QTableView, QWidget
 
-from data.database import databases_folder
+from data.database_model import databases_folder
 from data.export_manager import ExportManager
 from data.import_manager import ImportManager
+from services.user_internet_connection_service import (
+    user_internet_connection_check,
+)
+from services.user_location_service import UserLocationService
+from services.weather_service import WeatherService
 from src.ui.generated_python_ui.ui_generalTabWidget import Ui_GeneralWidget
-from src.ui.SettingsWidget import settingsWidget
+from src.ui.SettingsWidget import SettingsWidget
 from src.utils.gui_utilities import connect_threaded
 
 logger = logging.getLogger("ui")
@@ -30,8 +35,11 @@ class GeneralTabController(QObject):
         self.model: "GeneralTabModel" = model
         self.view: "GeneralTabView" = view
         self.application_controller = application_controller
-        self.settingsWidget: settingsWidget = settingsWidget(
-            self.application_controller, self.model, self, self.view
+        self.settingsWidget: SettingsWidget = SettingsWidget(
+            self.application_controller,
+            self.model.application_model,
+            self,
+            self.view,
         )
         self.__connect_signals()
 
@@ -46,7 +54,7 @@ class GeneralTabController(QObject):
         self.view.fuelUnitOfMeasurementComboBox.currentTextChanged.connect(
             self.handle_fuel_unit_changed
         )
-        self.view.calculateContainerCheckBox.toggled.connect(
+        self.view.realTimeTemperatureCheckBox.toggled.connect(
             self.handle_real_time_temperatures_check_box_changed
         )
         self.view.importPushButton.clicked.connect(
@@ -79,11 +87,15 @@ class GeneralTabController(QObject):
         )
 
     def handle_real_time_temperatures_api_call(self) -> None:
-        logger.debug("GeneralTabWidget: calling real-time temperature API")
-        raise NotImplementedError("Real-time temperature API not implemented")
-        # something like this?
-        # user_location_service = UserLocationService()
-        # user_location_service.get_user_location()
+        logger.debug(
+            "GeneralTabWidget: requesting temperature data from OpenWeatherMap"
+        )
+        if self.model.settings_model.get_setting(
+            "Preferences", "Fetch Local Temperatures On Startup"
+        ):
+            self.model.load_real_time_temperature_data()
+        else:
+            logger.info("skipping temperature data fetch.")
 
     def handle_import_button_clicked(self) -> None:
         logger.debug("GeneralTabWidget: import button clicked")
@@ -142,7 +154,10 @@ class GeneralTabController(QObject):
             combobox_data["calculation_units"],
         )
 
+        self.handle_apply_user_preferences()
+
     def handle_calculate_button_clicked(self) -> None:
+
         (
             user_id,
             fuel_type,
@@ -152,8 +167,8 @@ class GeneralTabController(QObject):
             temperature_type,
             farming_technique,
             calculation_unit,
-        ) = self.view.get_calculation_info()
-        self.model.calculation_model.calculate_emissions(
+        ) = self.view.get_calculation_info(self.model.real_time_temp_data)
+        self.model.calculation_model.calculate_emissions(  # ? We could probably change this to a signal.
             user_id,
             fuel_type,
             fuel_unit,
@@ -185,15 +200,30 @@ class GeneralTabController(QObject):
         if not checked:
             logger.debug("GeneralTabWidget: enabling temperature controls")
             self.view.temperatureDoubleSpinBox.setEnabled(True)
-            self.view.temperatureTypesComboBox.setEnabled(True)
         else:
             logger.debug("GeneralTabWidget: disabling temperature controls")
             self.view.temperatureDoubleSpinBox.setEnabled(False)
-            self.view.temperatureTypesComboBox.setEnabled(False)
 
     def handle_settings_button_clicked(self) -> None:
         logger.debug("GeneralTabWidget: settings button clicked")
         self.settingsWidget.view.show()
+
+    def handle_apply_user_preferences(self):
+        logger.debug("GeneralTabWidget: setting user preferences")
+
+        preferred_temp_unit = self.model.settings_model.get_setting(
+            "Preferences", "Temperature Measurement Unit"
+        )
+        preferred_calc_unit = self.model.settings_model.get_setting(
+            "Preferences", "Calculation Unit of Measurement"
+        )
+        use_temperature = self.model.settings_model.get_setting(
+            "Preferences", "Use Temperature"
+        )
+
+        self.view.apply_user_preferences(
+            [preferred_temp_unit, preferred_calc_unit, use_temperature]
+        )
 
 
 class GeneralTabModel:
@@ -201,9 +231,33 @@ class GeneralTabModel:
         self.application_model = application_model
         self.databases_model = self.application_model.databases_model
         self.calculation_model = self.application_model.calculation_model
+        self.settings_model = self.application_model.settings_model
+        self.real_time_temp_data = None
 
     def load_database_table_content(self) -> None:
         pass
+
+    def load_real_time_temperature_data(self) -> None:
+        ipinfo_user_key = self.settings_model.get_api_key(
+            "IP Geolocation API Key"
+        )
+        open_weather_map_user_key = self.settings_model.get_api_key(
+            "OpenWeatherMap API Key"
+        )
+
+        if open_weather_map_user_key is None:
+            raise ValueError("User does not have necessary API keys set.")
+
+        if user_internet_connection_check():
+            latitude, longitude = UserLocationService(
+                ipinfo_user_key
+            ).get_user_location()
+            temperature_data = WeatherService(
+                open_weather_map_user_key
+            ).get_weather_data(latitude, longitude)
+            self.real_time_temp_data = temperature_data
+        else:
+            raise ConnectionError("Unable to find internet connection.")
 
 
 class GeneralTabView(QWidget, Ui_GeneralWidget):
@@ -282,8 +336,15 @@ class GeneralTabView(QWidget, Ui_GeneralWidget):
         self.calculationUnitOfMeasurementComboBox.addItems(calculation_units)
 
     def get_calculation_info(
-        self,
+        self, real_time_temp_data
     ) -> tuple[int, str, str, float, float, str, str, str] | None:
+        """
+        :param real_time_temp_data: contains real time data from openweathermap API.
+        This data is located within the General Tab Model as an attribute.
+        :returns: (user_id, fuel_type, fuel_unit, amount_of_fuel_used, temperature_value,
+        temperature_type, farming_technique, calculation_unit)
+        """
+        user_id = 1
         fuel_type: str = self.fuelTypeComboBox.currentText()
         fuel_unit: str = self.fuelUnitOfMeasurementComboBox.currentText()
         amount_of_fuel_used: float = self.amountOfFuelUsedDoubleSpinBox.value()
@@ -293,20 +354,24 @@ class GeneralTabView(QWidget, Ui_GeneralWidget):
         calculation_unit: str = (
             self.calculationUnitOfMeasurementComboBox.currentText()
         )
-        if self.calculateContainerCheckBox.isChecked():
-            pass
-            # TODO: implement real-time temperature collection for this
-        else:
-            return (
-                1,
-                fuel_type,
-                fuel_unit,
-                amount_of_fuel_used,
-                temperature_value,
-                temperature_type,
-                farming_technique,
-                calculation_unit,
-            )
+        num_of_temp_scales = 3
+        if (
+            self.realTimeTemperatureCheckBox.isChecked()
+            and len(real_time_temp_data) == num_of_temp_scales
+        ):
+            temperature_value = real_time_temp_data[
+                self.temperatureTypesComboBox.currentIndex()
+            ]
+        return (
+            user_id,
+            fuel_type,
+            fuel_unit,
+            amount_of_fuel_used,
+            temperature_value,
+            temperature_type,
+            farming_technique,
+            calculation_unit,
+        )
 
     def update_database_table(self) -> None:
         if self.sql_widget_model:
@@ -378,6 +443,21 @@ class GeneralTabView(QWidget, Ui_GeneralWidget):
             file_type = None
 
         return output_path, file_type
+
+    def apply_user_preferences(self, user_preferences: List):
+        preferred_temp_unit, preferred_calc_unit, use_temperature = (
+            user_preferences
+        )
+        self.temperatureTypesComboBox.setCurrentText(preferred_temp_unit)
+        self.calculationUnitOfMeasurementComboBox.setCurrentText(
+            preferred_calc_unit
+        )
+        if use_temperature:
+            pass
+        else:
+            self.realTimeTemperatureCheckBox.setChecked(False)
+            self.temperatureDoubleSpinBox.setEnabled(True)
+            self.temperatureTypesComboBox.setEnabled(True)
 
 
 class GeneralTabWidget(QWidget):

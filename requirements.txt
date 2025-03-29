@@ -5,6 +5,7 @@ asyncio
 black
 chardet
 ipinfo
+keyring
 pandas
 pre-commit
 psutil

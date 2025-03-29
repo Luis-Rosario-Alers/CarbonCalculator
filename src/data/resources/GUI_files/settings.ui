@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>351</width>
+    <width>370</width>
     <height>546</height>
    </rect>
   </property>
@@ -234,6 +234,19 @@
             </item>
             <item>
              <widget class="QComboBox" name="themeComboBox"/>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item alignment="Qt::AlignmentFlag::AlignRight">
+          <widget class="QWidget" name="fetchLocalTemperaturesOnStartupContainerWIdget" native="true">
+           <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <item alignment="Qt::AlignmentFlag::AlignRight">
+             <widget class="QCheckBox" name="fetchLocalTemperaturesOnStartupCheckBox">
+              <property name="text">
+               <string>Fetch local temperatures on startup</string>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>

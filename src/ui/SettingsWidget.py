@@ -1,12 +1,16 @@
+import logging
 import os
+from typing import List
 
-from PySide6.QtWidgets import QFileDialog, QMessageBox, QWidget
+from PySide6.QtCore import QObject
+from PySide6.QtWidgets import QComboBox, QFileDialog, QMessageBox, QWidget
 
-from src.data.settings_manager import SettingsManager
 from ui.generated_python_ui.ui_settings import Ui_settingsWidget
 
+logger = logging.getLogger("ui")
 
-class settingsController:
+
+class SettingsController(QObject):
     def __init__(
         self,
         model,
@@ -15,6 +19,7 @@ class settingsController:
         parent_controller,
         parent_view,
     ):
+        super().__init__()
         self.parent_view = parent_view
         self.parent_controller = parent_controller
         self.application_controller = application_controller
@@ -52,76 +57,102 @@ class settingsController:
         self.view.temperatureUseCheckBox.stateChanged.connect(
             self.handle_temperature_use_changed
         )
+        self.view.fetchLocalTemperaturesOnStartupCheckBox.stateChanged.connect(
+            self.handle_fetch_local_temperatures_changed
+        )
 
     def handle_initialization_of_settings(self, combobox_information) -> None:
-        current_settings = {
-            "current_temp_unit": self.model.settings_manager.get_setting(
-                "Preferences", "Temperature Measurement Unit"
-            ),
-            "current_unit_of_measurement": self.model.settings_manager.get_setting(
-                "Preferences", "Calculation Unit of Measurement"
-            ),
-            "current_language": self.model.settings_manager.get_setting(
-                "Preferences", "Language"
-            ),
-            "current_theme": self.model.settings_manager.get_setting(
-                "Preferences", "Theme"
-            ),
-        }
+
+        current_settings = self.model.settings_model.get_all_settings()
+
         self.view.initialize_settings(combobox_information, current_settings)
 
     def handle_emissions_path_setting_clicked(self):
         path = self.view.emissions_modifiers_path_button_clicked()
-        self.model.settings_manager.update_settings(
+        self.model.settings_model.update_settings(
             **{"Paths": {"emissions_modifiers_path": path}}
         )
 
     def handle_ip_info_api_key_entered(self):
         key = self.view.ipInfoAPIKeyLineEdit.text().strip()
-        self.model.settings_manager.update_settings(
-            **{"API Keys": {"IP Geolocation API Key": key}}
-        )
+        if key:
+            self.model.settings_model.save_api_key(
+                "IP Geolocation API Key", key
+            )
+            self.model.settings_model.update_settings(
+                **{"API Keys": {"IP Geolocation API Key": "[STORED_SECURELY]"}}
+            )
+        else:
+            QMessageBox.critical(
+                self.view,
+                "Error",
+                "Please enter a valid ipinfo API key.",
+            )
+            self.view.openWeatherMapAPIKeyLineEdit.setText("")
+            return
 
     def handle_open_weather_map_api_key_entered(self):
         key = self.view.openWeatherMapAPIKeyLineEdit.text().strip()
-        self.model.settings_manager.update_settings(
-            **{"API Keys": {"OpenWeatherMap API Key": key}}
-        )
+        if key:
+            self.model.settings_model.save_api_key(
+                "OpenWeatherMap API Key", key
+            )
+            self.model.settings_model.update_settings(
+                **{"API Keys": {"OpenWeatherMap API Key": "[STORED_SECURELY]"}}
+            )
+        else:
+            QMessageBox.critical(
+                self.view,
+                "Error",
+                "Please enter a valid OpenWeatherMap API key.",
+            )
+            self.view.openWeatherMapAPIKeyLineEdit.setText("")
+            return
 
     def handle_temperature_unit_changed(self, text):
-        self.model.settings_manager.update_settings(
+        self.model.settings_model.update_settings(
             **{"Preferences": {"Temperature Measurement Unit": text}}
         )
 
     def handle_unit_of_measurement_changed(self, text):
-        self.model.settings_manager.update_settings(
+        self.model.settings_model.update_settings(
             **{"Preferences": {"Calculation Unit of Measurement": text}}
         )
 
     def handle_language_changed(self, text):
-        self.model.settings_manager.update_settings(
+        self.model.settings_model.update_settings(
             **{"Preferences": {"Language": text}}
         )
 
     def handle_theme_changed(self, text):
-        self.model.settings_manager.update_settings(
+        self.model.settings_model.update_settings(
             **{"Preferences": {"Theme": text}}
         )
 
     def handle_temperature_use_changed(self, state):
         is_checked = bool(state)
-        self.model.settings_manager.update_settings(
+        self.model.settings_model.update_settings(
             **{"Preferences": {"Use Temperature": is_checked}}
         )
 
+    def handle_fetch_local_temperatures_changed(self, state):
+        is_checked = bool(state)
+        self.model.settings_model.update_settings(
+            **{
+                "Preferences": {
+                    "Fetch Local Temperatures On Startup": is_checked
+                }
+            }
+        )
 
-class settingsModel:
-    def __init__(self, settings_manager, application_model):
-        self.settings_manager = settings_manager
+
+class SettingsModel:
+    def __init__(self, application_model):
         self.application_model = application_model
+        self.settings_model = application_model.settings_model
 
 
-class settingsView(QWidget, Ui_settingsWidget):
+class SettingsView(QWidget, Ui_settingsWidget):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
@@ -130,28 +161,33 @@ class settingsView(QWidget, Ui_settingsWidget):
         self,
         combobox_information,
         current_settings,
-        languages=None,
-        themes=None,
     ) -> None:
         """
         Initializes settings ui for user.
         :param current_settings: Dictionary with the current user settings.
         :param combobox_information: Contains information like temp units, calculation units, etc.
-        :param languages: supported languages for the application (English, Spanish, etc.)
-        :param themes: supported themes for application (Light, Dark, etc.)
         :return: Nothing
         """
-        if themes is None:
-            themes = {"Dark"}
-        if languages is None:
-            languages = {"English"}
-        current_temp_unit = current_settings["current_temp_unit"]
-        current_unit_of_measurement = current_settings[
-            "current_unit_of_measurement"
-        ]
-        current_language = current_settings["current_language"]
-        current_theme = current_settings["current_theme"]
+        # Process settings by category
+        preference_settings = current_settings.get("Preferences", {})
+        api_keys = current_settings.get("API Keys", {})
 
+        # Initialize preferences
+        current_temp_unit = preference_settings.get(
+            "Temperature Measurement Unit", "Celsius"
+        )
+        current_unit_of_measurement = preference_settings.get(
+            "Calculation Unit of Measurement", "Grams"
+        )
+        current_language = preference_settings.get("Language", "English")
+        current_theme = preference_settings.get("Theme", "Light")
+        fetch_local_temps_on_startup = preference_settings.get(
+            "Fetch Local Temperatures On Startup", True
+        )
+        use_temperature = preference_settings.get("Use Temperature", True)
+
+        # insert settings into comboboxes
+        # Fixme: This function seems to over write the emissions_modifiers_path for the [[settings.json]] file
         self._insert_current_setting(
             self.preferredTemperatureMeasurementComboBox,
             current_temp_unit,
@@ -163,14 +199,34 @@ class settingsView(QWidget, Ui_settingsWidget):
             combobox_information["calculation_units"],
         )
         self._insert_current_setting(
-            self.languageComboBox, current_language, languages
+            self.languageComboBox, current_language, ["English", "Spanish"]
         )
-        self._insert_current_setting(self.themeComboBox, current_theme, themes)
+        self._insert_current_setting(
+            self.themeComboBox, current_theme, ["Light", "Dark"]
+        )
 
-        self.temperatureUseCheckBox.setChecked(True)
+        self.fetchLocalTemperaturesOnStartupCheckBox.setChecked(
+            fetch_local_temps_on_startup
+        )
+        self.temperatureUseCheckBox.setChecked(use_temperature)
+
+        # Initialize API keys
+        openweather_key = api_keys.get("OpenWeatherMap API Key", "")
+        ipinfo_key = api_keys.get("IP Geolocation API Key", "")
+        self.openWeatherMapAPIKeyLineEdit.setText(openweather_key)
+        self.ipInfoAPIKeyLineEdit.setText(ipinfo_key)
 
     @staticmethod
-    def _insert_current_setting(combo_box, current_setting, items):
+    def _insert_current_setting(
+        combo_box: QComboBox, current_setting, items: List
+    ):
+        """
+        Inserts the current setting into the combo box and removes it from the list of items.
+        :param combo_box: Combobox object
+        :param current_setting: current setting state
+        :param items: items that normally go into the combo box
+        :return:
+        """
         if current_setting in items:
             items.remove(current_setting)
         combo_box.addItem(current_setting)
@@ -199,7 +255,7 @@ class settingsView(QWidget, Ui_settingsWidget):
         return input_path
 
 
-class settingsWidget(QWidget):
+class SettingsWidget(QWidget):
     def __init__(
         self,
         application_controller,
@@ -212,12 +268,9 @@ class settingsWidget(QWidget):
         self.application_model = application_model
         self.parent_controller = parent_controller
         self.parent_view = parent_view
-        self.settings_manager = SettingsManager()
-        self.model = settingsModel(
-            self.settings_manager, self.application_model
-        )
-        self.view = settingsView()
-        self.controller = settingsController(
+        self.model = SettingsModel(self.application_model)
+        self.view = SettingsView()
+        self.controller = SettingsController(
             self.model,
             self.view,
             application_controller,

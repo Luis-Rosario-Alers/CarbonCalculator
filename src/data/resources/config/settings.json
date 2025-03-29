@@ -11,6 +11,7 @@
         "Calculation Unit of Measurement": "Kilograms",
         "Language": "English",
         "Theme": "Light",
+        "Fetch Local Temperatures On Startup": false,
         "Use Temperature": true
     }
 }

@@ -4,8 +4,9 @@ import sys
 from PySide6.QtCore import QObject, Signal
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget
 
+from data.settings_model import SettingsModel
 from src.core.emissions_calculator import calculationModel
-from src.data.database import databasesModel
+from src.data.database_model import databasesModel
 from src.ui.GeneralTabWidget import GeneralTabWidget
 from src.ui.generated_python_ui.ui_main_window import Ui_MainWindow
 from src.ui.VisualizationTabWidget import VisualizationTabWidget
@@ -60,11 +61,13 @@ class AppModel(QObject):
         super().__init__()
         self.databases_model = databasesModel()
         self.calculation_model = calculationModel()
+        self.settings_model = SettingsModel()
 
     def setup_models(self, main_window_controller):
         logger.debug("Main Window Model: Setting up models in AppModel")
         self.databases_model.set_controller(main_window_controller)
         self.calculation_model.set_controller(main_window_controller)
+        self.settings_model.set_controller(main_window_controller)
 
 
 # View: controls the UI for the Main Window

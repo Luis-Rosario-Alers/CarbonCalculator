@@ -2,13 +2,13 @@ from pathlib import Path
 
 import pytest
 
-from src.data.settings_manager import SettingsManager
+from src.data.settings_model import SettingsModel
 
 
 class TestSettingsManager:
     @pytest.fixture
-    def settings_manager(self) -> SettingsManager:
-        return SettingsManager()
+    def settings_manager(self) -> SettingsModel:
+        return SettingsModel()
 
     # Successfully loads settings from JSON file
     def test_load_settings_loads_settings_from_json(

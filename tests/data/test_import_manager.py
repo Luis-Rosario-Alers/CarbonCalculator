@@ -4,7 +4,7 @@ from datetime import datetime
 import chardet
 import pytest
 
-from src.data.database import (
+from src.data.database_model import (
     databases_folder,
     initialize_emissions_database,
     setup_databases_folder,

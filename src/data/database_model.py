@@ -359,7 +359,7 @@ class databasesModel(QObject):
             logger.info("Logging calculation")
             logger.info(
                 f"User ID: {user_id}, Fuel Type: {fuel_type}, Fuel Used: {fuel_used} {fuel_unit}, "
-                f"Emissions: {emissions} {emissions_unit}, Farming Technique: {farming_technique}"
+                f"Emissions: {emissions} {emissions_unit}, Temperature: {temperature}{temperature_type[:1]}°, Farming Technique: {farming_technique}"
             )
             db_path = os.path.join(databases_folder, "emissions.db")
 

@@ -50,8 +50,15 @@ class VisualizationTabController(QObject):
             self.handle_filter_changed
         )
 
-    def handle_update_visualization(self):
-        def plot_data(data=None, user_id="", color=""):  # helper function
+    def handle_update_plot(self):
+        """
+        Handles visualization by either plotting a single user_id graph line
+        or plotting multiple lines of different user_ids.
+        """
+
+        def apply_plot_data(
+            data=None, user_id="", color=""
+        ):  # helper function
             emissions = []
             timestamps = []
             for data_points in data:
@@ -86,7 +93,7 @@ class VisualizationTabController(QObject):
                     fuel_type=self.fuel_type,
                     user_id=self.user_id,
                 )
-                plot_data(data=data, user_id=self.user_id)
+                apply_plot_data(data=data, user_id=self.user_id)
             else:
                 logger.debug(
                     "Visualization Tab Controller: no user id selected"
@@ -112,7 +119,7 @@ class VisualizationTabController(QObject):
                         user_id=str(user_id),
                     )
                     color = colors[i % len(colors)]
-                    plot_data(data=data, user_id=user_id, color=color)
+                    apply_plot_data(data=data, user_id=user_id, color=color)
             self.update_pending = False
         else:
             logger.debug(
@@ -120,37 +127,55 @@ class VisualizationTabController(QObject):
             )
 
     def handle_tab_changed(self, index):
+        """
+        Updates plot when accessing the visualization tab
+        """
         if (
             index == 1
         ):  # this is the position of the visualization tab on the stacked widget
-            self.handle_update_visualization()
+            self.handle_update_plot()
 
     def handle_pending_update(self):
+        """
+        Handles changing update state for plot
+        """
         logger.debug("Visualization Tab Controller: Pending update.")
         self.update_pending = True
 
     def handle_initialization_of_settings_comboboxes(
         self, combobox_information
     ):
+        """
+        Handles all initialization jobs for comboboxes
+        :param combobox_information: contains information like temp scales, fuel types, etc.
+        """
         logger.debug(
             "Visualization Tab Controller: Initializing settings comboboxes."
         )
+        # load comboboxes with values
         self.view.initialize_settings_comboboxes(
             combobox_information["fuel_types"],
             combobox_information["calculation_units"],
         )
 
+        # load all user preferences
+        preferred_calc_unit = self.model.settings_model.get_setting(
+            "Preferences", "Calculation Unit of Measurement"
+        )
+        self.view.apply_user_preferences(preferred_calc_unit)
+
     def handle_filter_changed(self):
         logger.debug("Visualization Tab Controller: Filter changed.")
         self.update_pending = True
         self.view.chartPlotWidget.clear()
-        self.handle_update_visualization()
+        self.handle_update_plot()
 
 
 class VisualizationTabModel:
     def __init__(self, application_model):
         self.application_model = application_model
         self.databases_model = self.application_model.databases_model
+        self.settings_model = self.application_model.settings_model
 
     def update_visualization_model_params(self):
         # TODO: Implement UI elements for params collection
@@ -229,6 +254,10 @@ class VisualizationTabView(QWidget, Ui_visualizationTab):
         logger.debug(
             f"Visualization Tab View: {self.fuelTypeComboBox.count()}"
         )
+
+    def apply_user_preferences(self, user_preferences):
+        preferred_calc_unit = user_preferences
+        self.emissionsUnitComboBox.setCurrentText(preferred_calc_unit)
 
 
 class VisualizationTabWidget(QWidget):

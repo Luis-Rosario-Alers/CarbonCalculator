@@ -2,7 +2,7 @@ import logging
 import os
 import sqlite3
 
-from data.database import databases_folder
+from data.database_model import databases_folder
 
 # validates user input and database data
 
@@ -76,13 +76,13 @@ class DataValidator:
             temperature_type, str
         ):
             raise ValueError(f"{temperature} is not a valid temperature")
-        if temperature_type == "Celsius":  # Celsius
+        if temperature_type == "Celsius":
             if temperature < -273.15:
                 raise ValueError(f"{temperature} is not a valid temperature")
-        elif temperature_type == "Fahrenheit":  # Fahrenheit
+        elif temperature_type == "Fahrenheit":
             if temperature < -459.67:
                 raise ValueError(f"{temperature} is not a valid temperature")
-        elif temperature_type == "Kelvin":  # Kelvin
+        elif temperature_type == "Kelvin":
             if temperature <= 0:
                 raise ValueError(f"{temperature} is not a valid temperature")
         return True  # if all checks pass

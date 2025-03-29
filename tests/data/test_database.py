@@ -7,7 +7,7 @@ from unittest.mock import patch
 import aiosqlite
 import pytest
 
-from src.data.database import (
+from src.data.database_model import (
     create_fuel_type_database,
     database_initialization,
     determine_application_path,

@@ -3,7 +3,7 @@ import logging
 from PySide6.QtCore import QObject, Signal
 
 from data.data_validator import DataValidator
-from data.database import databasesModel
+from data.database_model import databasesModel
 from src.services.unit_conversions_service import UnitConversionsService
 
 # * EDIT THIS FILE IF YOU NEED TO ADD EXTRA FUNCTIONALITY TO THE EMISSION CALCULATOR.

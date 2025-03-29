@@ -30,7 +30,7 @@ class Ui_visualizationTab(object):
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
         self.chartPlotWidget = PlotWidget(self.mainBody)
         self.chartPlotWidget.setObjectName("chartPlotWidget")
-        self.chartPlotWidget.setFrameShape(QFrame.Shape.WinPanel)
+        self.chartPlotWidget.setFrameShape(QFrame.Shape.NoFrame)
         self.chartPlotWidget.setFrameShadow(QFrame.Shadow.Plain)
 
         self.horizontalLayout_3.addWidget(self.chartPlotWidget)

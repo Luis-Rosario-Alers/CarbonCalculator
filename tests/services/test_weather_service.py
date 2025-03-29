@@ -83,7 +83,7 @@ class TestWeatherService:
         converter = TemperatureConverter(kelvin_temp)
 
         # Act
-        celsius = converter.convert_to_celsius()
+        celsius = converter.kelvin_to_celsius()
 
         # Assert
         assert celsius == pytest.approx(26.85)
@@ -95,7 +95,7 @@ class TestWeatherService:
         converter = TemperatureConverter(kelvin_temp)
 
         # Act
-        fahrenheit = converter.convert_to_fahrenheit()
+        fahrenheit = converter.kelvin_to_fahrenheit()
 
         # Assert
         assert fahrenheit == pytest.approx(80.33)
@@ -107,7 +107,7 @@ class TestWeatherService:
         converter = TemperatureConverter(kelvin_temp)
 
         # Act
-        celsius = converter.convert_to_celsius()
+        celsius = converter.kelvin_to_celsius()
 
         # Assert
         assert celsius < -273.15

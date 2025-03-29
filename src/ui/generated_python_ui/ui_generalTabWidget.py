@@ -22,7 +22,7 @@ class Ui_GeneralWidget(object):
     def setupUi(self, GeneralWidget):
         if not GeneralWidget.objectName():
             GeneralWidget.setObjectName("GeneralWidget")
-        GeneralWidget.resize(962, 755)
+        GeneralWidget.resize(1004, 685)
         GeneralWidget.setAutoFillBackground(True)
         GeneralWidget.setStyleSheet("")
         self.horizontalLayout = QHBoxLayout(GeneralWidget)
@@ -237,14 +237,28 @@ class Ui_GeneralWidget(object):
         self.calculateContainerWidget.setSizePolicy(sizePolicy5)
         self.horizontalLayout_6 = QHBoxLayout(self.calculateContainerWidget)
         self.horizontalLayout_6.setObjectName("horizontalLayout_6")
-        self.calculateContainerCheckBox = QCheckBox(
+        self.realTimeTemperaturesControlContainerWidget = QWidget(
             self.calculateContainerWidget
         )
-        self.calculateContainerCheckBox.setObjectName(
-            "calculateContainerCheckBox"
+        self.realTimeTemperaturesControlContainerWidget.setObjectName(
+            "realTimeTemperaturesControlContainerWidget"
+        )
+        self.verticalLayout_7 = QVBoxLayout(
+            self.realTimeTemperaturesControlContainerWidget
+        )
+        self.verticalLayout_7.setObjectName("verticalLayout_7")
+        self.realTimeTemperatureCheckBox = QCheckBox(
+            self.realTimeTemperaturesControlContainerWidget
+        )
+        self.realTimeTemperatureCheckBox.setObjectName(
+            "realTimeTemperatureCheckBox"
         )
 
-        self.horizontalLayout_6.addWidget(self.calculateContainerCheckBox)
+        self.verticalLayout_7.addWidget(self.realTimeTemperatureCheckBox)
+
+        self.horizontalLayout_6.addWidget(
+            self.realTimeTemperaturesControlContainerWidget
+        )
 
         self.calculateContainerPushButton = QPushButton(
             self.calculateContainerWidget
@@ -508,7 +522,7 @@ class Ui_GeneralWidget(object):
         self.temperatureDoubleSpinBox.setSuffix(
             QCoreApplication.translate("GeneralWidget", "\u00b0", None)
         )
-        self.calculateContainerCheckBox.setText(
+        self.realTimeTemperatureCheckBox.setText(
             QCoreApplication.translate(
                 "GeneralWidget", "Real-Time temperatures", None
             )
