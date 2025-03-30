@@ -12,45 +12,63 @@ logger = logging.getLogger("data")
 class DataValidator:
     @staticmethod
     def validate_fuel_type(fuel_type: str) -> bool:
-        logger.info("validating fuel_type")
+        logger.info("DataValidator.validate_fuel_type: Validating fuel type")
         db_path = os.path.join(databases_folder, "fuel_type_conversions.db")
 
         with sqlite3.connect(db_path) as conn:
             cursor = conn.cursor()
             cursor.execute("SELECT fuel_type FROM fuel_types")
             fuel_types = cursor.fetchone()
-            logger.info("fuel_type_conversions.db accessed")
+            logger.info(
+                "DataValidator.validate_fuel_type: Fuel type database accessed"
+            )
             if fuel_type in fuel_types:
-                logger.info(f"fuel_type accessed: {fuel_type}")
-                logger.info("fuel_type validated")
+                logger.info(
+                    f"DataValidator.validate_fuel_type: Checking fuel type '{fuel_type}'"
+                )
+                logger.info(
+                    "DataValidator.validate_fuel_type: Fuel type is valid"
+                )
                 return True
             else:
-                logger.info(f"fuel_type accessed: {fuel_type}")
-                logger.error("fuel_type invalid")
+                logger.info(
+                    f"DataValidator.validate_fuel_type: Checking fuel type '{fuel_type}'"
+                )
+                logger.error(
+                    "DataValidator.validate_fuel_type: Fuel type is invalid"
+                )
                 return False
 
     def validate_fuel_used(self, fuel_used):
         if not isinstance(fuel_used, (int, float)) or fuel_used <= 0:
-            logger.error("fuel_used is not an int or float data type")
+            logger.error(
+                "DataValidator.validate_fuel_used: Invalid data type - must be positive number"
+            )
             return False
         if not self.validate_integer(fuel_used):
             return False
-        logger.info("fuel_used validated")
+        logger.info(
+            "DataValidator.validate_fuel_used: Fuel used value is valid"
+        )
         return True
 
     def validate_user_id(self, user_id):
         if not isinstance(user_id, int) or user_id <= 0:
-            logger.error("user_id is not an int data type")
+            logger.error(
+                "DataValidator.validate_user_id: Invalid data type - must be positive integer"
+            )
             return False
         if not self.validate_integer(user_id):
             return False
-        logger.info("user_id validated")
+        logger.info("DataValidator.validate_user_id: User ID is valid")
         return True
 
     @staticmethod
     def validate_emissions_result(emissions):
         if not isinstance(emissions, (int, float)) or emissions < 0:
-            logger.error("emissions is not int or float")
+            logger.error(
+                "DataValidator.validate_emissions_result: Invalid emissions value - must be non-negative number"
+            )
             return False
         return True
 

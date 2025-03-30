@@ -6,12 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1222</width>
-    <height>755</height>
+    <width>737</width>
+    <height>516</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="autoFillBackground">
@@ -31,7 +34,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1222</width>
+     <width>737</width>
      <height>33</height>
     </rect>
    </property>

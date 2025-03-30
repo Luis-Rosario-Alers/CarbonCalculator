@@ -19,8 +19,14 @@ class ExportManager:
             "conversion_factors",
             "emissions_variables.json",
         )
+        logger.debug(
+            f"ExportManager.__init__: Initialized with database path: {self.db_path}"
+        )
 
     def fetch_data(self):
+        logger.info(
+            "ExportManager.fetch_data: Retrieving emissions data from database"
+        )
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
@@ -29,9 +35,15 @@ class ExportManager:
         )
         data = cursor.fetchall()
         conn.close()
+        logger.debug(
+            f"ExportManager.fetch_data: Retrieved {len(data)} records"
+        )
         return data
 
     def export_to_json(self, output_path):
+        logger.info(
+            f"ExportManager.export_to_json: Starting export to {output_path}"
+        )
         data = self.fetch_data()
 
         # Convert data to a list of dictionaries
@@ -52,9 +64,17 @@ class ExportManager:
         # Write data to JSON file
         with open(output_path, "w") as f:
             json.dump(data_dicts, f, indent=2)
-        logger.info(f"Data exported to {output_path}")
+        logger.info(
+            f"ExportManager.export_to_json: Data exported to {output_path}"
+        )
+        logger.debug(
+            f"ExportManager.export_to_json: Exported {len(data_dicts)} records"
+        )
 
     def export_to_csv(self, output_path):
+        logger.info(
+            f"ExportManager.export_to_csv: Starting export to {output_path}"
+        )
         data = self.fetch_data()
 
         # Write data to CSV file
@@ -73,4 +93,9 @@ class ExportManager:
                 ]
             )
             writer.writerows(data)
-        logger.info(f"Data exported to {output_path}")
+        logger.info(
+            f"ExportManager.export_to_csv: Data exported to {output_path}"
+        )
+        logger.debug(
+            f"ExportManager.export_to_csv: Exported {len(data)} records"
+        )

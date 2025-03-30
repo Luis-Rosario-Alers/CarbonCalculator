@@ -28,9 +28,6 @@ class SettingsController(QObject):
         self.__connect_signals()
 
     def __connect_signals(self) -> None:
-        self.parent_controller.combobox_information.connect(
-            self.handle_initialization_of_settings
-        )
         self.view.emissionsModifiersPathPushButton.clicked.connect(
             self.handle_emissions_path_setting_clicked
         )
@@ -125,7 +122,7 @@ class SettingsController(QObject):
         )
 
     def handle_theme_changed(self, text):
-        self.model.settings_model.update_settings(
+        self.model.settings_model.update_theme(
             **{"Preferences": {"Theme": text}}
         )
 
@@ -153,9 +150,10 @@ class SettingsModel:
 
 
 class SettingsView(QWidget, Ui_settingsWidget):
-    def __init__(self):
+    def __init__(self, parent_view):
         super().__init__()
         self.setupUi(self)
+        self.parent_view = parent_view
 
     def initialize_settings(
         self,
@@ -205,10 +203,15 @@ class SettingsView(QWidget, Ui_settingsWidget):
             self.themeComboBox, current_theme, ["Light", "Dark"]
         )
 
+        # Note: signals are blocked to avoid unnecessary slot activations.
+        self.fetchLocalTemperaturesOnStartupCheckBox.blockSignals(True)
+        self.temperatureUseCheckBox.blockSignals(True)
         self.fetchLocalTemperaturesOnStartupCheckBox.setChecked(
             fetch_local_temps_on_startup
         )
         self.temperatureUseCheckBox.setChecked(use_temperature)
+        self.fetchLocalTemperaturesOnStartupCheckBox.blockSignals(False)
+        self.temperatureUseCheckBox.blockSignals(False)
 
         # Initialize API keys
         openweather_key = api_keys.get("OpenWeatherMap API Key", "")
@@ -227,10 +230,10 @@ class SettingsView(QWidget, Ui_settingsWidget):
         :param items: items that normally go into the combo box
         :return:
         """
-        if current_setting in items:
-            items.remove(current_setting)
-        combo_box.addItem(current_setting)
+        combo_box.blockSignals(True)
         combo_box.addItems(items)
+        combo_box.setCurrentText(current_setting)
+        combo_box.blockSignals(False)
 
     def emissions_modifiers_path_button_clicked(self) -> str:
         input_path, selected_filter = QFileDialog.getOpenFileName(
@@ -269,7 +272,7 @@ class SettingsWidget(QWidget):
         self.parent_controller = parent_controller
         self.parent_view = parent_view
         self.model = SettingsModel(self.application_model)
-        self.view = SettingsView()
+        self.view = SettingsView(self.parent_view)
         self.controller = SettingsController(
             self.model,
             self.view,

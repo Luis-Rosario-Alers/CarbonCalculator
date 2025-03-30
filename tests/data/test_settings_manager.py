@@ -31,7 +31,7 @@ class TestSettingsManager:
         self, mocker, settings_manager
     ):
         # Arrange
-        settings_manager.settings_file = Path("test/path/settings.json")
+        settings_manager.settings_file_path = Path("test/path/settings.json")
         settings_manager.default_settings = {"test": "test"}
         mock_settings_file_exists = mocker.patch(
             "pathlib.Path.exists", return_value=False

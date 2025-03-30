@@ -1,8 +1,9 @@
 import logging
 
 import pandas as pd
-from pyqtgraph import DateAxisItem
+from pyqtgraph import DateAxisItem, mkPen
 from PySide6.QtCore import QObject
+from PySide6.QtGui import QFont
 from PySide6.QtWidgets import QWidget
 
 from src.ui.generated_python_ui.ui_visualizationTabWidget import (
@@ -35,6 +36,10 @@ class VisualizationTabController(QObject):
 
         self.application_controller.view.GeneralTabWidget.controller.combobox_information.connect(
             self.handle_initialization_of_settings_comboboxes
+        )
+
+        self.application_controller.theme_changed.connect(
+            self.view.set_background_for_plot
         )
 
         # NOTE: Please keep the order of these signals because they rely on the sequence in which they are connected.
@@ -188,6 +193,58 @@ class VisualizationTabView(QWidget, Ui_visualizationTab):
         self.setupUi(self)
         self.color_cache = {}
 
+    def set_background_for_plot(self, is_light_mode: bool):
+        if is_light_mode:
+            self.chartPlotWidget.setBackground(
+                "white"
+            )  # White background for light mode
+
+            self.chartPlotWidget.showGrid(x=True, y=True, alpha=0.3)
+
+            bottom_axis = self.chartPlotWidget.getAxis("bottom")
+            left_axis = self.chartPlotWidget.getAxis("left")
+
+            text_color = "#212529"  # Dark text for light mode
+            font = QFont("Helvetica", 10)
+
+            bottom_axis.setTextPen(text_color)
+            left_axis.setTextPen(text_color)
+
+            bottom_axis.setTickFont(font)
+            left_axis.setTickFont(font)
+
+            bottom_axis.setStyle(tickTextOffset=10)
+            left_axis.setStyle(tickTextOffset=10)
+
+            axis_pen = mkPen(color=text_color, width=1)
+            bottom_axis.setPen(axis_pen)
+            left_axis.setPen(axis_pen)
+        else:
+            self.chartPlotWidget.setBackground(
+                "black"
+            )  # Black background for dark mode
+
+            self.chartPlotWidget.showGrid(x=True, y=True, alpha=0.3)
+
+            bottom_axis = self.chartPlotWidget.getAxis("bottom")
+            left_axis = self.chartPlotWidget.getAxis("left")
+
+            text_color = "#F8F9FA"  # Light text for dark mode
+            font = QFont("Helvetica", 10)
+
+            bottom_axis.setTextPen(text_color)
+            left_axis.setTextPen(text_color)
+
+            bottom_axis.setTickFont(font)
+            left_axis.setTickFont(font)
+
+            bottom_axis.setStyle(tickTextOffset=10)
+            left_axis.setStyle(tickTextOffset=10)
+
+            axis_pen = mkPen(color=text_color, width=1)
+            bottom_axis.setPen(axis_pen)
+            left_axis.setPen(axis_pen)
+
     def update_plot(self, data, color, user_id):
         if color:
             self.chartPlotWidget.plot(
@@ -257,7 +314,9 @@ class VisualizationTabView(QWidget, Ui_visualizationTab):
 
     def apply_user_preferences(self, user_preferences):
         preferred_calc_unit = user_preferences
+        self.emissionsUnitComboBox.blockSignals(True)
         self.emissionsUnitComboBox.setCurrentText(preferred_calc_unit)
+        self.emissionsUnitComboBox.blockSignals(False)
 
 
 class VisualizationTabWidget(QWidget):

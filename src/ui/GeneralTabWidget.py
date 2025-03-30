@@ -1,10 +1,11 @@
 import logging
 import os
+from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Tuple
 
-from PySide6.QtCore import QObject, Signal
+from PySide6.QtCore import QObject, Qt, Signal
 from PySide6.QtSql import QSqlDatabase, QSqlTableModel
-from PySide6.QtWidgets import QFileDialog, QTableView, QWidget
+from PySide6.QtWidgets import QFileDialog, QStyle, QTableView, QWidget
 
 from data.database_model import databases_folder
 from data.export_manager import ExportManager
@@ -35,16 +36,13 @@ class GeneralTabController(QObject):
         self.model: "GeneralTabModel" = model
         self.view: "GeneralTabView" = view
         self.application_controller = application_controller
-        self.settingsWidget: SettingsWidget = SettingsWidget(
-            self.application_controller,
-            self.model.application_model,
-            self,
-            self.view,
-        )
+        self.settingsWidget: SettingsWidget = None
         self.__connect_signals()
 
     def __connect_signals(self) -> None:
-        logger.debug("Connecting signals in GeneralTabController")
+        logger.debug(
+            "GeneralTabController.__connect_signals: Connecting signals"
+        )
         self.model.databases_model.databases_initialized.connect(
             self.handle_initialization_of_database_widget
         )
@@ -88,7 +86,7 @@ class GeneralTabController(QObject):
 
     def handle_real_time_temperatures_api_call(self) -> None:
         logger.debug(
-            "GeneralTabWidget: requesting temperature data from OpenWeatherMap"
+            "GeneralTabController.handle_real_time_temperatures_api_call: Requesting temperature data"
         )
         if self.model.settings_model.get_setting(
             "Preferences", "Fetch Local Temperatures On Startup"
@@ -98,7 +96,9 @@ class GeneralTabController(QObject):
             logger.info("skipping temperature data fetch.")
 
     def handle_import_button_clicked(self) -> None:
-        logger.debug("GeneralTabWidget: import button clicked")
+        logger.debug(
+            "GeneralTabController.handle_import_button_clicked: Import button clicked"
+        )
         input_path, file_type = self.view.get_import_file_path()
         if file_type:
             logger.debug(f"GeneralTabWidget: importing {file_type} file")
@@ -114,7 +114,9 @@ class GeneralTabController(QObject):
                 logger.error("GeneralTabWidget: Unsupported file type")
 
     def handle_export_button_clicked(self) -> None:
-        logger.debug("GeneralTabWidget: export button clicked")
+        logger.debug(
+            "GeneralTabController.handle_export_button_clicked: Export button clicked"
+        )
         output_path, selected_filter = self.view.get_export_file_path()
         if output_path:
             logger.debug(f"GeneralTabWidget: exporting {selected_filter} file")
@@ -132,32 +134,35 @@ class GeneralTabController(QObject):
         self.view.load_database_table()
 
     def handle_comboboxes_initialization(self) -> None:
-        combobox_data = {
-            "fuel_types": self.model.databases_model.get_fuel_types(),
-            "farming_techniques": self.model.databases_model.get_farming_techniques(),
-            "fuel_type_units": ["Liters", "Cubic Meters", "Cubic Feet"],
-            "calculation_units": [
-                "Milligrams",
-                "Grams",
-                "Kilograms",
-                "Metric Tons",
-            ],
-            "temperature_types": ["Celsius", "Fahrenheit", "Kelvin"],
-        }
-        self.combobox_information.emit(combobox_data)
-        logger.debug("General Tab Controller: Emitted combobox_information.")
+        logger.debug(
+            "GeneralTabController.handle_comboboxes_initialization: Initializing comboboxes"
+        )
+        combobox_data = self.model.combobox_data
+
+        self.combobox_information.emit(
+            {
+                "fuel_types": combobox_data.fuel_types,
+                "farming_techniques": combobox_data.farming_techniques,
+                "fuel_type_units": combobox_data.fuel_type_units,
+                "calculation_units": combobox_data.calculation_units,
+                "temperature_types": combobox_data.temperature_types,
+            }
+        )
+        logger.debug(
+            "GeneralTabController.handle_comboboxes_initialization: Emitted combobox_information"
+        )
+
         self.view.initialize_combobox_values(
-            combobox_data["fuel_types"],
-            combobox_data["farming_techniques"],
-            combobox_data["fuel_type_units"],
-            combobox_data["temperature_types"],
-            combobox_data["calculation_units"],
+            combobox_data.fuel_types,
+            combobox_data.farming_techniques,
+            combobox_data.fuel_type_units,
+            combobox_data.temperature_types,
+            combobox_data.calculation_units,
         )
 
         self.handle_apply_user_preferences()
 
     def handle_calculate_button_clicked(self) -> None:
-
         (
             user_id,
             fuel_type,
@@ -206,6 +211,41 @@ class GeneralTabController(QObject):
 
     def handle_settings_button_clicked(self) -> None:
         logger.debug("GeneralTabWidget: settings button clicked")
+        # Create settings widget only once (lazy initialization)
+        if not hasattr(self, "settingsWidget") or self.settingsWidget is None:
+            self.settingsWidget = SettingsWidget(
+                self.application_controller,
+                self.model.application_model,
+                self,
+                self.view,
+            )
+
+            # Configure as proper dialog with correct parenting
+            self.settingsWidget.view.setParent(self.view)
+            self.settingsWidget.view.setWindowFlags(Qt.Dialog)
+            self.settingsWidget.view.setWindowModality(Qt.WindowModal)
+
+            combobox_data = self.model.combobox_data
+            combobox_information = {
+                "fuel_types": combobox_data.fuel_types,
+                "farming_techniques": combobox_data.farming_techniques,
+                "fuel_type_units": combobox_data.fuel_type_units,
+                "calculation_units": combobox_data.calculation_units,
+                "temperature_types": combobox_data.temperature_types,
+            }
+            self.settingsWidget.controller.handle_initialization_of_settings(
+                combobox_information
+            )
+
+        # Position dialog centered on parent
+        self.settingsWidget.view.setGeometry(
+            QStyle.alignedRect(
+                Qt.LeftToRight,
+                Qt.AlignCenter,
+                self.settingsWidget.view.size(),
+                self.view.geometry(),
+            )
+        )
         self.settingsWidget.view.show()
 
     def handle_apply_user_preferences(self):
@@ -227,12 +267,48 @@ class GeneralTabController(QObject):
 
 
 class GeneralTabModel:
+    @dataclass
+    class ComboBoxData:
+        fuel_types: List[str] = field(default_factory=list)
+        farming_techniques: List[str] = field(default_factory=list)
+        fuel_type_units: List[str] = field(
+            default_factory=lambda: ["Liters", "Cubic Meters", "Cubic Feet"]
+        )
+        calculation_units: List[str] = field(
+            default_factory=lambda: [
+                "Milligrams",
+                "Grams",
+                "Kilograms",
+                "Metric Tons",
+            ]
+        )
+        temperature_types: List[str] = field(
+            default_factory=lambda: ["Celsius", "Fahrenheit", "Kelvin"]
+        )
+
     def __init__(self, application_model) -> None:
         self.application_model = application_model
         self.databases_model = self.application_model.databases_model
         self.calculation_model = self.application_model.calculation_model
         self.settings_model = self.application_model.settings_model
         self.real_time_temp_data = None
+
+        self.combobox_data = self.ComboBoxData()
+        try:
+            self.combobox_data.fuel_types = (
+                self.databases_model.get_fuel_types()
+            )
+            self.combobox_data.farming_techniques = (
+                self.databases_model.get_farming_techniques()
+            )
+        except Exception as e:
+            logger.debug(
+                f"GeneralTabModel.__init__: Could not load database data: {e}"
+            )
+
+        logger.debug(
+            "GeneralTabModel.__init__: Model initialized with combobox data"
+        )
 
     def load_database_table_content(self) -> None:
         pass

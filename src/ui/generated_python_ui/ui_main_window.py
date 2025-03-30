@@ -13,7 +13,8 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1222, 755)
+        MainWindow.resize(737, 516)
+        MainWindow.setStyleSheet("")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.centralwidget.setAutoFillBackground(False)
@@ -33,7 +34,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName("menubar")
-        self.menubar.setGeometry(QRect(0, 0, 1222, 33))
+        self.menubar.setGeometry(QRect(0, 0, 737, 33))
         self.menuGeneral = QMenu(self.menubar)
         self.menuGeneral.setObjectName("menuGeneral")
         self.menuVisualization = QMenu(self.menubar)

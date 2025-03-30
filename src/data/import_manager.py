@@ -15,9 +15,15 @@ logger = logging.getLogger("data")
 class ImportManager:
     def __init__(self, input_path):
         self.input_path = input_path
+        logger.debug(
+            f"ImportManager.__init__: Initialized with input path: {input_path}"
+        )
 
     @staticmethod
     def insert_data(data):
+        logger.info(
+            f"ImportManager.insert_data: Inserting {len(data)} records into database"
+        )
         db_path = os.path.join(databases_folder, "emissions.db")
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
@@ -26,11 +32,18 @@ class ImportManager:
         )
         conn.commit()
         conn.close()
+        logger.debug("ImportManager.insert_data: Database insertion completed")
 
     def import_from_json(self):
+        logger.info(
+            f"ImportManager.import_from_json: Importing data from JSON file: {self.input_path}"
+        )
         with open(self.input_path, "r") as f:
             data_dicts = json.load(f)
 
+        logger.debug(
+            f"ImportManager.import_from_json: Loaded {len(data_dicts)} entries from JSON"
+        )
         required_keys = {
             "user_id",
             "fuel_type",
@@ -47,11 +60,15 @@ class ImportManager:
             # assigns the difference of those 2 values to missing keys.
             missing_keys = required_keys - entry.keys()
             if len(missing_keys) > 0:
-                logger.error(f"Missing required keys: {missing_keys}")
+                logger.error(
+                    f"ImportManager.import_from_json: Missing required keys: {missing_keys}"
+                )
                 raise ValueError(f"Missing required keys: {missing_keys}")
             for key in required_keys:
                 if key not in entry or entry[key] is None or entry[key] == "":
-                    logger.error(f"Missing value for key: {key}")
+                    logger.error(
+                        f"ImportManager.import_from_json: Missing value for key: {key}"
+                    )
                     raise ValueError(f"Missing value for key: {key}")
 
         # Convert data to a list of tuples
@@ -70,10 +87,15 @@ class ImportManager:
         ]
 
         self.insert_data(data)
-        logger.info(f"Data imported successfully from {self.input_path}")
+        logger.info(
+            f"ImportManager.import_from_json: Data imported successfully from {self.input_path}"
+        )
         return data
 
     def import_from_csv(self) -> List[tuple]:
+        logger.info(
+            f"ImportManager.import_from_csv: Importing data from CSV file: {self.input_path}"
+        )
         # Initialize encoding to None before detection attempt
         encoding = None
 
@@ -85,15 +107,17 @@ class ImportManager:
                 encoding = detected["encoding"]
                 confidence = detected["confidence"]
                 logger.info(
-                    f"Detected encoding: {encoding} with confidence: {confidence:.2%}"
+                    f"ImportManager.import_from_csv: Detected encoding: {encoding} with confidence: {confidence:.2%}"
                 )
 
                 if confidence < 0.6:
                     logger.warning(
-                        f"Low confidence in encoding detection: {confidence:.2%}"
+                        f"ImportManager.import_from_csv: Low confidence in encoding detection: {confidence:.2%}"
                     )
         except Exception as e:
-            logger.error(f"Error detecting file encoding: {str(e)}")
+            logger.error(
+                f"ImportManager.import_from_csv: Error detecting file encoding: {str(e)}"
+            )
             encoding = None
 
         # Fallback encodings to try if detection fails
@@ -110,7 +134,12 @@ class ImportManager:
                 ) as csv_file:
                     reader = csv.DictReader(csv_file)
                     data_dicts = [row for row in reader]
-                    logger.info(f"Successfully read file with encoding: {enc}")
+                    logger.info(
+                        f"ImportManager.import_from_csv: Successfully read file with encoding: {enc}"
+                    )
+                    logger.debug(
+                        f"ImportManager.import_from_csv: Loaded {len(data_dicts)} entries from CSV"
+                    )
 
                     required_keys = {
                         "user_id",
@@ -127,7 +156,7 @@ class ImportManager:
                         missing_keys = required_keys - row.keys()
                         if len(missing_keys) > 0:
                             logger.error(
-                                f"Missing required keys: {missing_keys}"
+                                f"ImportManager.import_from_csv: Missing required keys: {missing_keys}"
                             )
                             raise ValueError(
                                 f"Missing required keys: {missing_keys}"
@@ -138,7 +167,9 @@ class ImportManager:
                                 or row[key] is None
                                 or row[key] == ""
                             ):
-                                logger.error(f"Missing value for key: {key}")
+                                logger.error(
+                                    f"ImportManager.import_from_csv: Missing value for key: {key}"
+                                )
                                 raise ValueError(
                                     f"Missing value for key: {key}"
                                 )
@@ -160,12 +191,14 @@ class ImportManager:
 
                     self.insert_data(data)
                     logger.info(
-                        f"Data imported successfully from {self.input_path}"
+                        f"ImportManager.import_from_csv: Data imported successfully from {self.input_path}"
                     )
                     return data
 
             except UnicodeDecodeError:
-                logger.warning(f"Failed to read with encoding: {enc}")
+                logger.warning(
+                    f"ImportManager.import_from_csv: Failed to read with encoding: {enc}"
+                )
                 continue
 
         raise ValueError(

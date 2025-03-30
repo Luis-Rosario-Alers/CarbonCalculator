@@ -1,9 +1,11 @@
 import logging
+import os
 import sys
 
 from PySide6.QtCore import QObject, Signal
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget
 
+from data.database_model import application_path
 from data.settings_model import SettingsModel
 from src.core.emissions_calculator import calculationModel
 from src.data.database_model import databasesModel
@@ -21,6 +23,7 @@ class MainWindowController(QObject):
     initialization = Signal()
     application_closed = Signal()
     tab_changed = Signal(int)
+    theme_changed = Signal(bool)  # True if light mode, False if dark mode
 
     def __init__(self, model, view):
         super().__init__()
@@ -40,6 +43,10 @@ class MainWindowController(QObject):
             self.model.databases_model.log_transaction
         )
 
+        self.model.settings_model.theme_changed.connect(
+            self.handle_theme_changed
+        )
+
     def send_initialization_signal(self):
         logger.debug("Main Window Controller: emitting initialization signal")
         self.initialization.emit()  # this starts the initialization sequence
@@ -50,9 +57,28 @@ class MainWindowController(QObject):
         )
         self.application_closed.emit()
 
+    def initialize_theme(self):
+        logger.debug("Main Window Controller: initializing theme")
+        theme = self.model.settings_model.get_setting("Preferences", "Theme")
+        if theme == "Light":
+            self.handle_theme_changed(True)
+        else:
+            self.handle_theme_changed(False)
+
     def handle_tab_changed(self, index):
         logger.debug(f"Tab changed to index {index}")
         self.tab_changed.emit(index)
+
+    def handle_theme_changed(self, is_light_mode: bool) -> None:
+        theme_name = "light_theme.qss" if is_light_mode else "dark_theme.qss"
+        stylesheet_path = os.path.join(
+            application_path, "resources", "GUI_files", "styles", theme_name
+        )
+
+        with open(stylesheet_path, "r", encoding="utf-8") as f:
+            stylesheet = f.read()
+            QApplication.instance().setStyleSheet(stylesheet)
+            self.theme_changed.emit(is_light_mode)
 
 
 # Model: The app model handles APPLICATION WIDE STATE.
@@ -145,6 +171,8 @@ class MainWindowWidget(QMainWindow):
         )  # setups up all tabs for application
         self.controller.connect_signals()
         self.controller.send_initialization_signal()  # send signal to initialize all models
+        self.controller.initialize_theme()
+
         self.view.show()
 
     """

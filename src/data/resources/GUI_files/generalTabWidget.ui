@@ -2,22 +2,341 @@
 <ui version="4.0">
  <class>GeneralWidget</class>
  <widget class="QWidget" name="GeneralWidget">
+  <property name="windowModality">
+   <enum>Qt::WindowModality::NonModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1004</width>
-    <height>685</height>
+    <width>1179</width>
+    <height>663</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>General</string>
   </property>
   <property name="autoFillBackground">
-   <bool>true</bool>
+   <bool>false</bool>
   </property>
   <property name="styleSheet">
-   <string notr="true"/>
+   <string notr="true">/* Main Application Style */
+QWidget, QMainWindow {
+    background-color: #f8f9fa;
+    color: #212529;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 10pt;
+}
+
+/* MainWindow specific */
+QMainWindow {
+    border: none;
+}
+
+QMainWindow::separator {
+    background-color: #dee2e6;
+    width: 1px;
+    height: 1px;
+}
+
+QStatusBar {
+    background-color: #f1f3f5;
+    color: #495057;
+    border-top: 1px solid #dee2e6;
+}
+
+/* Menu styling */
+QMenuBar {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+QMenuBar::item {
+    background-color: transparent;
+    padding: 4px 10px;
+    border-radius: 3px;
+}
+
+QMenuBar::item:selected, QMenuBar::item:pressed {
+    background-color: #e9ecef;
+}
+
+QMenu {
+    background-color: #ffffff;
+    border: 1px solid #adb5bd;
+    border-radius: 4px;
+    padding: 2px;
+}
+
+QMenu::item {
+    padding: 5px 30px 5px 20px;
+    border-radius: 3px;
+    min-width: 150px;
+}
+
+QMenu::item:selected {
+    background-color: #e9ecef;
+    color: #212529;
+}
+
+QMenu::icon {
+    padding-left: 10px;
+}
+
+QMenu::separator {
+    height: 1px;
+    background-color: #dee2e6;
+    margin: 3px 10px;
+}
+
+QMenu::indicator {
+    width: 15px;
+    height: 15px;
+    padding-left: 5px;
+}
+
+/* Labels */
+QLabel {
+    color: #343a40;
+    padding: 2px;
+}
+
+QLabel#farmingVariablesLabel, QLabel#recentTransactionsHeaderLabel {
+    font-size: 12pt;
+    font-weight: bold;
+    color: #0d6efd;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+}
+
+QLabel#madeByCreditsLabel {
+    color: #6c757d;
+    font-size: 9pt;
+}
+
+/* Buttons - Only interactive elements have borders */
+QPushButton {
+    background-color: #e9ecef;
+    border: 1px solid #adb5bd;
+    border-radius: 4px;
+    padding: 5px 15px;
+    color: #495057;
+}
+
+QPushButton:hover {
+    background-color: #dee2e6;
+    border-color: #6c757d;
+}
+
+QPushButton:pressed {
+    background-color: #ced4da;
+    border-color: #495057;
+}
+
+QPushButton#calculateContainerPushButton {
+    background-color: #0d6efd;
+    color: white;
+    font-weight: bold;
+    border-color: #0b5ed7;
+}
+
+QPushButton#calculateContainerPushButton:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+}
+
+QPushButton#calculateContainerPushButton:pressed {
+    background-color: #0a58ca;
+    border-color: #0a53be;
+}
+
+/* ComboBoxes */
+QComboBox {
+    border: 1px solid #adb5bd;
+    border-radius: 4px;
+    padding: 3px 5px;
+    background-color: white;
+    min-height: 22px;
+}
+
+QComboBox::drop-down {
+    subcontrol-origin: padding;
+    subcontrol-position: top right;
+    width: 20px;
+    border-left: 1px solid #adb5bd;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    background-color: #e9ecef;
+}
+
+QComboBox::down-arrow {
+    image: url(:/icons/svgs/solid/chevron-down.svg);
+    width: 12px;
+    height: 12px;
+}
+
+QComboBox:on {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    border-color: #6c757d;
+}
+
+QComboBox:hover {
+    border-color: #6c757d;
+}
+
+QComboBox QAbstractItemView {
+    border: 1px solid #adb5bd;
+    background-color: white;
+    selection-background-color: #0d6efd;
+    selection-color: white;
+}
+
+/* Spin Boxes */
+QDoubleSpinBox {
+    border: 1px solid #adb5bd;
+    border-radius: 4px;
+    padding: 3px 5px;
+    background-color: white;
+    min-height: 22px;
+}
+
+QDoubleSpinBox::up-button, QDoubleSpinBox::down-button {
+    background-color: #e9ecef;
+    border: 1px solid #adb5bd;
+    border-radius: 2px;
+    width: 16px;
+}
+
+QDoubleSpinBox::up-button:hover, QDoubleSpinBox::down-button:hover {
+    background-color: #dee2e6;
+    border-color: #6c757d;
+}
+
+QDoubleSpinBox::up-button:pressed, QDoubleSpinBox::down-button:pressed {
+    background-color: #ced4da;
+    border-color: #495057;
+}
+
+/* CheckBox */
+QCheckBox {
+    spacing: 5px;
+}
+
+QCheckBox::indicator {
+    width: 15px;
+    height: 15px;
+    border: 1px solid #adb5bd;
+    border-radius: 3px;
+    background-color: white;
+}
+
+QCheckBox::indicator:checked {
+    background-color: #0d6efd;
+    border-color: #0b5ed7;
+    image: url(:/icons/svgs/solid/check.svg);
+}
+
+QCheckBox::indicator:hover {
+    border-color: #0d6efd;
+}
+
+/* TableView - Keep borders on data views */
+QTableView {
+    background-color: white;
+    border: 2px solid #adb5bd;
+    border-radius: 4px;
+    gridline-color: #e9ecef;
+    selection-background-color: #cfe2ff;
+    selection-color: #212529;
+}
+
+QTableView::item {
+    padding: 5px;
+}
+
+QTableView::item:hover {
+    background-color: #f1f3f5;
+}
+
+QHeaderView::section {
+    background-color: #e9ecef;
+    border: none;
+    border-right: 1px solid #adb5bd;
+    border-bottom: 1px solid #adb5bd;
+    padding: 5px;
+    font-weight: bold;
+}
+
+/* ProgressBar */
+QProgressBar {
+    border: 1px solid #adb5bd;
+    border-radius: 4px;
+    background-color: #e9ecef;
+    text-align: center;
+    color: #212529;
+    height: 14px;
+}
+
+QProgressBar::chunk {
+    background-color: #0d6efd;
+    border-radius: 3px;
+}
+
+/* Frames and Panels - Remove borders from containers */
+QFrame {
+    border: none;
+    border-radius: 4px;
+}
+
+/* Container widgets styling - No borders for better blending */
+#farmingVariablesWidget, #calculateContainerWidget, #moreWidget {
+    background-color: white;
+    border-radius: 6px;
+    padding: 5px;
+}
+
+#leftBar, #rightBar {
+    background-color: #f1f3f5;
+    border-radius: 4px;
+}
+
+#mainBody {
+    background-color: white;
+    border-radius: 4px;
+}
+
+/* Toolbar styling */
+QToolBar {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    spacing: 2px;
+    padding: 2px;
+}
+
+QToolBar::separator {
+    width: 1px;
+    background-color: #adb5bd;
+    margin: 0 4px;
+}
+
+QToolButton {
+    background-color: transparent;
+    border: 1px solid transparent;
+    border-radius: 3px;
+    padding: 3px;
+}
+
+QToolButton:hover {
+    background-color: #e9ecef;
+    border-color: #adb5bd;
+}
+
+QToolButton:pressed {
+    background-color: #dee2e6;
+    border-color: #6c757d;
+}</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
@@ -33,6 +352,9 @@
        <width>16777215</width>
        <height>16777215</height>
       </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
@@ -63,7 +385,9 @@
            </property>
            <property name="font">
             <font>
-             <pointsize>10</pointsize>
+             <family>Segoe UI</family>
+             <pointsize>12</pointsize>
+             <bold>true</bold>
             </font>
            </property>
            <property name="text">
@@ -129,6 +453,9 @@
                 <horstretch>0</horstretch>
                 <verstretch>0</verstretch>
                </sizepolicy>
+              </property>
+              <property name="styleSheet">
+               <string notr="true"/>
               </property>
               <property name="accelerated">
                <bool>true</bool>
@@ -296,7 +623,7 @@
                <string>Edit Database</string>
               </property>
               <property name="icon">
-               <iconset>
+               <iconset resource="icons.qrc">
                 <normaloff>:/icons/svgs/solid/database.svg</normaloff>:/icons/svgs/solid/database.svg</iconset>
               </property>
              </widget>
@@ -307,7 +634,7 @@
                <string>Import</string>
               </property>
               <property name="icon">
-               <iconset>
+               <iconset resource="icons.qrc">
                 <normaloff>:/icons/svgs/solid/file-import.svg</normaloff>:/icons/svgs/solid/file-import.svg</iconset>
               </property>
              </widget>
@@ -318,7 +645,7 @@
                <string>Export</string>
               </property>
               <property name="icon">
-               <iconset>
+               <iconset resource="icons.qrc">
                 <normaloff>:/icons/svgs/solid/file-export.svg</normaloff>:/icons/svgs/solid/file-export.svg</iconset>
               </property>
              </widget>
@@ -349,6 +676,8 @@
      </property>
      <property name="font">
       <font>
+       <family>Segoe UI</family>
+       <pointsize>10</pointsize>
        <underline>false</underline>
        <strikeout>false</strikeout>
       </font>
@@ -358,6 +687,8 @@
        <widget class="QLabel" name="mainBodyPlaceholderLabel">
         <property name="font">
          <font>
+          <family>Segoe UI</family>
+          <pointsize>10</pointsize>
           <underline>false</underline>
           <strikeout>false</strikeout>
           <kerning>false</kerning>
@@ -378,6 +709,8 @@
        <widget class="QLabel" name="madeByCreditsLabel">
         <property name="font">
          <font>
+          <family>Segoe UI</family>
+          <pointsize>9</pointsize>
           <italic>true</italic>
           <bold>true</bold>
           <underline>false</underline>
@@ -405,7 +738,9 @@
           <widget class="QLabel" name="recentTransactionsHeaderLabel">
            <property name="font">
             <font>
-             <pointsize>15</pointsize>
+             <family>Segoe UI</family>
+             <pointsize>12</pointsize>
+             <bold>true</bold>
             </font>
            </property>
            <property name="text">

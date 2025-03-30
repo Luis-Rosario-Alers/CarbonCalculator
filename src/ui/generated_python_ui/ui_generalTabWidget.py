@@ -22,9 +22,9 @@ class Ui_GeneralWidget(object):
     def setupUi(self, GeneralWidget):
         if not GeneralWidget.objectName():
             GeneralWidget.setObjectName("GeneralWidget")
-        GeneralWidget.resize(1004, 685)
-        GeneralWidget.setAutoFillBackground(True)
-        GeneralWidget.setStyleSheet("")
+        GeneralWidget.setWindowModality(Qt.WindowModality.NonModal)
+        GeneralWidget.resize(1179, 685)
+        GeneralWidget.setAutoFillBackground(False)
         self.horizontalLayout = QHBoxLayout(GeneralWidget)
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.leftBar = QWidget(GeneralWidget)
@@ -39,6 +39,7 @@ class Ui_GeneralWidget(object):
         )
         self.leftBar.setSizePolicy(sizePolicy)
         self.leftBar.setMaximumSize(QSize(16777215, 16777215))
+        self.leftBar.setStyleSheet("")
         self.verticalLayout_2 = QVBoxLayout(self.leftBar)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.farmingVariablesWidget = QWidget(self.leftBar)
@@ -65,7 +66,9 @@ class Ui_GeneralWidget(object):
         )
         self.farmingVariablesLabel.setSizePolicy(sizePolicy)
         font = QFont()
-        font.setPointSize(10)
+        font.setFamilies(["Segoe UI"])
+        font.setPointSize(12)
+        font.setBold(True)
         self.farmingVariablesLabel.setFont(font)
         self.farmingVariablesLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
@@ -129,6 +132,7 @@ class Ui_GeneralWidget(object):
             self.amountOfFuelUsedDoubleSpinBox.sizePolicy().hasHeightForWidth()
         )
         self.amountOfFuelUsedDoubleSpinBox.setSizePolicy(sizePolicy2)
+        self.amountOfFuelUsedDoubleSpinBox.setStyleSheet("")
         self.amountOfFuelUsedDoubleSpinBox.setAccelerated(True)
         self.amountOfFuelUsedDoubleSpinBox.setMinimum(-1000.000000000000000)
         self.amountOfFuelUsedDoubleSpinBox.setMaximum(1000.000000000000000)
@@ -365,6 +369,8 @@ class Ui_GeneralWidget(object):
         self.mainBody.setObjectName("mainBody")
         self.mainBody.setSizeIncrement(QSize(10, 0))
         font1 = QFont()
+        font1.setFamilies(["Segoe UI"])
+        font1.setPointSize(10)
         font1.setUnderline(False)
         font1.setStrikeOut(False)
         self.mainBody.setFont(font1)
@@ -373,6 +379,8 @@ class Ui_GeneralWidget(object):
         self.mainBodyPlaceholderLabel = QLabel(self.mainBody)
         self.mainBodyPlaceholderLabel.setObjectName("mainBodyPlaceholderLabel")
         font2 = QFont()
+        font2.setFamilies(["Segoe UI"])
+        font2.setPointSize(10)
         font2.setUnderline(False)
         font2.setStrikeOut(False)
         font2.setKerning(False)
@@ -387,6 +395,8 @@ class Ui_GeneralWidget(object):
         self.madeByCreditsLabel = QLabel(self.mainBody)
         self.madeByCreditsLabel.setObjectName("madeByCreditsLabel")
         font3 = QFont()
+        font3.setFamilies(["Segoe UI"])
+        font3.setPointSize(9)
         font3.setBold(True)
         font3.setItalic(True)
         font3.setUnderline(False)
@@ -418,9 +428,7 @@ class Ui_GeneralWidget(object):
         self.recentTransactionsHeaderLabel.setObjectName(
             "recentTransactionsHeaderLabel"
         )
-        font4 = QFont()
-        font4.setPointSize(15)
-        self.recentTransactionsHeaderLabel.setFont(font4)
+        self.recentTransactionsHeaderLabel.setFont(font)
         self.recentTransactionsHeaderLabel.setAlignment(
             Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignHCenter
         )
