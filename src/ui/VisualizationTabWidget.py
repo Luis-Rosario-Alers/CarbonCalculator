@@ -24,6 +24,8 @@ class VisualizationTabController(QObject):
         self.emissions_unit = None
         self.user_id = None
         self.fuel_type = None
+        self.start_time = None
+        self.end_time = None
         self.__connect_signals()
 
     def __connect_signals(self):
@@ -55,6 +57,14 @@ class VisualizationTabController(QObject):
             self.handle_filter_changed
         )
 
+        self.view.startTimeFrameDataTimeEdit.dateTimeChanged.connect(
+            self.handle_filter_changed
+        )
+
+        self.view.endTimeFrameDataTimeEdit.dateTimeChanged.connect(
+            self.handle_filter_changed
+        )
+
     def handle_update_plot(self):
         """
         Handles visualization by either plotting a single plot_user_id graph line
@@ -83,6 +93,8 @@ class VisualizationTabController(QObject):
         self.emissions_unit = self.view.emissionsUnitComboBox.currentText()
         self.fuel_type = self.view.fuelTypeComboBox.currentText()
         self.user_id = str(self.view.userIDLineEdit.text())
+        self.start_time = self.view.startTimeFrameDataTimeEdit.dateTime()
+        self.end_time = self.view.endTimeFrameDataTimeEdit.dateTime()
         # Update plot units once at the beginning
         self.view.update_plot_units(self.emissions_unit)
 
@@ -146,7 +158,12 @@ class VisualizationTabController(QObject):
         logger.debug(
             f"Visualization Tab Controller: Cache miss for user {user_id}, fetching data"
         )
+        date_time_format = "yyyy-MM-dd HH:mm:ss"
         data = self.model.databases_model.get_emissions_history(
+            time_frame=[
+                self.start_time.toString(date_time_format),
+                self.end_time.toString(date_time_format),
+            ],
             emissions_unit=self.emissions_unit,
             fuel_type=self.fuel_type,
             user_id=user_id,
@@ -213,11 +230,8 @@ class VisualizationTabController(QObject):
         preferred_calc_unit = self.model.settings_model.get_setting(
             "Preferences", "Calculation Unit of Measurement"
         )
-        preferred_user_id = str(
-            self.model.settings_model.get_setting("Preferences", "User ID")
-        )
         self.view.apply_user_preferences(
-            [preferred_calc_unit, preferred_user_id]
+            preferred_calc_unit
         )  # List user preferences
 
     def handle_filter_changed(self):
@@ -231,16 +245,28 @@ class VisualizationTabController(QObject):
         prev_emissions_unit = self.emissions_unit
         prev_fuel_type = self.fuel_type
         prev_user_id = self.user_id
+        prev_start_time = self.start_time
+        prev_end_time = self.end_time
 
         # Update current filter parameters
         self._prepare_visualization_parameters()
+
+        time_range_expanded = (
+            prev_start_time > self.start_time or prev_end_time < self.end_time
+        )
+        time_range_valid = (
+            not self.start_time > self.end_time
+            or not self.end_time < self.start_time
+        )
 
         # Check if units or fuel type changed - these require redrawing plots
         if (
             prev_emissions_unit != self.emissions_unit
             or prev_fuel_type != self.fuel_type
+            or time_range_expanded
+            and time_range_valid
         ):
-            # Units or fuel type changed - redraw everything
+            # Units or fuel type chaned - redraw everything
             logger.debug(
                 "Visualization Tab Controller: Units or fuel type changed - redrawing plots"
             )
@@ -253,6 +279,21 @@ class VisualizationTabController(QObject):
             return
 
         # Only user ID filter changed - use visibility to optimize
+        time_range_narrowed = (
+            prev_start_time < self.start_time or prev_end_time > self.end_time
+        )
+        if time_range_narrowed and time_range_valid:
+            logger.debug(
+                "Visualization Tab Controller: Time range narrowed - adjusting visible range"
+            )
+            # Convert to timestamp for pyqtgraph
+            start_timestamp = self.start_time.toSecsSinceEpoch()
+            end_timestamp = self.end_time.toSecsSinceEpoch()
+            # Set the visible range on the x-axis
+            self.view.chartPlotWidget.setXRange(start_timestamp, end_timestamp)
+
+            return
+
         if prev_user_id != self.user_id:
             logger.debug(
                 "Visualization Tab Controller: Only user ID filter changed"
@@ -484,12 +525,9 @@ class VisualizationTabView(QWidget, Ui_visualizationTab):
         )
 
     def apply_user_preferences(self, user_preferences):
-        preferred_calc_unit, preferred_user_id = user_preferences
+        preferred_calc_unit = user_preferences
         self.emissionsUnitComboBox.blockSignals(True)
-        self.userIDLineEdit.blockSignals(True)
         self.emissionsUnitComboBox.setCurrentText(preferred_calc_unit)
-        self.userIDLineEdit.setText(preferred_user_id)
-        self.userIDLineEdit.blockSignals(False)
         self.emissionsUnitComboBox.blockSignals(False)
 
 

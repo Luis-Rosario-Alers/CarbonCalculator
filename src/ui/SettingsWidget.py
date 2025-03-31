@@ -197,7 +197,7 @@ class SettingsView(QWidget, Ui_settingsWidget):
             "Fetch Local Temperatures On Startup", True
         )
         use_temperature = preference_settings.get("Use Temperature", True)
-        current_user_id = preference_settings.get("User ID", 1)
+        current_user_id = preference_settings.get("User ID", "1")
 
         # insert settings into comboboxes
         # Fixme: This function seems to over write the emissions_modifiers_path for the [[settings.json]] file
@@ -229,7 +229,7 @@ class SettingsView(QWidget, Ui_settingsWidget):
         self.fetchLocalTemperaturesOnStartupCheckBox.blockSignals(False)
         self.temperatureUseCheckBox.blockSignals(False)
 
-        self.preferredUserIDSpinBox.setValue(current_user_id)
+        self.preferredUserIDSpinBox.setValue(int(current_user_id))
         self.preferredUserIDSpinBox.blockSignals(False)
 
         # Initialize API keys

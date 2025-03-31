@@ -552,7 +552,6 @@ class databasesModel(QObject):
     @staticmethod
     def get_emissions_history(
         time_frame=None,
-        time_limit=None,
         user_id=None,
         fuel_type=None,
         emissions_unit=None,
@@ -562,8 +561,7 @@ class databasesModel(QObject):
         :param emissions_unit: The unit of measurement for emissions (e.g., kg CO2e)
         :param user_id: The ID of the user whose emissions history is being queried
         :param fuel_type: The type of fuel used (e.g., diesel, gasoline)
-        :param time_frame: The time frame for the emissions history (e.g., Days, Months, Years)
-        :param time_limit: The limit for the time frame (e.g., 30 for 30 days)
+        :param time_frame: The time frame for the emission history Ex. "1/1/2025 -- 1/1/2026." Start - End.
         :returns: Emissions History for filter parameters
         """
         logger.info(
@@ -577,17 +575,11 @@ class databasesModel(QObject):
                 params = []
 
                 if time_frame is not None:
-                    if time_frame == "Years":
-                        query += " AND timestamp >= datetime('now', ?)"
-                        params.append(f"-{time_limit * 365} days")
-                    elif time_frame == "Months":
-                        query += " AND timestamp >= datetime('now', ?)"
-                        params.append(f"-{time_limit * 30} days")
-                    elif time_frame == "Days":
-                        query += " AND timestamp >= datetime('now', ?)"
-                        params.append(f"-{time_limit} days")
-                else:
-                    pass
+                    query += (
+                        " AND timestamp BETWEEN datetime(?) AND datetime(?)"
+                    )
+                    params.append(time_frame[0])
+                    params.append(time_frame[1])
 
                 if isinstance(user_id, str):
                     query += " AND user_id = ?"

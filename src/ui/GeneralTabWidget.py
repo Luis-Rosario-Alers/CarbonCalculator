@@ -579,7 +579,7 @@ class GeneralTabView(QWidget, Ui_GeneralWidget):
         self.calculationUnitOfMeasurementComboBox.setCurrentText(
             preferred_calc_unit
         )
-        self.userIDSpinBox.setValue(preferred_user_id)
+        self.userIDSpinBox.setValue(int(preferred_user_id))
         if use_temperature:
             pass
         else:

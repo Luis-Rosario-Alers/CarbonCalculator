@@ -182,7 +182,7 @@ class ImportManager:
                             row["fuel_used"],
                             row["emissions"],
                             row["emissions_unit"],
-                            float(row["temperature"]),
+                            row["temperature"],
                             row["farming_technique"],
                             row["timestamp"],
                         )
