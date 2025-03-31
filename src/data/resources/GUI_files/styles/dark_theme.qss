@@ -197,12 +197,42 @@ QDoubleSpinBox:hover, QSpinBox:hover {
     border-color: #6c757d;
 }
 
+QDoubleSpinBox:focus, QSpinBox:focus {
+    border-color: #0d6efd;
+    background-color: #2d2d2d;
+}
+
 QDoubleSpinBox::up-button, QDoubleSpinBox::down-button,
 QSpinBox::up-button, QSpinBox::down-button {
     background-color: #3a3a3a;
     border: 1px solid #495057;
     width: 16px;
     border-radius: 2px;
+    subcontrol-origin: border;
+}
+
+QDoubleSpinBox::up-button, QSpinBox::up-button {
+    subcontrol-position: top right;
+    border-top-right-radius: 3px;
+    margin-top: 1px;
+}
+
+QDoubleSpinBox::down-button, QSpinBox::down-button {
+    subcontrol-position: bottom right;
+    border-bottom-right-radius: 3px;
+    margin-bottom: 1px;
+}
+
+QDoubleSpinBox::up-arrow, QSpinBox::up-arrow {
+    image: url(:/icons/svgs/solid/chevron-up.svg);
+    width: 10px;
+    height: 10px;
+}
+
+QDoubleSpinBox::down-arrow, QSpinBox::down-arrow {
+    image: url(:/icons/svgs/solid/chevron-down.svg);
+    width: 10px;
+    height: 10px;
 }
 
 QDoubleSpinBox::up-button:hover, QDoubleSpinBox::down-button:hover,
@@ -431,6 +461,11 @@ QDoubleSpinBox::up-button:disabled, QDoubleSpinBox::down-button:disabled,
 QSpinBox::up-button:disabled, QSpinBox::down-button:disabled {
     background-color: #1a1a1a;
     border-color: #3a3a3a;
+}
+
+QDoubleSpinBox::up-arrow:disabled, QSpinBox::up-arrow:disabled,
+QDoubleSpinBox::down-arrow:disabled, QSpinBox::down-arrow:disabled {
+    opacity: 0.5;
 }
 
 QCheckBox:disabled, QRadioButton:disabled {

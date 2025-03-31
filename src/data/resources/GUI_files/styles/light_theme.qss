@@ -194,10 +194,17 @@ QComboBox QAbstractItemView::item:selected:hover {
 /* ================= SPINBOX CONTROLS ================= */
 QDoubleSpinBox, QSpinBox {
     padding-right: 20px;
+    background-color: white;
+    selection-background-color: #0d6efd;
+    selection-color: white;
 }
 
 QDoubleSpinBox:hover, QSpinBox:hover {
     border-color: #6c757d;
+}
+
+QDoubleSpinBox:focus, QSpinBox:focus {
+    border-color: #0d6efd;
 }
 
 QDoubleSpinBox::up-button, QDoubleSpinBox::down-button,
@@ -218,6 +225,26 @@ QDoubleSpinBox::up-button:pressed, QDoubleSpinBox::down-button:pressed,
 QSpinBox::up-button:pressed, QSpinBox::down-button:pressed {
     background-color: #ced4da;
     border-color: #495057;
+}
+
+/* Spinbox arrows */
+QDoubleSpinBox::up-arrow, QSpinBox::up-arrow {
+    image: url(:/icons/svgs/solid/chevron-up.svg);
+    width: 10px;
+    height: 10px;
+}
+
+QDoubleSpinBox::down-arrow, QSpinBox::down-arrow {
+    image: url(:/icons/svgs/solid/chevron-down.svg);
+    width: 10px;
+    height: 10px;
+}
+
+/* Spinbox disabled state */
+QDoubleSpinBox:disabled, QSpinBox:disabled {
+    background-color: #f1f3f5;
+    color: #adb5bd;
+    border-color: #dee2e6;
 }
 
 /* ================= TEXT CONTROLS ================= */

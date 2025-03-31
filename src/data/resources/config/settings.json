@@ -10,8 +10,9 @@
         "Temperature Measurement Unit": "Celsius",
         "Calculation Unit of Measurement": "Kilograms",
         "Language": "English",
-        "Theme": "Light",
+        "Theme": "Dark",
         "Fetch Local Temperatures On Startup": false,
-        "Use Temperature": true
+        "Use Temperature": true,
+        "User ID": 0
     }
 }

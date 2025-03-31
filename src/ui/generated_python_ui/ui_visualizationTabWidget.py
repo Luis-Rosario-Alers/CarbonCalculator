@@ -16,6 +16,8 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from src.ui.generated_python_ui import icons_rc  # noqa: F401
+
 
 class Ui_visualizationTab(object):
     def setupUi(self, visualizationTab):

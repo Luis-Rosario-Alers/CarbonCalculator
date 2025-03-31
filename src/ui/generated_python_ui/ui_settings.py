@@ -8,16 +8,19 @@ from PySide6.QtWidgets import (
     QLineEdit,
     QPushButton,
     QSizePolicy,
+    QSpinBox,
     QVBoxLayout,
     QWidget,
 )
+
+from src.ui.generated_python_ui import icons_rc  # noqa: F401
 
 
 class Ui_settingsWidget(object):
     def setupUi(self, settingsWidget):
         if not settingsWidget.objectName():
             settingsWidget.setObjectName("settingsWidget")
-        settingsWidget.resize(370, 546)
+        settingsWidget.resize(370, 636)
         self.horizontalLayout = QHBoxLayout(settingsWidget)
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.leftBar = QWidget(settingsWidget)
@@ -116,6 +119,7 @@ class Ui_settingsWidget(object):
 
         self.ipInfoAPIKeyLineEdit = QLineEdit(self.ipInfoAPIKeyWidget)
         self.ipInfoAPIKeyLineEdit.setObjectName("ipInfoAPIKeyLineEdit")
+        self.ipInfoAPIKeyLineEdit.setStyleSheet("")
 
         self.horizontalLayout_4.addWidget(self.ipInfoAPIKeyLineEdit)
 
@@ -145,6 +149,9 @@ class Ui_settingsWidget(object):
         )
         self.openWeatherMapAPIKeyLineEdit.setObjectName(
             "openWeatherMapAPIKeyLineEdit"
+        )
+        self.openWeatherMapAPIKeyLineEdit.setStyleSheet(
+            "* { lineedit-password-character: 9679 }"
         )
         self.openWeatherMapAPIKeyLineEdit.setFrame(True)
         self.openWeatherMapAPIKeyLineEdit.setClearButtonEnabled(False)
@@ -301,6 +308,30 @@ class Ui_settingsWidget(object):
             self.themeContainerWidget, 0, Qt.AlignmentFlag.AlignRight
         )
 
+        self.preferredUserIDContainerWidget = QWidget(self.leftBarMainWidget)
+        self.preferredUserIDContainerWidget.setObjectName(
+            "preferredUserIDContainerWidget"
+        )
+        self.horizontalLayout_12 = QHBoxLayout(
+            self.preferredUserIDContainerWidget
+        )
+        self.horizontalLayout_12.setObjectName("horizontalLayout_12")
+        self.preferredUserIDLabel = QLabel(self.preferredUserIDContainerWidget)
+        self.preferredUserIDLabel.setObjectName("preferredUserIDLabel")
+
+        self.horizontalLayout_12.addWidget(self.preferredUserIDLabel)
+
+        self.preferredUserIDSpinBox = QSpinBox(
+            self.preferredUserIDContainerWidget
+        )
+        self.preferredUserIDSpinBox.setObjectName("preferredUserIDSpinBox")
+
+        self.horizontalLayout_12.addWidget(self.preferredUserIDSpinBox)
+
+        self.verticalLayout_3.addWidget(
+            self.preferredUserIDContainerWidget, 0, Qt.AlignmentFlag.AlignRight
+        )
+
         self.fetchLocalTemperaturesOnStartupContainerWIdget = QWidget(
             self.leftBarMainWidget
         )
@@ -430,6 +461,11 @@ class Ui_settingsWidget(object):
         )
         self.themeLabel.setText(
             QCoreApplication.translate("settingsWidget", "Theme:", None)
+        )
+        self.preferredUserIDLabel.setText(
+            QCoreApplication.translate(
+                "settingsWidget", "Preferred User ID", None
+            )
         )
         self.fetchLocalTemperaturesOnStartupCheckBox.setText(
             QCoreApplication.translate(

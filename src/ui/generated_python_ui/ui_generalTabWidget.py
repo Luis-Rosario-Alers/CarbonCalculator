@@ -12,10 +12,13 @@ from PySide6.QtWidgets import (
     QProgressBar,
     QPushButton,
     QSizePolicy,
+    QSpinBox,
     QTableView,
     QVBoxLayout,
     QWidget,
 )
+
+from src.ui.generated_python_ui import icons_rc  # noqa: F401
 
 
 class Ui_GeneralWidget(object):
@@ -23,8 +26,9 @@ class Ui_GeneralWidget(object):
         if not GeneralWidget.objectName():
             GeneralWidget.setObjectName("GeneralWidget")
         GeneralWidget.setWindowModality(Qt.WindowModality.NonModal)
-        GeneralWidget.resize(1179, 685)
+        GeneralWidget.resize(1179, 663)
         GeneralWidget.setAutoFillBackground(False)
+        GeneralWidget.setStyleSheet("")
         self.horizontalLayout = QHBoxLayout(GeneralWidget)
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.leftBar = QWidget(GeneralWidget)
@@ -224,6 +228,26 @@ class Ui_GeneralWidget(object):
 
         self.verticalLayout_3.addWidget(
             self.widget, 0, Qt.AlignmentFlag.AlignLeft
+        )
+
+        self.userIDContainerWidget = QWidget(self.farmingVariablesWidget)
+        self.userIDContainerWidget.setObjectName("userIDContainerWidget")
+        self.horizontalLayout_5 = QHBoxLayout(self.userIDContainerWidget)
+        self.horizontalLayout_5.setObjectName("horizontalLayout_5")
+        self.userIDLabel = QLabel(self.userIDContainerWidget)
+        self.userIDLabel.setObjectName("userIDLabel")
+
+        self.horizontalLayout_5.addWidget(
+            self.userIDLabel, 0, Qt.AlignmentFlag.AlignLeft
+        )
+
+        self.userIDSpinBox = QSpinBox(self.userIDContainerWidget)
+        self.userIDSpinBox.setObjectName("userIDSpinBox")
+
+        self.horizontalLayout_5.addWidget(self.userIDSpinBox)
+
+        self.verticalLayout_3.addWidget(
+            self.userIDContainerWidget, 0, Qt.AlignmentFlag.AlignLeft
         )
 
         self.verticalLayout_2.addWidget(self.farmingVariablesWidget)
@@ -524,11 +548,14 @@ class Ui_GeneralWidget(object):
             QCoreApplication.translate("GeneralWidget", "Fuel Amount:", None)
         )
         self.label.setText(
-            QCoreApplication.translate("GeneralWidget", "Temperature", None)
+            QCoreApplication.translate("GeneralWidget", "Temperature:", None)
         )
         self.temperatureDoubleSpinBox.setPrefix("")
         self.temperatureDoubleSpinBox.setSuffix(
             QCoreApplication.translate("GeneralWidget", "\u00b0", None)
+        )
+        self.userIDLabel.setText(
+            QCoreApplication.translate("GeneralWidget", "User ID:", None)
         )
         self.realTimeTemperatureCheckBox.setText(
             QCoreApplication.translate(

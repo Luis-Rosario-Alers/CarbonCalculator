@@ -3,6 +3,7 @@ import os
 import sys
 
 from PySide6.QtCore import QObject, Signal
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget
 
 from data.database_model import application_path
@@ -24,6 +25,8 @@ class MainWindowController(QObject):
     application_closed = Signal()
     tab_changed = Signal(int)
     theme_changed = Signal(bool)  # True if light mode, False if dark mode
+    progress_updated = Signal(int, str)
+    progress_complete = Signal()
 
     def __init__(self, model, view):
         super().__init__()
@@ -31,6 +34,7 @@ class MainWindowController(QObject):
         self.view = view
 
     def connect_signals(self):
+        self.update_progress(70, "Connecting Signals")
         logger.debug(
             "Main Window Controller: Connecting signals in MainWindowController"
         )
@@ -42,10 +46,22 @@ class MainWindowController(QObject):
         self.model.calculation_model.calculation_result.connect(
             self.model.databases_model.log_transaction
         )
-
         self.model.settings_model.theme_changed.connect(
             self.handle_theme_changed
         )
+
+    # Yes, I know it's not the BEST solution, but we will get to it at some point.
+    def update_progress(self, percentage, message):
+        """
+        Updates General Tab View progress bar
+        :param percentage: percentage of progress
+        :param message: message to display on progress bar.
+        :return: Nothing
+        """
+        logger.debug(f"Progress update: {percentage}% - {message}")
+        self.progress_updated.emit(percentage, message)
+        if percentage >= 100:
+            self.progress_complete.emit()
 
     def send_initialization_signal(self):
         logger.debug("Main Window Controller: emitting initialization signal")
@@ -91,8 +107,17 @@ class AppModel(QObject):
 
     def setup_models(self, main_window_controller):
         logger.debug("Main Window Model: Setting up models in AppModel")
+        main_window_controller.update_progress(
+            30, "Setting up database models..."
+        )
         self.databases_model.set_controller(main_window_controller)
+
+        main_window_controller.update_progress(
+            45, "Setting up calculation models..."
+        )
         self.calculation_model.set_controller(main_window_controller)
+
+        main_window_controller.update_progress(60, "Loading settings...")
         self.settings_model.set_controller(main_window_controller)
 
 
@@ -107,6 +132,29 @@ class MainWindowView(QMainWindow, Ui_MainWindow):
         self.GeneralTabWidget = None
         self.VisualizationTabWidget = None
         self.setupUi(self)
+        self.setup_icon()
+
+    def setup_icon(self):
+        if sys.platform.startswith("win"):  # windows
+            icon_file = "icon.ico"
+        elif sys.platform.startswith("darwin"):  # macOS
+            icon_file = "icon.icns"
+        else:  # Linux and other Unix-like systems
+            icon_file = "icon.png"
+
+        icon_path = os.path.join(
+            application_path, "resources", "assets", icon_file
+        )
+
+        if not os.path.exists(icon_path):
+            icon_path = os.path.join(
+                application_path, "resources", "assets", "icon.png"
+            )
+
+        if os.path.exists(icon_path):
+            self.setWindowIcon(QIcon(icon_path))
+        else:
+            logger.warning(f"Icon file not found at {icon_path}")
 
     def setup_tabs(self, model, controller):
         logger.debug("Main Window View: Setting up tabs in MainWindowView")
@@ -159,37 +207,41 @@ class MainWindowWidget(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        # Create model and controller
+        # These comments are here so that I don't get stripped up lol.
+
+        # Initialize all components
         self.model = AppModel()
         self.view = MainWindowView()
         self.controller = MainWindowController(self.model, self.view)
-        self.model.setup_models(
-            self.controller
-        )  # setups up application wide models
-        self.view.setup_tabs(
-            self.model, self.controller
-        )  # setups up all tabs for application
+        # Step 1: Starting application
+        self.controller.update_progress(0, "Starting application...")
+
+        # Step 2: Setting up user interface
+        self.controller.update_progress(15, "Setting up user interface...")
+        self.view.setup_tabs(self.model, self.controller)
+
+        # Step 3: Setting up backend models
+        self.controller.update_progress(25, "Setting up backend models...")
+
+        # Steps 4-6: Setting up models (database, calculation, settings)
+        self.model.setup_models(self.controller)
+
+        # Step 7: Connecting components
         self.controller.connect_signals()
-        self.controller.send_initialization_signal()  # send signal to initialize all models
+
+        # Step 8: Applying theme
+        self.controller.update_progress(85, "Applying theme...")
         self.controller.initialize_theme()
 
+        # Step 9: Sending initialization signal
+        self.controller.update_progress(95, "Sending initialization signal...")
+        self.controller.send_initialization_signal()
+
+        # Step 10: Ready - final step
+        self.controller.update_progress(100, "Ready")
+        self.controller.progress_complete.emit()
+
         self.view.show()
-
-    """
-    def setup_tab_widgets(self):
-        # Replace mainBody placeholder with stacked widget
-        self.stacked_widget = QStackedWidget()
-        self.horizontalLayout.replaceWidget(self.mainBody, self.stacked_widget)
-
-        # Create tab widgets and add to stack
-        self.GeneralTabWidget = GeneralTabWidget(self.model, self.controller)
-        self.VisualizationTabWidget = VisualizationTabWidget(self.model, self.controller)
-        self.ai_chat_tab = AIChatTabWidget(self.model, self.controller)
-
-        self.stacked_widget.addWidget(self.GeneralTabWidget)
-        self.stacked_widget.addWidget(self.VisualizationTabWidget)
-        self.stacked_widget.addWidget(self.ai_chat_tab)
-    """
 
 
 if __name__ == "__main__":

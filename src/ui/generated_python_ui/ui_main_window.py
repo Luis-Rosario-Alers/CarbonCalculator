@@ -1,20 +1,25 @@
-from PySide6.QtCore import QCoreApplication, QMetaObject, QRect
+from PySide6.QtCore import QCoreApplication, QMetaObject, QRect, QSize
 from PySide6.QtWidgets import (
     QHBoxLayout,
     QMenu,
     QMenuBar,
     QStackedWidget,
     QStatusBar,
+    QTabWidget,
     QWidget,
 )
+
+from src.ui.generated_python_ui import icons_rc  # noqa: F401
 
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(737, 516)
+        MainWindow.resize(737, 507)
         MainWindow.setStyleSheet("")
+        MainWindow.setIconSize(QSize(24, 24))
+        MainWindow.setTabShape(QTabWidget.TabShape.Rounded)
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.centralwidget.setAutoFillBackground(False)
@@ -64,7 +69,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(
-            QCoreApplication.translate("MainWindow", "MainWindow", None)
+            QCoreApplication.translate("MainWindow", "Carbon Calculator", None)
         )
         self.menuGeneral.setTitle(
             QCoreApplication.translate("MainWindow", "General", None)

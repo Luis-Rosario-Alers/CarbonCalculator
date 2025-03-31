@@ -57,54 +57,63 @@ class VisualizationTabController(QObject):
 
     def handle_update_plot(self):
         """
-        Handles visualization by either plotting a single user_id graph line
+        Handles visualization by either plotting a single plot_user_id graph line
         or plotting multiple lines of different user_ids.
         """
-
-        def apply_plot_data(
-            data=None, user_id="", color=""
-        ):  # helper function
-            emissions = []
-            timestamps = []
-            for data_points in data:
-                # convert time to int
-                timestamp_str = data_points[7]
-                timestamp_dt = pd.to_datetime(timestamp_str)
-                timestamp_num = timestamp_dt.timestamp()
-
-                emissions.append(data_points[3])
-                timestamps.append(timestamp_num)
-            data_frame = pd.DataFrame(
-                {"time": timestamps, "emissions": emissions}
-            )
-            self.view.update_plot_units(self.emissions_unit)
-            self.view.update_plot(data_frame, color, user_id)
-            self.update_pending = False
-
-        if self.update_pending:
+        if not self.update_pending:
             logger.debug(
-                "Visualization Tab Controller: Updating Visualization"
+                "Visualization Tab Controller: No update was pending."
             )
-            self.emissions_unit = self.view.emissionsUnitComboBox.currentText()
-            self.fuel_type = self.view.fuelTypeComboBox.currentText()
-            self.user_id = self.view.userIDLineEdit.text()
+            return
 
-            if self.user_id:
-                logger.debug(
-                    "Visualization Tab Controller: user id is selected"
-                )
-                data = self.model.databases_model.get_emissions_history(
-                    emissions_unit=self.emissions_unit,
-                    fuel_type=self.fuel_type,
-                    user_id=self.user_id,
-                )
-                apply_plot_data(data=data, user_id=self.user_id)
-            else:
-                logger.debug(
-                    "Visualization Tab Controller: no user id selected"
-                )
-                user_ids = self.model.databases_model.get_all_user_ids()
+        logger.debug("Visualization Tab Controller: Updating Visualization")
+        # Clear previous plots
+        self.view.hide_all_plots()
+        self._prepare_visualization_parameters()
 
+        if self.user_id:
+            self._plot_single_user_data()
+        else:
+            self._plot_multiple_users_data()
+
+        self.update_pending = False
+
+    def _prepare_visualization_parameters(self):
+        """Extract visualization parameters from the UI."""
+        self.emissions_unit = self.view.emissionsUnitComboBox.currentText()
+        self.fuel_type = self.view.fuelTypeComboBox.currentText()
+        self.user_id = str(self.view.userIDLineEdit.text())
+        # Update plot units once at the beginning
+        self.view.update_plot_units(self.emissions_unit)
+
+    def _plot_single_user_data(self):
+        """Plot emissions data for a single user."""
+        logger.debug("Visualization Tab Controller: user id is selected")
+
+        data = self._get_emissions_data(user_id=self.user_id)
+        data_frame = self._transform_data_to_dataframe(data)
+
+        color = self.view.color_cache.get(self.user_id, None)
+        if color:
+            pass
+        else:
+            color = None
+        self.view.update_plot(data_frame, color, self.user_id)
+        self.view.show_plot(self.user_id)
+
+    def _plot_multiple_users_data(self):
+        """Plot emissions data for all users."""
+        logger.debug("Visualization Tab Controller: no user id selected")
+        user_ids = self.model.databases_model.get_all_user_ids()
+
+        for user_id in user_ids:
+            # Check if we need to update this user's data based on filter changes
+            data = self._get_emissions_data(user_id=user_id)
+            data_frame = self._transform_data_to_dataframe(data)
+
+            # Use existing color if available
+            color = self.view.color_cache.get(user_id, None)
+            if not color:
                 colors = [
                     "#1f77b4",
                     "#ff7f0e",
@@ -116,20 +125,57 @@ class VisualizationTabController(QObject):
                     "#7f7f7f",
                     "#bcbd22",
                     "#17becf",
-                ] * ((len(user_ids) + 9) // 10)
-                for i, user_id in enumerate(user_ids):
-                    data = self.model.databases_model.get_emissions_history(
-                        emissions_unit=self.emissions_unit,
-                        fuel_type=self.fuel_type,
-                        user_id=str(user_id),
-                    )
-                    color = colors[i % len(colors)]
-                    apply_plot_data(data=data, user_id=user_id, color=color)
-            self.update_pending = False
-        else:
+                ]
+                idx = len(self.view.color_cache) % len(colors)
+                color = colors[idx]
+
+            self.view.update_plot(data_frame, color, user_id)
+            self.view.show_plot(user_id)
+
+    def _get_emissions_data(self, user_id):
+        """Get emission data with caching"""
+        # Ensure user_id is a string for consistent cache keys
+        cache_key = (user_id, self.fuel_type, self.emissions_unit)
+        # Check if we have cached data
+        if cache_key in self.model.data_cache:
             logger.debug(
-                "Visualization Tab Controller: No update was pending."
+                f"Visualization Tab Controller: Cache hit for user {user_id}"
             )
+            return self.model.data_cache[cache_key]
+        # No cache hit, fetch from a database
+        logger.debug(
+            f"Visualization Tab Controller: Cache miss for user {user_id}, fetching data"
+        )
+        data = self.model.databases_model.get_emissions_history(
+            emissions_unit=self.emissions_unit,
+            fuel_type=self.fuel_type,
+            user_id=user_id,
+        )
+        # Cache the result
+        self.model.data_cache[cache_key] = data
+        return data
+
+    @staticmethod
+    def _transform_data_to_dataframe(data_points):
+        """
+        Transform raw emission data into a pandas DataFrame for plotting.
+        :param data_points: X and Y data points. (Emissions over Time)
+        :return: nothing
+        """
+
+        emissions = []
+        timestamps = []
+
+        for data_point in data_points:
+            # convert time to int
+            timestamp_str = data_point[7]
+            timestamp_dt = pd.to_datetime(timestamp_str)
+            timestamp_num = timestamp_dt.timestamp()
+
+            emissions.append(data_point[3])
+            timestamps.append(timestamp_num)
+
+        return pd.DataFrame({"time": timestamps, "emissions": emissions})
 
     def handle_tab_changed(self, index):
         """
@@ -167,13 +213,70 @@ class VisualizationTabController(QObject):
         preferred_calc_unit = self.model.settings_model.get_setting(
             "Preferences", "Calculation Unit of Measurement"
         )
-        self.view.apply_user_preferences(preferred_calc_unit)
+        preferred_user_id = str(
+            self.model.settings_model.get_setting("Preferences", "User ID")
+        )
+        self.view.apply_user_preferences(
+            [preferred_calc_unit, preferred_user_id]
+        )  # List user preferences
 
     def handle_filter_changed(self):
+        """
+        Efficiently handle filter changes by determining if plots need redrawing
+        or just visibility changes.
+        """
         logger.debug("Visualization Tab Controller: Filter changed.")
-        self.update_pending = True
-        self.view.chartPlotWidget.clear()
-        self.handle_update_plot()
+
+        # Store previous filter values to detect changes
+        prev_emissions_unit = self.emissions_unit
+        prev_fuel_type = self.fuel_type
+        prev_user_id = self.user_id
+
+        # Update current filter parameters
+        self._prepare_visualization_parameters()
+
+        # Check if units or fuel type changed - these require redrawing plots
+        if (
+            prev_emissions_unit != self.emissions_unit
+            or prev_fuel_type != self.fuel_type
+        ):
+            # Units or fuel type changed - redraw everything
+            logger.debug(
+                "Visualization Tab Controller: Units or fuel type changed - redrawing plots"
+            )
+            self.view.clear_plots()  # Add this method to the view
+            self.model.invalidate_data_cache(
+                emissions_unit=prev_emissions_unit, fuel_type=prev_fuel_type
+            )
+            self.update_pending = True
+            self.handle_update_plot()
+            return
+
+        # Only user ID filter changed - use visibility to optimize
+        if prev_user_id != self.user_id:
+            logger.debug(
+                "Visualization Tab Controller: Only user ID filter changed"
+            )
+            self.view.hide_all_plots()
+
+            if self.user_id:
+                # Show only the selected user's plot
+                if self.user_id in self.view.plot_items:
+                    # Plot exists, make it visible
+                    logger.debug(
+                        f"Visualization Tab Controller: Showing existing plot for user {self.user_id}"
+                    )
+                    self.view.show_plot(self.user_id)
+                else:
+                    # Need to create just this one plot
+                    logger.debug(
+                        f"Visualization Tab Controller: Creating new plot for user {self.user_id}"
+                    )
+                    self._plot_single_user_data()
+            else:
+                # No user ID filter - show all plots
+                logger.debug("Visualization Tab Controller: Showing all plots")
+                self.view.show_all_plots()
 
 
 class VisualizationTabModel:
@@ -181,16 +284,54 @@ class VisualizationTabModel:
         self.application_model = application_model
         self.databases_model = self.application_model.databases_model
         self.settings_model = self.application_model.settings_model
+        self.data_cache = {}
 
     def update_visualization_model_params(self):
         # TODO: Implement UI elements for params collection
         pass
+
+    # Instead of clearing the entire cache, provide a way to selectively invalidate
+    def invalidate_data_cache(
+        self, user_id=None, fuel_type=None, emissions_unit=None
+    ):
+        """
+        Invalidate specific cache entries based on parameters.
+        If no parameters are provided, invalidates all cache entries.
+        """
+        if user_id is None and fuel_type is None and emissions_unit is None:
+            self.data_cache.clear()
+            logger.debug(
+                "Visualization Tab Model: All data cache invalidated."
+            )
+            self.is_cache_valid = False
+            return
+
+        keys_to_remove = []
+        for key in list(self.data_cache.keys()):
+            cached_user_id, cached_fuel_type, cached_emissions_unit = key
+            if (
+                (user_id is not None and cached_user_id == user_id)
+                or (fuel_type is not None and cached_fuel_type == fuel_type)
+                or (
+                    emissions_unit is not None
+                    and cached_emissions_unit == emissions_unit
+                )
+            ):
+                keys_to_remove.append(key)
+
+        for key in keys_to_remove:
+            del self.data_cache[key]
+
+        logger.debug(
+            f"Visualization Tab Model: {len(keys_to_remove)} cache entries invalidated."
+        )
 
 
 class VisualizationTabView(QWidget, Ui_visualizationTab):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+        self.plot_items = {}
         self.color_cache = {}
 
     def set_background_for_plot(self, is_light_mode: bool):
@@ -212,9 +353,6 @@ class VisualizationTabView(QWidget, Ui_visualizationTab):
 
             bottom_axis.setTickFont(font)
             left_axis.setTickFont(font)
-
-            bottom_axis.setStyle(tickTextOffset=10)
-            left_axis.setStyle(tickTextOffset=10)
 
             axis_pen = mkPen(color=text_color, width=1)
             bottom_axis.setPen(axis_pen)
@@ -246,23 +384,56 @@ class VisualizationTabView(QWidget, Ui_visualizationTab):
             left_axis.setPen(axis_pen)
 
     def update_plot(self, data, color, user_id):
-        if color:
-            self.chartPlotWidget.plot(
-                data.time,
-                data.emissions,
-                name=f"User ID: {user_id}",
-                pen=color,
-            )
-            self.color_cache.update({user_id: color})
-        else:
-            if len(self.color_cache) >= 1:
-                self.chartPlotWidget.plot(
-                    data.time,
-                    data.emissions,
-                    name=f"User ID: {user_id}",
-                    pen=self.color_cache.get(int(user_id)),
-                )
-        # TODO: add parameters to change figure type
+        # Check if we already have a plot for this user
+        if user_id in self.plot_items:
+            # Update existing plot data
+            self.plot_items[user_id].setData(data.time, data.emissions)
+            return
+
+        if not color:
+            color = self.color_cache.get(
+                user_id, "#1f77b4"
+            )  # Default color if wasn't specified
+
+        plot_item = self.chartPlotWidget.plot(
+            data.time,
+            data.emissions,
+            name=f"User ID: {user_id}",
+            pen=color,
+        )
+
+        # Store the plot item for future reference
+        self.plot_items[str(user_id)] = plot_item
+        self.color_cache[str(user_id)] = color
+
+    def hide_all_plots(self):
+        """
+        Hide all plots without removing them
+        """
+        for plot_item in self.plot_items.values():
+            plot_item.setVisible(False)
+
+    def show_plot(self, user_id):
+        """
+        Show specific plot by user_id
+        :param user_id: User ID to show
+        """
+        if user_id in self.plot_items:
+            self.plot_items[user_id].setVisible(True)
+
+    def show_all_plots(self):
+        """Show all plots"""
+        for plot_item in self.plot_items.values():
+            plot_item.setVisible(True)
+
+    def clear_plots(self):
+        """
+        Remove all plots from the chart widget and reset tracking collections
+        """
+        for plot_item in self.plot_items.values():
+            self.chartPlotWidget.removeItem(plot_item)
+        self.plot_items.clear()
+        # Keep color_cache for consistent colors between sessions
 
     def update_plot_units(self, unit):
         """
@@ -313,9 +484,12 @@ class VisualizationTabView(QWidget, Ui_visualizationTab):
         )
 
     def apply_user_preferences(self, user_preferences):
-        preferred_calc_unit = user_preferences
+        preferred_calc_unit, preferred_user_id = user_preferences
         self.emissionsUnitComboBox.blockSignals(True)
+        self.userIDLineEdit.blockSignals(True)
         self.emissionsUnitComboBox.setCurrentText(preferred_calc_unit)
+        self.userIDLineEdit.setText(preferred_user_id)
+        self.userIDLineEdit.blockSignals(False)
         self.emissionsUnitComboBox.blockSignals(False)
 
 

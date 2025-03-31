@@ -3,9 +3,15 @@ import os
 from dataclasses import dataclass, field
 from typing import Dict, List, Optional, Tuple
 
-from PySide6.QtCore import QObject, Qt, Signal
+from PySide6.QtCore import QObject, Qt, QTimer, Signal
 from PySide6.QtSql import QSqlDatabase, QSqlTableModel
-from PySide6.QtWidgets import QFileDialog, QStyle, QTableView, QWidget
+from PySide6.QtWidgets import (
+    QApplication,
+    QFileDialog,
+    QStyle,
+    QTableView,
+    QWidget,
+)
 
 from data.database_model import databases_folder
 from data.export_manager import ExportManager
@@ -67,6 +73,13 @@ class GeneralTabController(QObject):
         self.view.calculateContainerPushButton.clicked.connect(
             self.handle_calculate_button_clicked
         )
+        # Handles progress bar updates.
+        self.application_controller.progress_updated.connect(
+            self.handle_progress_update
+        )
+        self.application_controller.progress_complete.connect(
+            self.handle_progress_complete
+        )
 
         connect_threaded(
             self.application_controller,
@@ -82,6 +95,20 @@ class GeneralTabController(QObject):
             self.application_controller,
             "application_closed",
             self.handle_application_close,
+        )
+
+    def handle_progress_update(self, percentage: int, message: str) -> None:
+        self.view.update_progress_status(percentage, message)
+
+    def handle_progress_complete(self) -> None:
+        self.view.progressBar.setValue(100)
+
+        # Hides progress bar and label after 3 seconds
+        QTimer.singleShot(
+            3000, lambda: self.view.progressBar.setVisible(False)
+        )
+        QTimer.singleShot(
+            3000, lambda: self.view.progressLabel.setVisible(False)
         )
 
     def handle_real_time_temperatures_api_call(self) -> None:
@@ -260,9 +287,17 @@ class GeneralTabController(QObject):
         use_temperature = self.model.settings_model.get_setting(
             "Preferences", "Use Temperature"
         )
+        preferred_user_id = self.model.settings_model.get_setting(
+            "Preferences", "User ID"
+        )
 
         self.view.apply_user_preferences(
-            [preferred_temp_unit, preferred_calc_unit, use_temperature]
+            [
+                preferred_temp_unit,
+                preferred_calc_unit,
+                use_temperature,
+                preferred_user_id,
+            ]
         )
 
 
@@ -345,6 +380,16 @@ class GeneralTabView(QWidget, Ui_GeneralWidget):
         self.db_connection = None
         self.sql_widget_model = None
 
+    def update_progress_status(self, percentage: int, message: str) -> None:
+        self.progressBar.setValue(percentage)
+        self.progressLabel.setText(message)
+
+        self.progressBar.setVisible(True)
+        self.progressLabel.setVisible(True)
+
+        # Force update to ensure UI refreshes
+        QApplication.processEvents()
+
     def load_database_table(self) -> None:
         if not self.database_loaded:
             logger.info("Loading database table")
@@ -420,7 +465,7 @@ class GeneralTabView(QWidget, Ui_GeneralWidget):
         :returns: (user_id, fuel_type, fuel_unit, amount_of_fuel_used, temperature_value,
         temperature_type, farming_technique, calculation_unit)
         """
-        user_id = 1
+        user_id: int = self.userIDSpinBox.value()
         fuel_type: str = self.fuelTypeComboBox.currentText()
         fuel_unit: str = self.fuelUnitOfMeasurementComboBox.currentText()
         amount_of_fuel_used: float = self.amountOfFuelUsedDoubleSpinBox.value()
@@ -431,6 +476,9 @@ class GeneralTabView(QWidget, Ui_GeneralWidget):
             self.calculationUnitOfMeasurementComboBox.currentText()
         )
         num_of_temp_scales = 3
+        # This checks for temp data validity.
+        # Yes, I know we should probably
+        # move that functionality to the data validator class, but it will happen later.
         if (
             self.realTimeTemperatureCheckBox.isChecked()
             and len(real_time_temp_data) == num_of_temp_scales
@@ -521,13 +569,17 @@ class GeneralTabView(QWidget, Ui_GeneralWidget):
         return output_path, file_type
 
     def apply_user_preferences(self, user_preferences: List):
-        preferred_temp_unit, preferred_calc_unit, use_temperature = (
-            user_preferences
-        )
+        (
+            preferred_temp_unit,
+            preferred_calc_unit,
+            use_temperature,
+            preferred_user_id,
+        ) = user_preferences
         self.temperatureTypesComboBox.setCurrentText(preferred_temp_unit)
         self.calculationUnitOfMeasurementComboBox.setCurrentText(
             preferred_calc_unit
         )
+        self.userIDSpinBox.setValue(preferred_user_id)
         if use_temperature:
             pass
         else:

@@ -57,6 +57,9 @@ class SettingsController(QObject):
         self.view.fetchLocalTemperaturesOnStartupCheckBox.stateChanged.connect(
             self.handle_fetch_local_temperatures_changed
         )
+        self.view.preferredUserIDSpinBox.valueChanged.connect(
+            self.handle_user_id_changed
+        )
 
     def handle_initialization_of_settings(self, combobox_information) -> None:
 
@@ -104,7 +107,6 @@ class SettingsController(QObject):
                 "Please enter a valid OpenWeatherMap API key.",
             )
             self.view.openWeatherMapAPIKeyLineEdit.setText("")
-            return
 
     def handle_temperature_unit_changed(self, text):
         self.model.settings_model.update_settings(
@@ -141,6 +143,18 @@ class SettingsController(QObject):
                 }
             }
         )
+
+    def handle_user_id_changed(self):
+        value = str(self.view.preferredUserIDSpinBox.value())
+        if int(value) >= 0:
+            self.model.settings_model.update_settings(
+                **{"Preferences": {"User ID": value}}
+            )
+        else:
+            QMessageBox.critical(
+                self.view, "Invalid User ID", "Please enter a valid user ID."
+            )
+            self.view.preferredUserIDSpinBox.setValue(0)
 
 
 class SettingsModel:
@@ -183,6 +197,7 @@ class SettingsView(QWidget, Ui_settingsWidget):
             "Fetch Local Temperatures On Startup", True
         )
         use_temperature = preference_settings.get("Use Temperature", True)
+        current_user_id = preference_settings.get("User ID", 1)
 
         # insert settings into comboboxes
         # Fixme: This function seems to over write the emissions_modifiers_path for the [[settings.json]] file
@@ -206,12 +221,16 @@ class SettingsView(QWidget, Ui_settingsWidget):
         # Note: signals are blocked to avoid unnecessary slot activations.
         self.fetchLocalTemperaturesOnStartupCheckBox.blockSignals(True)
         self.temperatureUseCheckBox.blockSignals(True)
+        self.preferredUserIDSpinBox.blockSignals(True)
         self.fetchLocalTemperaturesOnStartupCheckBox.setChecked(
             fetch_local_temps_on_startup
         )
         self.temperatureUseCheckBox.setChecked(use_temperature)
         self.fetchLocalTemperaturesOnStartupCheckBox.blockSignals(False)
         self.temperatureUseCheckBox.blockSignals(False)
+
+        self.preferredUserIDSpinBox.setValue(current_user_id)
+        self.preferredUserIDSpinBox.blockSignals(False)
 
         # Initialize API keys
         openweather_key = api_keys.get("OpenWeatherMap API Key", "")
@@ -224,7 +243,7 @@ class SettingsView(QWidget, Ui_settingsWidget):
         combo_box: QComboBox, current_setting, items: List
     ):
         """
-        Inserts the current setting into the combo box and removes it from the list of items.
+        Inserts the current settings into the combo box and then sets the current text as the current setting.
         :param combo_box: Combobox object
         :param current_setting: current setting state
         :param items: items that normally go into the combo box

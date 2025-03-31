@@ -624,7 +624,7 @@ class databasesModel(QObject):
         with sqlite3.connect(db_path) as conn:
             cursor = conn.cursor()
             cursor.execute("SELECT DISTINCT user_id FROM emissions")
-            user_ids = [row[0] for row in cursor.fetchall()]
+            user_ids = [str(row[0]) for row in cursor.fetchall()]
             logger.debug(
                 f"databasesModel.get_all_user_ids: Found {len(user_ids)} unique user IDs"
             )
@@ -656,4 +656,4 @@ class databasesModel(QObject):
 
     # function to test initialization of all databases
     # database_initialization()
-    get_emissions_history()
+    get_emissions_history
