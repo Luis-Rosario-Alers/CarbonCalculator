@@ -6,7 +6,7 @@ import sys
 
 from PySide6.QtCore import QObject, Signal
 
-from src.utils.gui_utilities import connect_threaded
+from utils.gui_utilities import connect_threaded
 
 logger = logging.getLogger("data")
 

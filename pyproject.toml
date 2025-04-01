@@ -3,3 +3,14 @@ profile = "black"
 line_length = 79
 [tool.black]
 line-length = 79
+
+[tool.pytest]
+pythonpath = [".", "src"]
+
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.mypy]
+python_version = "3.8"
+pythonpath = [".", "src"]

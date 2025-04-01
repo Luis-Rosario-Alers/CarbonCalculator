@@ -1,7 +1,7 @@
 from PySide6.QtCore import QCoreApplication, QMetaObject, Qt
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QWidget
 
-from src.ui.generated_python_ui import icons_rc  # noqa: F401
+from ui.generated_python_ui import icons_rc  # noqa: F401
 
 
 class Ui_feedbackTabWidget(object):

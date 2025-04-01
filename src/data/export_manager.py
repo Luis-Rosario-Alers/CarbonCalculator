@@ -4,7 +4,7 @@ import logging
 import os
 import sqlite3
 
-from src.data.database_model import databases_folder
+from data.database_model import databases_folder
 
 logger = logging.getLogger("data")
 

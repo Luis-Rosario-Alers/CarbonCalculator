@@ -2,7 +2,7 @@ from PySide6.QtCore import QCoreApplication, QMetaObject, QSize, Qt
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel, QVBoxLayout, QWidget
 
-from src.ui.generated_python_ui import icons_rc  # noqa: F401
+from ui.generated_python_ui import icons_rc  # noqa: F401
 
 
 class Ui_helpTabWidget(object):

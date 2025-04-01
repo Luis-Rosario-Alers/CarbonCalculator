@@ -21,9 +21,9 @@ from services.user_internet_connection_service import (
 )
 from services.user_location_service import UserLocationService
 from services.weather_service import WeatherService
-from src.ui.generated_python_ui.ui_generalTabWidget import Ui_GeneralWidget
-from src.ui.SettingsWidget import SettingsWidget
-from src.utils.gui_utilities import connect_threaded
+from ui.generated_python_ui.ui_generalTabWidget import Ui_GeneralWidget
+from ui.SettingsWidget import SettingsWidget
+from utils.gui_utilities import connect_threaded
 
 logger = logging.getLogger("ui")
 

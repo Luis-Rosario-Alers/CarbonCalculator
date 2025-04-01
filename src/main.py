@@ -5,7 +5,7 @@ from datetime import datetime
 
 from PySide6.QtWidgets import QApplication
 
-from src.ui.main_window import MainWindowWidget
+from ui.main_window import MainWindowWidget
 
 
 def setup_logging():

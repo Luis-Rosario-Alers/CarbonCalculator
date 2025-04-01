@@ -9,7 +9,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from src.ui.generated_python_ui import icons_rc  # noqa: F401
+from ui.generated_python_ui import icons_rc  # noqa: F401
 
 
 class Ui_MainWindow(object):

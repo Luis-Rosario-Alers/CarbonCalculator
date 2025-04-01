@@ -6,15 +6,14 @@ from PySide6.QtCore import QObject, Signal
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget
 
-from data.database_model import application_path
+from core.emissions_calculator import calculationModel
+from data.database_model import application_path, databasesModel
 from data.settings_model import SettingsModel
-from src.core.emissions_calculator import calculationModel
-from src.data.database_model import databasesModel
-from src.ui.GeneralTabWidget import GeneralTabWidget
-from src.ui.generated_python_ui.ui_main_window import Ui_MainWindow
-from src.ui.VisualizationTabWidget import VisualizationTabWidget
 from ui.FeedbackTabWidget import FeedbackTabWidget
+from ui.GeneralTabWidget import GeneralTabWidget
+from ui.generated_python_ui.ui_main_window import Ui_MainWindow
 from ui.HelpTabWidget import HelpTabWidget
+from ui.VisualizationTabWidget import VisualizationTabWidget
 
 logger = logging.getLogger("ui")
 
