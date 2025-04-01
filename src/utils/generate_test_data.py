@@ -161,7 +161,7 @@ def save_to_csv(
 if __name__ == "__main__":
     # Generate 10,000 test records
     print("Generating fake emissions test data...")
-    test_data = generate_test_data(10000)
+    test_data = generate_test_data(1000)
 
     # Save as JSON
     json_path = save_to_json(test_data)
