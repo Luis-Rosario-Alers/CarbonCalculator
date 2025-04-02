@@ -6,7 +6,7 @@ from PySide6.QtCore import QObject
 from PySide6.QtGui import QFont
 from PySide6.QtWidgets import QWidget
 
-from src.ui.generated_python_ui.ui_visualizationTabWidget import (
+from ui.generated_python_ui.ui_visualizationTabWidget import (
     Ui_visualizationTab,
 )
 
@@ -46,23 +46,23 @@ class VisualizationTabController(QObject):
 
         # NOTE: Please keep the order of these signals because they rely on the sequence in which they are connected.
         self.view.emissionsUnitComboBox.currentIndexChanged.connect(
-            self.handle_filter_changed
+            self.handle_unit_changed
         )
 
         self.view.fuelTypeComboBox.currentIndexChanged.connect(
-            self.handle_filter_changed
+            self.handle_unit_changed
         )
 
         self.view.userIDLineEdit.textChanged.connect(
-            self.handle_filter_changed
+            self.handle_user_id_changed
         )
 
         self.view.startTimeFrameDataTimeEdit.dateTimeChanged.connect(
-            self.handle_filter_changed
+            self.handle_time_changed
         )
 
         self.view.endTimeFrameDataTimeEdit.dateTimeChanged.connect(
-            self.handle_filter_changed
+            self.handle_time_changed
         )
 
     def handle_update_plot(self):
@@ -154,6 +154,7 @@ class VisualizationTabController(QObject):
                 f"Visualization Tab Controller: Cache hit for user {user_id}"
             )
             return self.model.data_cache[cache_key]
+
         # No cache hit, fetch from a database
         logger.debug(
             f"Visualization Tab Controller: Cache miss for user {user_id}, fetching data"
@@ -168,8 +169,20 @@ class VisualizationTabController(QObject):
             fuel_type=self.fuel_type,
             user_id=user_id,
         )
+
         # Cache the result
         self.model.data_cache[cache_key] = data
+
+        # Update the cached time range
+        if not hasattr(self.model, "cached_time_range"):
+            self.model.cached_time_range = (self.start_time, self.end_time)
+        else:
+            # Expand the cached range if needed
+            current_start, current_end = self.model.cached_time_range
+            new_start = min(current_start, self.start_time)
+            new_end = max(current_end, self.end_time)
+            self.model.cached_time_range = (new_start, new_end)
+
         return data
 
     @staticmethod
@@ -234,43 +247,32 @@ class VisualizationTabController(QObject):
             preferred_calc_unit
         )  # List user preferences
 
-    def handle_filter_changed(self):
-        """
-        Efficiently handle filter changes by determining if plots need redrawing
-        or just visibility changes.
-        """
-        logger.debug("Visualization Tab Controller: Filter changed.")
+    def handle_unit_changed(self):
+        """Handles visualization updates when units change."""
+        logger.debug("Visualization Tab Controller: Unit changed.")
 
-        # Store previous filter values to detect changes
         prev_emissions_unit = self.emissions_unit
         prev_fuel_type = self.fuel_type
-        prev_user_id = self.user_id
-        prev_start_time = self.start_time
-        prev_end_time = self.end_time
 
-        # Update current filter parameters
+        # update parameters to reflect new changes.
         self._prepare_visualization_parameters()
 
-        time_range_expanded = (
-            prev_start_time > self.start_time or prev_end_time < self.end_time
-        )
-        time_range_valid = (
-            not self.start_time > self.end_time
-            or not self.end_time < self.start_time
-        )
+        # Validate time range
+        if self.start_time > self.end_time:
+            logger.warning(
+                "Invalid time range selected: start time is after end time"
+            )
+            return
 
-        # Check if units or fuel type changed - these require redrawing plots
+        # Handle units or fuel type changes
         if (
             prev_emissions_unit != self.emissions_unit
             or prev_fuel_type != self.fuel_type
-            or time_range_expanded
-            and time_range_valid
         ):
-            # Units or fuel type chaned - redraw everything
             logger.debug(
-                "Visualization Tab Controller: Units or fuel type changed - redrawing plots"
+                "Visualization Tab Controller: Units or fuel type changed"
             )
-            self.view.clear_plots()  # Add this method to the view
+            self.view.clear_plots()
             self.model.invalidate_data_cache(
                 emissions_unit=prev_emissions_unit, fuel_type=prev_fuel_type
             )
@@ -278,46 +280,95 @@ class VisualizationTabController(QObject):
             self.handle_update_plot()
             return
 
-        # Only user ID filter changed - use visibility to optimize
-        time_range_narrowed = (
-            prev_start_time < self.start_time or prev_end_time > self.end_time
-        )
-        if time_range_narrowed and time_range_valid:
-            logger.debug(
-                "Visualization Tab Controller: Time range narrowed - adjusting visible range"
-            )
-            # Convert to timestamp for pyqtgraph
+    def handle_time_changed(self):
+        """
+        Handles visualization updates when the time range changes.
+        This method tracks previous time values and should update the visualization
+        based on the new time range selection.
+        It works with the start_time and end_time
+        properties to determine if and how to refresh the data.
+        """
+        prev_start_time = self.start_time
+        prev_end_time = self.end_time
+
+        # update parameters to reflect new changes.
+        self._prepare_visualization_parameters()
+
+        time_range_valid = self.end_time >= self.start_time
+
+        # Handle time range changes
+        if (
+            prev_start_time != self.start_time
+            or prev_end_time != self.end_time
+            and time_range_valid
+        ):
             start_timestamp = self.start_time.toSecsSinceEpoch()
             end_timestamp = self.end_time.toSecsSinceEpoch()
-            # Set the visible range on the x-axis
-            self.view.chartPlotWidget.setXRange(start_timestamp, end_timestamp)
 
+            if self._check_if_timerange_needs_reload(
+                prev_start_time, prev_end_time
+            ):
+                logger.debug(
+                    "Visualization Tab Controller: Loading new time range data"
+                )
+                self._prepare_visualization_parameters()
+                self.model.invalidate_timerange_cache()
+                self.update_pending = True
+                self.handle_update_plot()
+                self.view.chartPlotWidget.setXRange(
+                    start_timestamp, end_timestamp
+                )
+            else:
+                logger.debug(
+                    "Visualization Tab Controller: Adjusting time view only"
+                )
+                self.view.chartPlotWidget.setXRange(
+                    start_timestamp, end_timestamp
+                )
             return
+
+    def handle_user_id_changed(self):
+        """Handles visualization updates when any filter criteria changes."""
+        logger.debug("Visualization Tab Controller: Filter changed.")
+
+        prev_user_id = self.user_id
+
+        # update parameters to reflect new changes.
+        self._prepare_visualization_parameters()
 
         if prev_user_id != self.user_id:
             logger.debug(
-                "Visualization Tab Controller: Only user ID filter changed"
+                f"Visualization Tab Controller: User ID changed to {self.user_id}"
             )
             self.view.hide_all_plots()
 
             if self.user_id:
-                # Show only the selected user's plot
                 if self.user_id in self.view.plot_items:
-                    # Plot exists, make it visible
-                    logger.debug(
-                        f"Visualization Tab Controller: Showing existing plot for user {self.user_id}"
-                    )
                     self.view.show_plot(self.user_id)
                 else:
-                    # Need to create just this one plot
-                    logger.debug(
-                        f"Visualization Tab Controller: Creating new plot for user {self.user_id}"
-                    )
                     self._plot_single_user_data()
             else:
-                # No user ID filter - show all plots
-                logger.debug("Visualization Tab Controller: Showing all plots")
                 self.view.show_all_plots()
+
+    def _check_if_timerange_needs_reload(self, prev_start_time, prev_end_time):
+        """
+        Determines if the new time range requires loading new data.
+        Returns True if new data needs to be loaded, False if current data is enough.
+        """
+        # Store the time range currently loaded in the cache
+        # This is a new attribute we need to track in the model
+        if not hasattr(self.model, "cached_time_range"):
+            # First load - we need to reload
+            return True
+
+        cached_start, cached_end = self.model.cached_time_range
+
+        # If new range extends beyond cached range in either direction, reload
+        if self.start_time < cached_start or self.end_time > cached_end:
+            return True
+
+        # Otherwise, we're zooming in or moving within the cached range
+        return False
 
 
 class VisualizationTabModel:
@@ -366,6 +417,20 @@ class VisualizationTabModel:
         logger.debug(
             f"Visualization Tab Model: {len(keys_to_remove)} cache entries invalidated."
         )
+
+    def invalidate_timerange_cache(self):
+        """
+        Invalidate the cache due to time range changes.
+        """
+        start_cache, end_cache = self.cached_time_range
+
+        logger.debug("Visualization Tab Model: Time range cache invalidated")
+
+    def update_cached_time_range(self, start_time, end_time):
+        """
+        Update the record of what time range is currently cached.
+        """
+        self.cached_time_range = (start_time, end_time)
 
 
 class VisualizationTabView(QWidget, Ui_visualizationTab):
