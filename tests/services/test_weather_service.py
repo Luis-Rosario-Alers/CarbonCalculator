@@ -19,9 +19,7 @@ class TestWeatherService:
 
         weather_service = WeatherService("your_weather_api_key_here")
         # Act
-        result = await weather_service.get_weather(
-            latitude=51.5074, longitude=-0.1278
-        )
+        result = await weather_service.get_weather(latitude=51.5074, longitude=-0.1278)
         # Assert
         assert result is None
         mock_logger.error.assert_called_with("Weather data not retrieved")
@@ -35,18 +33,14 @@ class TestWeatherService:
 
         weather_service = WeatherService("your_weather_api_key_here")
         # Act
-        result = await weather_service.get_weather(
-            latitude=51.5074, longitude=-0.1278
-        )
+        result = await weather_service.get_weather(latitude=51.5074, longitude=-0.1278)
         # Assert
         assert result is None
         mock_logger.error.assert_called()
 
     # Successfully retrieves weather data and returns tuple of temperatures when valid coordinates provided
     @pytest.mark.asyncio
-    async def test_get_weather_returns_temperatures_for_valid_coordinates(
-        self, mocker
-    ):
+    async def test_get_weather_returns_temperatures_for_valid_coordinates(self, mocker):
         # Arrange
         api_key = "test_key"
         mock_logger = mocker.patch("src.services.weather_service.logger")
@@ -62,9 +56,7 @@ class TestWeatherService:
         mock_client_session.return_value.__aenter__.return_value = mock_session
 
         # Act
-        result = await weather_service.get_weather(
-            latitude=51.5074, longitude=-0.1278
-        )
+        result = await weather_service.get_weather(latitude=51.5074, longitude=-0.1278)
 
         # Assert
         assert isinstance(result, tuple)

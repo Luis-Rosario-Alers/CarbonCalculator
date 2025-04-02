@@ -48,9 +48,7 @@ class SettingsController(QObject):
         self.view.languageComboBox.currentTextChanged.connect(
             self.handle_language_changed
         )
-        self.view.themeComboBox.currentTextChanged.connect(
-            self.handle_theme_changed
-        )
+        self.view.themeComboBox.currentTextChanged.connect(self.handle_theme_changed)
         self.view.temperatureUseCheckBox.stateChanged.connect(
             self.handle_temperature_use_changed
         )
@@ -76,9 +74,7 @@ class SettingsController(QObject):
     def handle_ip_info_api_key_entered(self):
         key = self.view.ipInfoAPIKeyLineEdit.text().strip()
         if key:
-            self.model.settings_model.save_api_key(
-                "IP Geolocation API Key", key
-            )
+            self.model.settings_model.save_api_key("IP Geolocation API Key", key)
             self.model.settings_model.update_settings(
                 **{"API Keys": {"IP Geolocation API Key": "[STORED_SECURELY]"}}
             )
@@ -94,9 +90,7 @@ class SettingsController(QObject):
     def handle_open_weather_map_api_key_entered(self):
         key = self.view.openWeatherMapAPIKeyLineEdit.text().strip()
         if key:
-            self.model.settings_model.save_api_key(
-                "OpenWeatherMap API Key", key
-            )
+            self.model.settings_model.save_api_key("OpenWeatherMap API Key", key)
             self.model.settings_model.update_settings(
                 **{"API Keys": {"OpenWeatherMap API Key": "[STORED_SECURELY]"}}
             )
@@ -119,14 +113,10 @@ class SettingsController(QObject):
         )
 
     def handle_language_changed(self, text):
-        self.model.settings_model.update_settings(
-            **{"Preferences": {"Language": text}}
-        )
+        self.model.settings_model.update_settings(**{"Preferences": {"Language": text}})
 
     def handle_theme_changed(self, text):
-        self.model.settings_model.update_theme(
-            **{"Preferences": {"Theme": text}}
-        )
+        self.model.settings_model.update_theme(**{"Preferences": {"Theme": text}})
 
     def handle_temperature_use_changed(self, state):
         is_checked = bool(state)
@@ -137,11 +127,7 @@ class SettingsController(QObject):
     def handle_fetch_local_temperatures_changed(self, state):
         is_checked = bool(state)
         self.model.settings_model.update_settings(
-            **{
-                "Preferences": {
-                    "Fetch Local Temperatures On Startup": is_checked
-                }
-            }
+            **{"Preferences": {"Fetch Local Temperatures On Startup": is_checked}}
         )
 
     def handle_user_id_changed(self):
@@ -239,9 +225,7 @@ class SettingsView(QWidget, Ui_settingsWidget):
         self.ipInfoAPIKeyLineEdit.setText(ipinfo_key)
 
     @staticmethod
-    def _insert_current_setting(
-        combo_box: QComboBox, current_setting, items: List
-    ):
+    def _insert_current_setting(combo_box: QComboBox, current_setting, items: List):
         """
         Inserts the current settings into the combo box and then sets the current text as the current setting.
         :param combo_box: Combobox object
@@ -265,10 +249,7 @@ class SettingsView(QWidget, Ui_settingsWidget):
         if not input_path:
             return ""
 
-        if (
-            input_path.lower().endswith(".json")
-            or "json" in selected_filter.lower()
-        ):
+        if input_path.lower().endswith(".json") or "json" in selected_filter.lower():
             pass
         else:
             QMessageBox.critical(self, "Error", "Invalid file type")

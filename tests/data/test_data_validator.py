@@ -12,9 +12,7 @@ class TestDataValidator:
         return DataValidator()
 
     @pytest.mark.asyncio
-    async def test_validate_fuel_type_valid(
-        self, data_validator: DataValidator
-    ):
+    async def test_validate_fuel_type_valid(self, data_validator: DataValidator):
         """Test validate_fuel_type with an invalid fuel type."""
         mock_cursor = AsyncMock()
         mock_cursor.fetchone.return_value = "gasoline"
@@ -36,9 +34,7 @@ class TestDataValidator:
         assert mock_cursor.fetchone.return_value == "gasoline"
 
     @pytest.mark.asyncio
-    async def test_validate_fuel_type_invalid(
-        self, data_validator: DataValidator
-    ):
+    async def test_validate_fuel_type_invalid(self, data_validator: DataValidator):
         """Test validate_fuel_type with a valid fuel type."""
         mock_cursor = AsyncMock()
         mock_cursor.fetchone.return_value = "biodiesel"
@@ -132,9 +128,7 @@ class TestDataValidator:
     def test_validate_temperature_valid(self, data_validator: DataValidator):
         """Test validate_temperature with valid inputs."""
         assert data_validator.validate_temperature(0, 0) is True  # Celsius
-        assert (
-            data_validator.validate_temperature(100, 1) is True
-        )  # Fahrenheit
+        assert data_validator.validate_temperature(100, 1) is True  # Fahrenheit
         assert data_validator.validate_temperature(273.15, 2) is True  # Kelvin
 
     def test_validate_temperature_invalid(self, data_validator: DataValidator):
@@ -142,9 +136,7 @@ class TestDataValidator:
         with pytest.raises(ValueError):
             data_validator.validate_temperature(-273.16, 0)  # Celsius
         with pytest.raises(ValueError):
-            data_validator.validate_temperature(
-                str(True), 1
-            )  # boolean temperature
+            data_validator.validate_temperature(str(True), 1)  # boolean temperature
         with pytest.raises(ValueError):
             data_validator.validate_temperature(
                 bool(1 + 1 == 2), 2

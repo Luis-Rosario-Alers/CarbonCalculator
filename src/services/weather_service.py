@@ -32,9 +32,7 @@ class WeatherService:
             temperature_kelvin = weather_data["main"]["temp"]
 
             temperature_celsius = self.__kelvin_to_celsius(temperature_kelvin)
-            temperature_fahrenheit = self.__kelvin_to_fahrenheit(
-                temperature_kelvin
-            )
+            temperature_fahrenheit = self.__kelvin_to_fahrenheit(temperature_kelvin)
             logger.info(
                 f"Temperature in Celsius: {temperature_celsius}, Fahrenheit: {temperature_fahrenheit}, Kelvin: {temperature_kelvin}"
             )

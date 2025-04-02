@@ -13,9 +13,7 @@ logger = logging.getLogger("data")
 
 def determine_application_path():
     if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
-        logger.info(
-            "determine_application_path: Running as a PyInstaller bundle"
-        )
+        logger.info("determine_application_path: Running as a PyInstaller bundle")
         application_path = sys._MEIPASS
         databases_folder = os.path.join(application_path, "databases")
         logger.info(
@@ -136,9 +134,7 @@ class databasesModel(QObject):
 
     @staticmethod
     def load_settings():
-        logger.info(
-            "databasesModel.load_settings: Loading application settings"
-        )
+        logger.info("databasesModel.load_settings: Loading application settings")
         settings_dir = os.path.join(application_path, "resources", "config")
         settings_path = os.path.join(settings_dir, "settings.json")
         default_factors_path = os.path.join(
@@ -161,9 +157,7 @@ class databasesModel(QObject):
                         settings_file.write(json.dumps(settings, indent=4))
                 return json_path
         except (json.JSONDecodeError, FileNotFoundError):
-            logger.error(
-                "databasesModel.load_settings: Error loading settings file"
-            )
+            logger.error("databasesModel.load_settings: Error loading settings file")
             return None
 
     @staticmethod
@@ -488,9 +482,7 @@ class databasesModel(QObject):
             logger.error(
                 f"databasesModel.get_fuel_type_emissions_modifier: No emissions modifier found for {fuel_type}"
             )
-            raise ValueError(
-                f"No emissions modifier found for fuel type: {fuel_type}"
-            )
+            raise ValueError(f"No emissions modifier found for fuel type: {fuel_type}")
 
     def log_transaction(
         self,
@@ -505,9 +497,7 @@ class databasesModel(QObject):
         emissions_unit=None,
     ):
         try:
-            logger.info(
-                "databasesModel.log_transaction: Logging new calculation"
-            )
+            logger.info("databasesModel.log_transaction: Logging new calculation")
             logger.info(
                 f"databasesModel.log_transaction: User ID: {user_id}, Fuel Type: {fuel_type}, Fuel Used: {fuel_used} {fuel_unit}, "
                 f"Emissions: {emissions} {emissions_unit}, Temperature: {temperature}{temperature_type[:1]}°, Farming Technique: {farming_technique}"
@@ -536,15 +526,11 @@ class databasesModel(QObject):
             logger.debug(
                 "databasesModel.log_transaction: Transaction committed to database"
             )
-            logger.debug(
-                "databasesModel.log_transaction: Database connection closed"
-            )
+            logger.debug("databasesModel.log_transaction: Database connection closed")
             conn.close()
             self.calculation_logged.emit()
         except sqlite3.Error as e:
-            logger.error(
-                f"databasesModel.log_transaction: Database error: {e}"
-            )
+            logger.error(f"databasesModel.log_transaction: Database error: {e}")
             logger.error(e)
         except ValueError as e:
             logger.error(f"databasesModel.log_transaction: Value error: {e}")
@@ -575,9 +561,7 @@ class databasesModel(QObject):
                 params = []
 
                 if time_frame is not None:
-                    query += (
-                        " AND timestamp BETWEEN datetime(?) AND datetime(?)"
-                    )
+                    query += " AND timestamp BETWEEN datetime(?) AND datetime(?)"
                     params.append(time_frame[0])
                     params.append(time_frame[1])
 
@@ -609,9 +593,7 @@ class databasesModel(QObject):
     @staticmethod
     def get_all_user_ids():
         """Get all unique user IDs from the database"""
-        logger.info(
-            "databasesModel.get_all_user_ids: Retrieving all unique user IDs"
-        )
+        logger.info("databasesModel.get_all_user_ids: Retrieving all unique user IDs")
         db_path = os.path.join(databases_folder, "emissions.db")
         with sqlite3.connect(db_path) as conn:
             cursor = conn.cursor()
@@ -642,9 +624,7 @@ class databasesModel(QObject):
 
         # Emit signal that databases are initialized
         self.databases_initialized.emit()
-        logger.info(
-            "databasesModel.database_initialization: All databases initialized"
-        )
+        logger.info("databasesModel.database_initialization: All databases initialized")
 
     # function to test initialization of all databases
     # database_initialization()

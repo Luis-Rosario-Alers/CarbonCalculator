@@ -1,9 +1,7 @@
 import aiohttp
 import pytest
 
-from src.services.user_internet_connection_service import (
-    user_internet_connection_check,
-)
+from src.services.user_internet_connection_service import user_internet_connection_check
 
 
 class TestInternetConnectionService:
@@ -41,7 +39,5 @@ class TestInternetConnectionService:
         result = await user_internet_connection_check()
 
         # Assert
-        mock_logger.info.assert_called_with(
-            "Note: Some features may not be available."
-        )
+        mock_logger.info.assert_called_with("Note: Some features may not be available.")
         assert result is False

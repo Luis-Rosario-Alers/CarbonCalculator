@@ -59,9 +59,7 @@ class Ui_feedbackTabWidget(object):
             Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignTop,
         )
 
-        self.horizontalLayout_2.addWidget(
-            self.widget_4, 0, Qt.AlignmentFlag.AlignRight
-        )
+        self.horizontalLayout_2.addWidget(self.widget_4, 0, Qt.AlignmentFlag.AlignRight)
 
         self.verticalLayout.addWidget(self.widget_2)
 

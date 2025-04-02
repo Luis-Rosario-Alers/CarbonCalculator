@@ -17,18 +17,14 @@ class Ui_helpTabWidget(object):
         self.verticalLayout = QVBoxLayout(self.helpTabContainerWidget)
         self.verticalLayout.setObjectName("verticalLayout")
         self.githubLogoContainerWidget = QWidget(self.helpTabContainerWidget)
-        self.githubLogoContainerWidget.setObjectName(
-            "githubLogoContainerWidget"
-        )
+        self.githubLogoContainerWidget.setObjectName("githubLogoContainerWidget")
         self.verticalLayout_2 = QVBoxLayout(self.githubLogoContainerWidget)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.githubLogoLabel = QLabel(self.githubLogoContainerWidget)
         self.githubLogoLabel.setObjectName("githubLogoLabel")
         self.githubLogoLabel.setMinimumSize(QSize(200, 450))
         self.githubLogoLabel.setFrameShape(QFrame.Shape.NoFrame)
-        self.githubLogoLabel.setPixmap(
-            QPixmap(":/icons/svgs/brands/square-github.svg")
-        )
+        self.githubLogoLabel.setPixmap(QPixmap(":/icons/svgs/brands/square-github.svg"))
         self.githubLogoLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.verticalLayout_2.addWidget(

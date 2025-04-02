@@ -15,20 +15,18 @@ def generate_test_data(num_records: int = 100) -> List[Dict[str, Any]]:
     """
     Generate fake emissions data for testing.
 
-    Args:
-        num_records: Number of records to generate (default: 100)
+    :param num_records: Number of records to generate (default: 100)
 
-    Returns:
-        List of dictionaries containing fake emissions data
+    :return: List of dictionaries containing fake emissions data
     """
     # Available options in the application
     fuel_types = [
-        "Gasoline",
-        "Diesel",
-        "Biodiesel",
-        "Natural Gas",
-        "Propane",
-        "Ethanol",
+        "gasoline",
+        "diesel",
+        "biodiesel",
+        "natural gas",
+        "propane",
+        "ethanol",
     ]
     farming_techniques = [
         "Conventional",
@@ -53,9 +51,9 @@ def generate_test_data(num_records: int = 100) -> List[Dict[str, Any]]:
     for _ in range(num_records):
         # Generate random timestamp within the past year
         random_days = random.randint(0, 365)
-        timestamp = (
-            start_date + datetime.timedelta(days=random_days)
-        ).strftime("%Y-%m-%d %H:%M:%S")
+        timestamp = (start_date + datetime.timedelta(days=random_days)).strftime(
+            "%Y-%m-%d %H:%M:%S"
+        )
 
         # Random selections
         user_id = random.choice(user_ids)
@@ -113,12 +111,10 @@ def save_to_json(
     """
     Save generated data to a JSON file.
 
-    Args:
-        data: List of dictionaries containing emissions data
-        filename: Output filename (default: test_emissions_data.json)
+    :param data: List of dictionaries containing emissions data
+    :param filename: Output filename (default: test_emissions_data.json)
 
-    Returns:
-        Path to the saved file
+    :return: Path to the saved file
     """
     filepath = os.path.join(os.getcwd(), filename)
     with open(filepath, "w") as f:
@@ -133,12 +129,10 @@ def save_to_csv(
     """
     Save generated data to a CSV file.
 
-    Args:
-        data: List of dictionaries containing emissions data
-        filename: Output filename (default: test_emissions_data.csv)
+    :param data: List of dictionaries containing emissions data
+    :param filename: Output filename (default: test_emissions_data.csv)
 
-    Returns:
-        Path to the saved file
+    :return: Path to the saved file
     """
     filepath = os.path.join(os.getcwd(), filename)
 
@@ -171,9 +165,7 @@ if __name__ == "__main__":
     csv_path = save_to_csv(test_data)
     print(f"CSV test data saved to: {csv_path}")
 
-    print(
-        f"Generated {len(test_data)} test records in both JSON and CSV formats."
-    )
+    print(f"Generated {len(test_data)} test records in both JSON and CSV formats.")
     print(
         "You can now import these files into your CarbonCalculator application for testing."
     )

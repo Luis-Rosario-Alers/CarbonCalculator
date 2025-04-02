@@ -4,13 +4,19 @@ import logging
 import os
 import sqlite3
 
+from PySide6.QtCore import QObject, Signal
+
 from data.database_model import databases_folder
 
 logger = logging.getLogger("data")
 
 
-class ExportManager:
+class ExportManager(QObject):
+
+    export_completed = Signal()
+
     def __init__(self):
+        super().__init__()
         self.db_path = os.path.join(databases_folder, "emissions.db")
         self.config_path = os.path.join(
             os.path.dirname(__file__),
@@ -19,6 +25,10 @@ class ExportManager:
             "conversion_factors",
             "emissions_variables.json",
         )
+        self.controller = None
+
+    def set_controller(self, controller):
+        self.controller = controller
 
     def fetch_data(self):
         conn = sqlite3.connect(self.db_path)
@@ -52,6 +62,7 @@ class ExportManager:
         with open(output_path, "w") as f:
             json.dump(data_dicts, f, indent=2)
         logger.info(f"Data exported to {output_path}")
+        self.export_completed.emit()
 
     def export_to_csv(self, output_path):
         data = self.fetch_data()
@@ -72,3 +83,4 @@ class ExportManager:
             )
             writer.writerows(data)
         logger.info(f"Data exported to {output_path}")
+        self.export_completed.emit()

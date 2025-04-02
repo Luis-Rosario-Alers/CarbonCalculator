@@ -19,24 +19,18 @@ class DataValidator:
             cursor = conn.cursor()
             cursor.execute("SELECT fuel_type FROM fuel_types")
             fuel_types = cursor.fetchone()
-            logger.info(
-                "DataValidator.validate_fuel_type: Fuel type database accessed"
-            )
+            logger.info("DataValidator.validate_fuel_type: Fuel type database accessed")
             if fuel_type in fuel_types:
                 logger.info(
                     f"DataValidator.validate_fuel_type: Checking fuel type '{fuel_type}'"
                 )
-                logger.info(
-                    "DataValidator.validate_fuel_type: Fuel type is valid"
-                )
+                logger.info("DataValidator.validate_fuel_type: Fuel type is valid")
                 return True
             else:
                 logger.info(
                     f"DataValidator.validate_fuel_type: Checking fuel type '{fuel_type}'"
                 )
-                logger.error(
-                    "DataValidator.validate_fuel_type: Fuel type is invalid"
-                )
+                logger.error("DataValidator.validate_fuel_type: Fuel type is invalid")
                 return False
 
     def validate_fuel_used(self, fuel_used):
@@ -47,9 +41,7 @@ class DataValidator:
             return False
         if not self.validate_integer(fuel_used):
             return False
-        logger.info(
-            "DataValidator.validate_fuel_used: Fuel used value is valid"
-        )
+        logger.info("DataValidator.validate_fuel_used: Fuel used value is valid")
         return True
 
     def validate_user_id(self, user_id):
@@ -83,9 +75,7 @@ class DataValidator:
     @staticmethod
     def validate_temperature_type(temperature_type):
         if not isinstance(temperature_type, str):
-            raise ValueError(
-                f"{temperature_type} is not a valid temperature type"
-            )
+            raise ValueError(f"{temperature_type} is not a valid temperature type")
         return
 
     @staticmethod

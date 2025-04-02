@@ -5,20 +5,12 @@ from typing import Dict, List, Optional, Tuple
 
 from PySide6.QtCore import QObject, Qt, QTimer, Signal
 from PySide6.QtSql import QSqlDatabase, QSqlTableModel
-from PySide6.QtWidgets import (
-    QApplication,
-    QFileDialog,
-    QStyle,
-    QTableView,
-    QWidget,
-)
+from PySide6.QtWidgets import QApplication, QFileDialog, QStyle, QTableView, QWidget
 
 from data.database_model import databases_folder
 from data.export_manager import ExportManager
 from data.import_manager import ImportManager
-from services.user_internet_connection_service import (
-    user_internet_connection_check,
-)
+from services.user_internet_connection_service import user_internet_connection_check
 from services.user_location_service import UserLocationService
 from services.weather_service import WeatherService
 from ui.generated_python_ui.ui_generalTabWidget import Ui_GeneralWidget
@@ -46,9 +38,7 @@ class GeneralTabController(QObject):
         self.__connect_signals()
 
     def __connect_signals(self) -> None:
-        logger.debug(
-            "GeneralTabController.__connect_signals: Connecting signals"
-        )
+        logger.debug("GeneralTabController.__connect_signals: Connecting signals")
         self.model.databases_model.databases_initialized.connect(
             self.handle_initialization_of_database_widget
         )
@@ -61,12 +51,8 @@ class GeneralTabController(QObject):
         self.view.realTimeTemperatureCheckBox.toggled.connect(
             self.handle_real_time_temperatures_check_box_changed
         )
-        self.view.importPushButton.clicked.connect(
-            self.handle_import_button_clicked
-        )
-        self.view.exportPushButton.clicked.connect(
-            self.handle_export_button_clicked
-        )
+        self.view.importPushButton.clicked.connect(self.handle_import_button_clicked)
+        self.view.exportPushButton.clicked.connect(self.handle_export_button_clicked)
         self.view.settingsPushButton.clicked.connect(
             self.handle_settings_button_clicked
         )
@@ -104,12 +90,8 @@ class GeneralTabController(QObject):
         self.view.progressBar.setValue(100)
 
         # Hides progress bar and label after 3 seconds
-        QTimer.singleShot(
-            3000, lambda: self.view.progressBar.setVisible(False)
-        )
-        QTimer.singleShot(
-            3000, lambda: self.view.progressLabel.setVisible(False)
-        )
+        QTimer.singleShot(3000, lambda: self.view.progressBar.setVisible(False))
+        QTimer.singleShot(3000, lambda: self.view.progressLabel.setVisible(False))
 
     def handle_real_time_temperatures_api_call(self) -> None:
         logger.debug(
@@ -130,12 +112,12 @@ class GeneralTabController(QObject):
         if file_type:
             logger.debug(f"GeneralTabWidget: importing {file_type} file")
             if file_type == "json":
-                import_manager = ImportManager(input_path)
-                import_manager.import_from_json()
+                import_manager = ImportManager()
+                import_manager.import_from_json(input_path)
                 self.view.update_database_table()
             elif file_type == "csv":
-                import_manager = ImportManager(input_path)
-                import_manager.import_from_csv()
+                import_manager = ImportManager()
+                import_manager.import_from_csv(input_path)
                 self.view.update_database_table()
             else:
                 logger.error("GeneralTabWidget: Unsupported file type")
@@ -223,9 +205,7 @@ class GeneralTabController(QObject):
         logger.debug("GeneralTabWidget: fuel unit changed")
         self.view.fuel_unit_suffix_update(fuel_unit)
 
-    def handle_real_time_temperatures_check_box_changed(
-        self, checked: bool
-    ) -> None:
+    def handle_real_time_temperatures_check_box_changed(self, checked: bool) -> None:
         logger.debug(
             f"GeneralTabWidget: Real-Time temperature check box changed to {checked}"
         )
@@ -330,28 +310,20 @@ class GeneralTabModel:
 
         self.combobox_data = self.ComboBoxData()
         try:
-            self.combobox_data.fuel_types = (
-                self.databases_model.get_fuel_types()
-            )
+            self.combobox_data.fuel_types = self.databases_model.get_fuel_types()
             self.combobox_data.farming_techniques = (
                 self.databases_model.get_farming_techniques()
             )
         except Exception as e:
-            logger.debug(
-                f"GeneralTabModel.__init__: Could not load database data: {e}"
-            )
+            logger.debug(f"GeneralTabModel.__init__: Could not load database data: {e}")
 
-        logger.debug(
-            "GeneralTabModel.__init__: Model initialized with combobox data"
-        )
+        logger.debug("GeneralTabModel.__init__: Model initialized with combobox data")
 
     def load_database_table_content(self) -> None:
         pass
 
     def load_real_time_temperature_data(self) -> None:
-        ipinfo_user_key = self.settings_model.get_api_key(
-            "IP Geolocation API Key"
-        )
+        ipinfo_user_key = self.settings_model.get_api_key("IP Geolocation API Key")
         open_weather_map_user_key = self.settings_model.get_api_key(
             "OpenWeatherMap API Key"
         )
@@ -472,9 +444,7 @@ class GeneralTabView(QWidget, Ui_GeneralWidget):
         temperature_value: float = self.temperatureDoubleSpinBox.value()
         temperature_type: str = self.temperatureTypesComboBox.currentText()
         farming_technique: str = self.farmingTechniqueComboBox.currentText()
-        calculation_unit: str = (
-            self.calculationUnitOfMeasurementComboBox.currentText()
-        )
+        calculation_unit: str = self.calculationUnitOfMeasurementComboBox.currentText()
         num_of_temp_scales = 3
         # This checks for temp data validity.
         # Yes, I know we should probably
@@ -502,9 +472,7 @@ class GeneralTabView(QWidget, Ui_GeneralWidget):
             self.sql_widget_model.select()
             self.sqlTableView.resizeColumnsToContents()
 
-            logger.info(
-                f"Table updated with {self.sql_widget_model.rowCount()} rows"
-            )
+            logger.info(f"Table updated with {self.sql_widget_model.rowCount()} rows")
 
     def fuel_unit_suffix_update(self, fuel_unit: str) -> None:
         fuel_unit_suffixes: Dict[str, str] = {
@@ -527,15 +495,9 @@ class GeneralTabView(QWidget, Ui_GeneralWidget):
         if not input_path:
             return None, None
 
-        if (
-            input_path.lower().endswith(".json")
-            or "json" in selected_filter.lower()
-        ):
+        if input_path.lower().endswith(".json") or "json" in selected_filter.lower():
             file_type = "json"
-        elif (
-            input_path.lower().endswith(".csv")
-            or "csv" in selected_filter.lower()
-        ):
+        elif input_path.lower().endswith(".csv") or "csv" in selected_filter.lower():
             file_type = "csv"
         else:
             file_type = None
@@ -553,15 +515,9 @@ class GeneralTabView(QWidget, Ui_GeneralWidget):
         if not output_path:
             return None, None
 
-        if (
-            output_path.lower().endswith(".json")
-            or "json" in selected_filter.lower()
-        ):
+        if output_path.lower().endswith(".json") or "json" in selected_filter.lower():
             file_type = "json"
-        elif (
-            output_path.lower().endswith(".csv")
-            or "csv" in selected_filter.lower()
-        ):
+        elif output_path.lower().endswith(".csv") or "csv" in selected_filter.lower():
             file_type = "csv"
         else:
             file_type = None
@@ -576,9 +532,7 @@ class GeneralTabView(QWidget, Ui_GeneralWidget):
             preferred_user_id,
         ) = user_preferences
         self.temperatureTypesComboBox.setCurrentText(preferred_temp_unit)
-        self.calculationUnitOfMeasurementComboBox.setCurrentText(
-            preferred_calc_unit
-        )
+        self.calculationUnitOfMeasurementComboBox.setCurrentText(preferred_calc_unit)
         self.userIDSpinBox.setValue(int(preferred_user_id))
         if use_temperature:
             pass

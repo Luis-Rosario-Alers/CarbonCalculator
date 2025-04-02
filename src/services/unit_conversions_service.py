@@ -25,9 +25,7 @@ class UnitConversionsService:
 
         converted_value = from_unit_conversion_formulas[from_unit](fuel_value)
         # Convert the fuel_value to liters
-        logger.debug(
-            f"Converting {fuel_value} {from_unit} to {converted_value} liters"
-        )
+        logger.debug(f"Converting {fuel_value} {from_unit} to {converted_value} liters")
         return converted_value
 
     # use this for fuels measured in volume (natural gas, gasoline, etc.)
@@ -64,9 +62,9 @@ class UnitConversionsService:
             "Metric Tons": lambda x: x / 1000,
         }
 
-        converted_emissions_result = from_unit_conversion_formulas[
-            calculation_unit
-        ](calculation_result)
+        converted_emissions_result = from_unit_conversion_formulas[calculation_unit](
+            calculation_result
+        )
         logger.debug(
             f"Converting {calculation_result} Kilograms to {converted_emissions_result} {calculation_unit}"
         )

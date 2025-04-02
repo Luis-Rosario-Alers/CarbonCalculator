@@ -38,9 +38,7 @@ class Ui_GeneralWidget(object):
         )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.leftBar.sizePolicy().hasHeightForWidth()
-        )
+        sizePolicy.setHeightForWidth(self.leftBar.sizePolicy().hasHeightForWidth())
         self.leftBar.setSizePolicy(sizePolicy)
         self.leftBar.setMaximumSize(QSize(16777215, 16777215))
         self.leftBar.setStyleSheet("")
@@ -121,15 +119,11 @@ class Ui_GeneralWidget(object):
             self.amountOfFuelUsedLabel, 0, Qt.AlignmentFlag.AlignRight
         )
 
-        self.amountOfFuelUsedDoubleSpinBox = QDoubleSpinBox(
-            self.amountOfFuelUsedWidget
-        )
+        self.amountOfFuelUsedDoubleSpinBox = QDoubleSpinBox(self.amountOfFuelUsedWidget)
         self.amountOfFuelUsedDoubleSpinBox.setObjectName(
             "amountOfFuelUsedDoubleSpinBox"
         )
-        sizePolicy2 = QSizePolicy(
-            QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed
-        )
+        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         sizePolicy2.setHorizontalStretch(0)
         sizePolicy2.setVerticalStretch(0)
         sizePolicy2.setHeightForWidth(
@@ -164,9 +158,7 @@ class Ui_GeneralWidget(object):
             self.fuelTypeComboBox, 0, Qt.AlignmentFlag.AlignLeft
         )
 
-        self.fuelUnitOfMeasurementComboBox = QComboBox(
-            self.amountOfFuelUsedWidget
-        )
+        self.fuelUnitOfMeasurementComboBox = QComboBox(self.amountOfFuelUsedWidget)
         self.fuelUnitOfMeasurementComboBox.setObjectName(
             "fuelUnitOfMeasurementComboBox"
         )
@@ -189,15 +181,11 @@ class Ui_GeneralWidget(object):
         self.label = QLabel(self.widget)
         self.label.setObjectName("label")
 
-        self.horizontalLayout_9.addWidget(
-            self.label, 0, Qt.AlignmentFlag.AlignLeft
-        )
+        self.horizontalLayout_9.addWidget(self.label, 0, Qt.AlignmentFlag.AlignLeft)
 
         self.temperatureDoubleSpinBox = QDoubleSpinBox(self.widget)
         self.temperatureDoubleSpinBox.setObjectName("temperatureDoubleSpinBox")
-        sizePolicy4 = QSizePolicy(
-            QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed
-        )
+        sizePolicy4 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
         sizePolicy4.setHorizontalStretch(0)
         sizePolicy4.setVerticalStretch(0)
         sizePolicy4.setHeightForWidth(
@@ -226,9 +214,7 @@ class Ui_GeneralWidget(object):
             self.temperatureTypesComboBox, 0, Qt.AlignmentFlag.AlignLeft
         )
 
-        self.verticalLayout_3.addWidget(
-            self.widget, 0, Qt.AlignmentFlag.AlignLeft
-        )
+        self.verticalLayout_3.addWidget(self.widget, 0, Qt.AlignmentFlag.AlignLeft)
 
         self.userIDContainerWidget = QWidget(self.farmingVariablesWidget)
         self.userIDContainerWidget.setObjectName("userIDContainerWidget")
@@ -278,9 +264,7 @@ class Ui_GeneralWidget(object):
         self.realTimeTemperatureCheckBox = QCheckBox(
             self.realTimeTemperaturesControlContainerWidget
         )
-        self.realTimeTemperatureCheckBox.setObjectName(
-            "realTimeTemperatureCheckBox"
-        )
+        self.realTimeTemperatureCheckBox.setObjectName("realTimeTemperatureCheckBox")
 
         self.verticalLayout_7.addWidget(self.realTimeTemperatureCheckBox)
 
@@ -288,12 +272,8 @@ class Ui_GeneralWidget(object):
             self.realTimeTemperaturesControlContainerWidget
         )
 
-        self.calculateContainerPushButton = QPushButton(
-            self.calculateContainerWidget
-        )
-        self.calculateContainerPushButton.setObjectName(
-            "calculateContainerPushButton"
-        )
+        self.calculateContainerPushButton = QPushButton(self.calculateContainerWidget)
+        self.calculateContainerPushButton.setObjectName("calculateContainerPushButton")
 
         self.horizontalLayout_6.addWidget(self.calculateContainerPushButton)
 
@@ -410,9 +390,7 @@ class Ui_GeneralWidget(object):
         font2.setKerning(False)
         self.mainBodyPlaceholderLabel.setFont(font2)
         self.mainBodyPlaceholderLabel.setFrameShape(QFrame.Shape.NoFrame)
-        self.mainBodyPlaceholderLabel.setAlignment(
-            Qt.AlignmentFlag.AlignCenter
-        )
+        self.mainBodyPlaceholderLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.verticalLayout_6.addWidget(self.mainBodyPlaceholderLabel)
 
@@ -442,13 +420,9 @@ class Ui_GeneralWidget(object):
         self.recentTransactionsHeaderWidget.setObjectName(
             "recentTransactionsHeaderWidget"
         )
-        self.horizontalLayout_3 = QHBoxLayout(
-            self.recentTransactionsHeaderWidget
-        )
+        self.horizontalLayout_3 = QHBoxLayout(self.recentTransactionsHeaderWidget)
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
-        self.recentTransactionsHeaderLabel = QLabel(
-            self.recentTransactionsHeaderWidget
-        )
+        self.recentTransactionsHeaderLabel = QLabel(self.recentTransactionsHeaderWidget)
         self.recentTransactionsHeaderLabel.setObjectName(
             "recentTransactionsHeaderLabel"
         )
@@ -479,9 +453,7 @@ class Ui_GeneralWidget(object):
         self.sqlTableView.setMinimumSize(QSize(300, 0))
         self.sqlTableView.setMaximumSize(QSize(16777215, 900))
         self.sqlTableView.setSizeIncrement(QSize(0, 0))
-        self.sqlTableView.setSelectionMode(
-            QAbstractItemView.SelectionMode.NoSelection
-        )
+        self.sqlTableView.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
 
         self.verticalLayout.addWidget(self.sqlTableView)
 
@@ -504,9 +476,7 @@ class Ui_GeneralWidget(object):
         )
         sizePolicy7.setHorizontalStretch(0)
         sizePolicy7.setVerticalStretch(0)
-        sizePolicy7.setHeightForWidth(
-            self.progressBar.sizePolicy().hasHeightForWidth()
-        )
+        sizePolicy7.setHeightForWidth(self.progressBar.sizePolicy().hasHeightForWidth())
         self.progressBar.setSizePolicy(sizePolicy7)
         self.progressBar.setValue(0)
 
@@ -535,14 +505,10 @@ class Ui_GeneralWidget(object):
             QCoreApplication.translate("GeneralWidget", "General", None)
         )
         self.farmingVariablesLabel.setText(
-            QCoreApplication.translate(
-                "GeneralWidget", "Farming Variables", None
-            )
+            QCoreApplication.translate("GeneralWidget", "Farming Variables", None)
         )
         self.farmingTechniqueLabel.setText(
-            QCoreApplication.translate(
-                "GeneralWidget", "Farming Technique:", None
-            )
+            QCoreApplication.translate("GeneralWidget", "Farming Technique:", None)
         )
         self.amountOfFuelUsedLabel.setText(
             QCoreApplication.translate("GeneralWidget", "Fuel Amount:", None)
@@ -558,9 +524,7 @@ class Ui_GeneralWidget(object):
             QCoreApplication.translate("GeneralWidget", "User ID:", None)
         )
         self.realTimeTemperatureCheckBox.setText(
-            QCoreApplication.translate(
-                "GeneralWidget", "Real-Time temperatures", None
-            )
+            QCoreApplication.translate("GeneralWidget", "Real-Time temperatures", None)
         )
         self.calculateContainerPushButton.setText(
             QCoreApplication.translate("GeneralWidget", "Calculate", None)
@@ -588,14 +552,10 @@ class Ui_GeneralWidget(object):
             )
         )
         self.recentTransactionsHeaderLabel.setText(
-            QCoreApplication.translate(
-                "GeneralWidget", "Recent Transactions", None
-            )
+            QCoreApplication.translate("GeneralWidget", "Recent Transactions", None)
         )
         self.progressLabel.setText(
-            QCoreApplication.translate(
-                "GeneralWidget", "nothing is happening", None
-            )
+            QCoreApplication.translate("GeneralWidget", "nothing is happening", None)
         )
 
     # retranslateUi

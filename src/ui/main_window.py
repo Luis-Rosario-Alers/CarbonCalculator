@@ -8,6 +8,8 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QWidget
 
 from core.emissions_calculator import calculationModel
 from data.database_model import application_path, databasesModel
+from data.export_manager import ExportManager
+from data.import_manager import ImportManager
 from data.settings_model import SettingsModel
 from ui.FeedbackTabWidget import FeedbackTabWidget
 from ui.GeneralTabWidget import GeneralTabWidget
@@ -45,9 +47,7 @@ class MainWindowController(QObject):
         self.model.calculation_model.calculation_result.connect(
             self.model.databases_model.log_transaction
         )
-        self.model.settings_model.theme_changed.connect(
-            self.handle_theme_changed
-        )
+        self.model.settings_model.theme_changed.connect(self.handle_theme_changed)
 
     # Yes, I know it's not the BEST solution, but we will get to it at some point.
     def update_progress(self, percentage, message):
@@ -67,9 +67,7 @@ class MainWindowController(QObject):
         self.initialization.emit()  # this starts the initialization sequence
 
     def handle_main_window_closed(self):
-        logger.debug(
-            "Main Window Controller: emitting application closed signal"
-        )
+        logger.debug("Main Window Controller: emitting application closed signal")
         self.application_closed.emit()
 
     def initialize_theme(self):
@@ -103,21 +101,25 @@ class AppModel(QObject):
         self.databases_model = databasesModel()
         self.calculation_model = calculationModel()
         self.settings_model = SettingsModel()
+        self.import_manager = ImportManager()
+        self.export_manager = ExportManager()
 
     def setup_models(self, main_window_controller):
         logger.debug("Main Window Model: Setting up models in AppModel")
-        main_window_controller.update_progress(
-            30, "Setting up database models..."
-        )
+        main_window_controller.update_progress(30, "Setting up database models...")
         self.databases_model.set_controller(main_window_controller)
 
-        main_window_controller.update_progress(
-            45, "Setting up calculation models..."
-        )
+        main_window_controller.update_progress(45, "Setting up calculation models...")
         self.calculation_model.set_controller(main_window_controller)
 
-        main_window_controller.update_progress(60, "Loading settings...")
+        main_window_controller.update_progress(50, "Loading settings...")
         self.settings_model.set_controller(main_window_controller)
+
+        main_window_controller.update_progress(60, "Setting up import manager...")
+        self.import_manager.set_controller(main_window_controller)
+
+        main_window_controller.update_progress(75, "Setting up export manager...")
+        self.export_manager.set_controller(main_window_controller)
 
 
 # View: controls the UI for the Main Window
@@ -141,9 +143,7 @@ class MainWindowView(QMainWindow, Ui_MainWindow):
         else:  # Linux and other Unix-like systems
             icon_file = "icon.png"
 
-        icon_path = os.path.join(
-            application_path, "resources", "assets", icon_file
-        )
+        icon_path = os.path.join(application_path, "resources", "assets", icon_file)
 
         if not os.path.exists(icon_path):
             icon_path = os.path.join(
@@ -172,9 +172,7 @@ class MainWindowView(QMainWindow, Ui_MainWindow):
         self.stackedWidget.setCurrentWidget(self.GeneralTabWidget.view)
 
         self.menuGeneral.addAction("General").triggered.connect(
-            lambda: self.stackedWidget.setCurrentWidget(
-                self.GeneralTabWidget.view
-            )
+            lambda: self.stackedWidget.setCurrentWidget(self.GeneralTabWidget.view)
         )
         self.menuVisualization.addAction("Visualization").triggered.connect(
             lambda: self.stackedWidget.setCurrentWidget(
@@ -185,14 +183,10 @@ class MainWindowView(QMainWindow, Ui_MainWindow):
             lambda: self.stackedWidget.setCurrentWidget(QWidget())
         )
         self.menuHelp.addAction("Help").triggered.connect(
-            lambda: self.stackedWidget.setCurrentWidget(
-                self.HelpTabWidget.view
-            )
+            lambda: self.stackedWidget.setCurrentWidget(self.HelpTabWidget.view)
         )
         self.menuFeedback.addAction("Feedback").triggered.connect(
-            lambda: self.stackedWidget.setCurrentWidget(
-                self.FeedbackTabWidget.view
-            )
+            lambda: self.stackedWidget.setCurrentWidget(self.FeedbackTabWidget.view)
         )
 
     def closeEvent(self, event):

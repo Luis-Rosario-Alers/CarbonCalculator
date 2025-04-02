@@ -80,9 +80,7 @@ class Ui_MainWindow(object):
         self.menuAI_chat.setTitle(
             QCoreApplication.translate("MainWindow", "AI chat", None)
         )
-        self.menuHelp.setTitle(
-            QCoreApplication.translate("MainWindow", "Help", None)
-        )
+        self.menuHelp.setTitle(QCoreApplication.translate("MainWindow", "Help", None))
         self.menuFeedback.setTitle(
             QCoreApplication.translate("MainWindow", "Feedback", None)
         )

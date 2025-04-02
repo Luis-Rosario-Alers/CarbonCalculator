@@ -50,9 +50,7 @@ class SettingsModel(QObject):
         :return: Nothing
         """
         self.application_controller = application_controller
-        logger.debug(
-            "SettingsModel.set_controller: Application controller set"
-        )
+        logger.debug("SettingsModel.set_controller: Application controller set")
 
     def _load_settings(self):
         """
@@ -116,9 +114,7 @@ class SettingsModel(QObject):
         :param kwargs: Dictionary of settings to update
         :return: Nothing
         """
-        logger.debug(
-            f"SettingsModel.update_settings: Updating settings with: {kwargs}"
-        )
+        logger.debug(f"SettingsModel.update_settings: Updating settings with: {kwargs}")
         for category, settings in kwargs.items():
             if category in self.settings and isinstance(settings, dict):
                 self.settings[category].update(settings)
@@ -134,9 +130,7 @@ class SettingsModel(QObject):
         # yes, I know it's basically a copy of update_settings.
         # I just need separate functions so that I can emit signals properly
         # and keep separation of concerns
-        logger.debug(
-            f"SettingsModel.update_settings: Updating theme with: {kwargs}"
-        )
+        logger.debug(f"SettingsModel.update_settings: Updating theme with: {kwargs}")
         for category, settings in kwargs.items():
             if category in self.settings and isinstance(settings, dict):
                 if settings.get("Theme") == "Light":
