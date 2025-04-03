@@ -2,18 +2,16 @@ from pathlib import Path
 
 import pytest
 
-from src.data.settings_manager import SettingsManager
+from src.data.settings_model import SettingsModel
 
 
 class TestSettingsManager:
     @pytest.fixture
-    def settings_manager(self) -> SettingsManager:
-        return SettingsManager()
+    def settings_manager(self) -> SettingsModel:
+        return SettingsModel()
 
     # Successfully loads settings from JSON file
-    def test_load_settings_loads_settings_from_json(
-        self, mocker, settings_manager
-    ):
+    def test_load_settings_loads_settings_from_json(self, mocker, settings_manager):
         # Arrange
         mock_settings_file = mocker.patch(
             "src.data.settings_manager.SettingsManager._load_settings"
@@ -31,7 +29,7 @@ class TestSettingsManager:
         self, mocker, settings_manager
     ):
         # Arrange
-        settings_manager.settings_file = Path("test/path/settings.json")
+        settings_manager.settings_file_path = Path("test/path/settings.json")
         settings_manager.default_settings = {"test": "test"}
         mock_settings_file_exists = mocker.patch(
             "pathlib.Path.exists", return_value=False
@@ -49,9 +47,7 @@ class TestSettingsManager:
         mock_save_settings.assert_called_once()
 
     # Successfully saves settings to JSON file
-    def test_save_settings_saves_settings_to_json(
-        self, mocker, settings_manager
-    ):
+    def test_save_settings_saves_settings_to_json(self, mocker, settings_manager):
         # Arrange
         mock_save_settings = mocker.patch(
             "src.data.settings_manager.SettingsManager._save_settings"

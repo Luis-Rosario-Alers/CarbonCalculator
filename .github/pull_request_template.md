@@ -20,6 +20,13 @@ Gitmoji Reference Guide (for PR naming):
 🚑 `:ambulance:` - Critical hotfix
 -->
 
+<!--
+## Branch Naming Conventions
+- Feature branches should be named as `feature/your-feature-description`
+- Bug fix branches should be named as `bugfix/your-bug-fix-description`
+- Use Gitmoji for pull request names to stick to conventions (e.g., `✨ Add new feature` or `🐛 Fix a bug`)
+-->
+
 ## Description
 <!-- Please include a summary of the changes and the related issue. -->
 
@@ -41,10 +48,5 @@ Gitmoji Reference Guide (for PR naming):
 - [ ] I have added tests that prove my fix is effective or that my feature works
 - [ ] New and existing unit tests pass locally with my changes
 
-## Branch Naming Conventions
-- Feature branches should be named as `feature/your-feature-description`
-- Bug fix branches should be named as `bugfix/your-bug-fix-description`
-- Use Gitmoji for pull request names to stick to conventions (e.g., `✨ Add new feature` or `🐛 Fix a bug`)
-
 ## Additional Notes
-<!-- Any additional information or context about the PR. --> 
+<!-- Any additional information or context about the PR. -->

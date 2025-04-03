@@ -6,17 +6,13 @@ from src.data.export_manager import ExportManager
 
 class TestExportManager:
     # Successfully exports data from SQLite to JSON file with correct structure
-    def test_export_to_json_writes_data_with_correct_structure(
-        self, tmp_path, mocker
-    ):
+    def test_export_to_json_writes_data_with_correct_structure(self, tmp_path, mocker):
         # Arrange
         test_data = [
             (1, "gasoline", 10.5, 24.3, "2023-01-01"),
             (2, "diesel", 8.2, 22.1, "2023-01-02"),
         ]
-        mock_fetch = mocker.patch(
-            "src.data.export_manager.ExportManager.fetch_data"
-        )
+        mock_fetch = mocker.patch("src.data.export_manager.ExportManager.fetch_data")
         mock_fetch.return_value = test_data
 
         export_manager = ExportManager()
@@ -44,9 +40,7 @@ class TestExportManager:
     # Handle empty result set from database
     def test_export_to_json_handles_empty_dataset(self, tmp_path, mocker):
         # Arrange
-        mock_fetch = mocker.patch(
-            "src.data.export_manager.ExportManager.fetch_data"
-        )
+        mock_fetch = mocker.patch("src.data.export_manager.ExportManager.fetch_data")
         mock_fetch.return_value = []
 
         export_manager = ExportManager()
@@ -69,9 +63,7 @@ class TestExportManager:
             (i, "fuel_type", i * 1.1, i * 2.2, f"2023-01-{i % 30 + 1:02d}")
             for i in range(1000)
         ]
-        mock_fetch = mocker.patch(
-            "src.data.export_manager.ExportManager.fetch_data"
-        )
+        mock_fetch = mocker.patch("src.data.export_manager.ExportManager.fetch_data")
         mock_fetch.return_value = large_test_data
         export_manager = ExportManager()
         output_file = tmp_path / "large_test_output.json"
@@ -90,17 +82,13 @@ class TestExportManager:
         }
 
     # Successfully exports data from SQLite to CSV file with correct structure
-    def test_export_to_csv_writes_data_with_correct_structure(
-        self, tmp_path, mocker
-    ):
+    def test_export_to_csv_writes_data_with_correct_structure(self, tmp_path, mocker):
         # Arrange
         test_data = [
             (1, "gasoline", 10.5, 24.3, "2023-01-01"),
             (2, "diesel", 8.2, 22.1, "2023-01-02"),
         ]
-        mock_fetch = mocker.patch(
-            "src.data.export_manager.ExportManager.fetch_data"
-        )
+        mock_fetch = mocker.patch("src.data.export_manager.ExportManager.fetch_data")
         mock_fetch.return_value = test_data
         export_manager = ExportManager()
         output_file = tmp_path / "test_output.csv"
@@ -121,9 +109,7 @@ class TestExportManager:
 
     def test_export_to_csv_handles_empty_dataset(self, tmp_path, mocker):
         # Arrange
-        mock_fetch = mocker.patch(
-            "src.data.export_manager.ExportManager.fetch_data"
-        )
+        mock_fetch = mocker.patch("src.data.export_manager.ExportManager.fetch_data")
         mock_fetch.return_value = []
         export_manager = ExportManager()
         output_file = tmp_path / "empty_output.csv"
@@ -141,9 +127,7 @@ class TestExportManager:
             (i, "fuel_type", i * 1.1, i * 2.2, f"2023-01-{i % 30 + 1:02d}")
             for i in range(1000)
         ]
-        mock_fetch = mocker.patch(
-            "src.data.export_manager.ExportManager.fetch_data"
-        )
+        mock_fetch = mocker.patch("src.data.export_manager.ExportManager.fetch_data")
         mock_fetch.return_value = large_test_data
         export_manager = ExportManager()
         output_file = tmp_path / "large_test_output.csv"
@@ -165,9 +149,7 @@ class TestExportManager:
 
     def test_export_to_csv_fetch_data_called(self, mocker):
         # Arrange
-        mock_fetch = mocker.patch(
-            "src.data.export_manager.ExportManager.fetch_data"
-        )
+        mock_fetch = mocker.patch("src.data.export_manager.ExportManager.fetch_data")
         mocker.patch("builtins.open")
 
         export_manager = ExportManager()
@@ -178,9 +160,7 @@ class TestExportManager:
 
     def test_export_to_json_fetch_data_called(self, mocker):
         # Arrange
-        mock_fetch = mocker.patch(
-            "src.data.export_manager.ExportManager.fetch_data"
-        )
+        mock_fetch = mocker.patch("src.data.export_manager.ExportManager.fetch_data")
         mocker.patch("builtins.open")
 
         export_manager = ExportManager()

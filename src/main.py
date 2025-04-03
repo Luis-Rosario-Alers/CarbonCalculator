@@ -5,14 +5,16 @@ from datetime import datetime
 
 from PySide6.QtWidgets import QApplication
 
-from src.ui.main_window import MainWindowWidget
+from ui.main_window import MainWindowWidget
 
 
 def setup_logging():
     if not os.path.exists("logs"):
         os.makedirs("logs")
 
-    log_filename = f"logs/carbon_calculator_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
+    log_filename = (
+        f"logs/carbon_calculator_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
+    )
 
     logging.basicConfig(
         level=logging.DEBUG,

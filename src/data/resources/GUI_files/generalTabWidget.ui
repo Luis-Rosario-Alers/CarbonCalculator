@@ -2,19 +2,22 @@
 <ui version="4.0">
  <class>GeneralWidget</class>
  <widget class="QWidget" name="GeneralWidget">
+  <property name="windowModality">
+   <enum>Qt::WindowModality::NonModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>962</width>
-    <height>755</height>
+    <width>1179</width>
+    <height>663</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>General</string>
   </property>
   <property name="autoFillBackground">
-   <bool>true</bool>
+   <bool>false</bool>
   </property>
   <property name="styleSheet">
    <string notr="true"/>
@@ -33,6 +36,9 @@
        <width>16777215</width>
        <height>16777215</height>
       </size>
+     </property>
+     <property name="styleSheet">
+      <string notr="true"/>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
@@ -63,7 +69,9 @@
            </property>
            <property name="font">
             <font>
-             <pointsize>10</pointsize>
+             <family>Segoe UI</family>
+             <pointsize>12</pointsize>
+             <bold>true</bold>
             </font>
            </property>
            <property name="text">
@@ -130,6 +138,9 @@
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
+              <property name="styleSheet">
+               <string notr="true"/>
+              </property>
               <property name="accelerated">
                <bool>true</bool>
               </property>
@@ -170,7 +181,7 @@
             <item alignment="Qt::AlignmentFlag::AlignLeft">
              <widget class="QLabel" name="label">
               <property name="text">
-               <string>Temperature</string>
+               <string>Temperature:</string>
               </property>
              </widget>
             </item>
@@ -215,6 +226,22 @@
            </layout>
           </widget>
          </item>
+         <item alignment="Qt::AlignmentFlag::AlignLeft">
+          <widget class="QWidget" name="userIDContainerWidget" native="true">
+           <layout class="QHBoxLayout" name="horizontalLayout_5">
+            <item alignment="Qt::AlignmentFlag::AlignLeft">
+             <widget class="QLabel" name="userIDLabel">
+              <property name="text">
+               <string>User ID:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="userIDSpinBox"/>
+            </item>
+           </layout>
+          </widget>
+         </item>
         </layout>
        </widget>
       </item>
@@ -228,10 +255,16 @@
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout_6">
          <item>
-          <widget class="QCheckBox" name="calculateContainerCheckBox">
-           <property name="text">
-            <string>Real-Time temperatures</string>
-           </property>
+          <widget class="QWidget" name="realTimeTemperaturesControlContainerWidget" native="true">
+           <layout class="QVBoxLayout" name="verticalLayout_7">
+            <item>
+             <widget class="QCheckBox" name="realTimeTemperatureCheckBox">
+              <property name="text">
+               <string>Real-Time temperatures</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </widget>
          </item>
          <item>
@@ -343,6 +376,8 @@
      </property>
      <property name="font">
       <font>
+       <family>Segoe UI</family>
+       <pointsize>10</pointsize>
        <underline>false</underline>
        <strikeout>false</strikeout>
       </font>
@@ -352,6 +387,8 @@
        <widget class="QLabel" name="mainBodyPlaceholderLabel">
         <property name="font">
          <font>
+          <family>Segoe UI</family>
+          <pointsize>10</pointsize>
           <underline>false</underline>
           <strikeout>false</strikeout>
           <kerning>false</kerning>
@@ -372,6 +409,8 @@
        <widget class="QLabel" name="madeByCreditsLabel">
         <property name="font">
          <font>
+          <family>Segoe UI</family>
+          <pointsize>9</pointsize>
           <italic>true</italic>
           <bold>true</bold>
           <underline>false</underline>
@@ -399,7 +438,9 @@
           <widget class="QLabel" name="recentTransactionsHeaderLabel">
            <property name="font">
             <font>
-             <pointsize>15</pointsize>
+             <family>Segoe UI</family>
+             <pointsize>12</pointsize>
+             <bold>true</bold>
             </font>
            </property>
            <property name="text">

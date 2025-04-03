@@ -1,2 +1,2 @@
 # FILE: bandit.yaml
-exclude_dirs: ['tests', 'tests/test_calculator.py, tests/test_weather_service.py']
+exclude_dirs: ['tests', 'tests/test_calculator.py, tests/test_weather_service.py', "src/utils/generate_test_data.py"]

@@ -1,6 +1,8 @@
 from PySide6.QtCore import QCoreApplication, QMetaObject, Qt
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QVBoxLayout, QWidget
 
+from ui.generated_python_ui import icons_rc  # noqa: F401
+
 
 class Ui_feedbackTabWidget(object):
     def setupUi(self, feedbackTabWidget):
@@ -57,9 +59,7 @@ class Ui_feedbackTabWidget(object):
             Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignTop,
         )
 
-        self.horizontalLayout_2.addWidget(
-            self.widget_4, 0, Qt.AlignmentFlag.AlignRight
-        )
+        self.horizontalLayout_2.addWidget(self.widget_4, 0, Qt.AlignmentFlag.AlignRight)
 
         self.verticalLayout.addWidget(self.widget_2)
 

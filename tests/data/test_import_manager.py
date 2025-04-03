@@ -4,7 +4,7 @@ from datetime import datetime
 import chardet
 import pytest
 
-from src.data.database import (
+from src.data.database_model import (
     databases_folder,
     initialize_emissions_database,
     setup_databases_folder,
@@ -78,9 +78,7 @@ class TestImportManager:
     # * Tests for import_csv method
     def test_import_csv_with_missing_headers(self, tmp_path):
         # Arrange
-        csv_content = (
-            "user_id,fuel_type,emissions,timestamp\n1,gas,25.3,2023-01-01"
-        )
+        csv_content = "user_id,fuel_type,emissions,timestamp\n1,gas,25.3,2023-01-01"
         csv_file = tmp_path / "test.csv"
         csv_file.write_text(csv_content)
         import_manager = ImportManager(str(csv_file))
@@ -138,14 +136,14 @@ class TestImportManager:
         # Act & Assert
         with pytest.raises(ValueError):
             import_manager.import_from_json()
-        mock_logger.error.assert_called_once_with(
-            "Missing value for key: fuel_used"
-        )
+        mock_logger.error.assert_called_once_with("Missing value for key: fuel_used")
 
     def test_import_from_csv_missing_values_in_keys(self, mocker, tmp_path):
         # Arrange
         mock_logger = mocker.patch("src.data.import_manager.logger")
-        csv_content = "user_id,fuel_type,fuel_used,emissions,timestamp\n1,gas,,25.3,2023-01-01"
+        csv_content = (
+            "user_id,fuel_type,fuel_used,emissions,timestamp\n1,gas,,25.3,2023-01-01"
+        )
         csv_file = tmp_path / "test.csv"
         csv_file.write_text(csv_content)
         import_manager = ImportManager(str(csv_file))
@@ -153,13 +151,13 @@ class TestImportManager:
         # Act & Assert
         with pytest.raises(ValueError):
             import_manager.import_from_csv()
-        mock_logger.error.assert_called_once_with(
-            "Missing value for key: fuel_used"
-        )
+        mock_logger.error.assert_called_once_with("Missing value for key: fuel_used")
 
     def test_import_from_csv_with_utf_8_encoding(self, mocker, tmp_path):
         # Arrange with no special characters
-        csv_content = "user_id,fuel_type,fuel_used,emissions,timestamp\n1,gas,50,150,2024-01-01"
+        csv_content = (
+            "user_id,fuel_type,fuel_used,emissions,timestamp\n1,gas,50,150,2024-01-01"
+        )
         csv_file = tmp_path / "test.csv"
         # Explicitly write in UTF-8 encoding
         with open(csv_file, "w", encoding="utf-8", newline="") as f:
@@ -214,9 +212,7 @@ class TestImportManager:
         imported_data = import_manager.import_from_csv()
 
         # Assert
-        assert imported_data == [
-            (1, "gasolina señal düración", 50, 150, "2024-01-01")
-        ]
+        assert imported_data == [(1, "gasolina señal düración", 50, 150, "2024-01-01")]
 
         # Verify the file was actually written in ISO-8859-1
         with open(csv_file, "rb") as f:
@@ -230,7 +226,9 @@ class TestImportManager:
 
     def test_import_from_csv_with_UnicodeDecodeError(self, mocker, tmp_path):
         # Arrange
-        csv_content = "user_id,fuel_type,fuel_used,emissions,timestamp\n1,gas,50,150,2024-01-01"
+        csv_content = (
+            "user_id,fuel_type,fuel_used,emissions,timestamp\n1,gas,50,150,2024-01-01"
+        )
         csv_file = tmp_path / "test.csv"
         mock_logger = mocker.patch("src.data.import_manager.logger")
 
@@ -246,9 +244,7 @@ class TestImportManager:
                 raise UnicodeDecodeError("testcodec", b"", 0, 1, "test")
             return mocker.mock_open(read_data=csv_content)(*args, **kwargs)
 
-        mocker.patch(
-            "src.data.import_manager.open", side_effect=mock_open_side_effect
-        )
+        mocker.patch("src.data.import_manager.open", side_effect=mock_open_side_effect)
 
         import_manager = ImportManager(str(csv_file))
 
@@ -256,9 +252,8 @@ class TestImportManager:
         with pytest.raises(ValueError) as exc_info:
             import_manager.import_from_csv()
 
-        assert (
-            "Could not read file with any of the attempted encodings"
-            in str(exc_info.value)
+        assert "Could not read file with any of the attempted encodings" in str(
+            exc_info.value
         )
 
         # Verify warnings were logged for each attempted encoding
@@ -271,11 +266,11 @@ class TestImportManager:
                 f"Failed to read with encoding: {encoding}"
             )
 
-    def test_import_from_csv_with_error_detecting_encoding(
-        self, mocker, tmp_path
-    ):
+    def test_import_from_csv_with_error_detecting_encoding(self, mocker, tmp_path):
         # Arrange
-        csv_content = "user_id,fuel_type,fuel_used,emissions,timestamp\n1,gas,50,150,2024-01-01"
+        csv_content = (
+            "user_id,fuel_type,fuel_used,emissions,timestamp\n1,gas,50,150,2024-01-01"
+        )
         csv_file = tmp_path / "test.csv"
         mock_logger = mocker.patch("src.data.import_manager.logger")
 
@@ -289,9 +284,7 @@ class TestImportManager:
                 raise UnicodeDecodeError("testcodec", b"", 0, 1, "test")
             return mocker.mock_open(read_data=csv_content)(*args, **kwargs)
 
-        mocker.patch(
-            "src.data.import_manager.open", side_effect=mock_open_side_effect
-        )
+        mocker.patch("src.data.import_manager.open", side_effect=mock_open_side_effect)
 
         # Act
         import_manager = ImportManager(str(csv_file))
@@ -323,7 +316,9 @@ class TestImportManager:
         self, mocker, tmp_path
     ):
         # Arrange
-        csv_content = "user_id,fuel_type,fuel_used,emissions,timestamp\n1,gas,50,150,2024-01-01"
+        csv_content = (
+            "user_id,fuel_type,fuel_used,emissions,timestamp\n1,gas,50,150,2024-01-01"
+        )
         csv_file = tmp_path / "test.csv"
         csv_file.write_text(csv_content)
         mock_logger = mocker.patch("src.data.import_manager.logger")
@@ -344,7 +339,9 @@ class TestImportManager:
 
     def test_import_from_csv_when_all_encodings_fail(self, mocker, tmp_path):
         # Arrange
-        csv_content = "user_id,fuel_type,fuel_used,emissions,timestamp\n1,gas,50,150,2024-01-01"
+        csv_content = (
+            "user_id,fuel_type,fuel_used,emissions,timestamp\n1,gas,50,150,2024-01-01"
+        )
         csv_file = tmp_path / "test.csv"
         csv_file.write_text(csv_content)
 
@@ -362,9 +359,7 @@ class TestImportManager:
                 raise UnicodeDecodeError("testcodec", b"", 0, 1, "test")
             return mocker.mock_open(read_data=csv_content)(*args, **kwargs)
 
-        mocker.patch(
-            "src.data.import_manager.open", side_effect=mock_open_side_effect
-        )
+        mocker.patch("src.data.import_manager.open", side_effect=mock_open_side_effect)
 
         import_manager = ImportManager(str(csv_file))
 

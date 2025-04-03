@@ -8,16 +8,19 @@ from PySide6.QtWidgets import (
     QLineEdit,
     QPushButton,
     QSizePolicy,
+    QSpinBox,
     QVBoxLayout,
     QWidget,
 )
+
+from ui.generated_python_ui import icons_rc  # noqa: F401
 
 
 class Ui_settingsWidget(object):
     def setupUi(self, settingsWidget):
         if not settingsWidget.objectName():
             settingsWidget.setObjectName("settingsWidget")
-        settingsWidget.resize(351, 546)
+        settingsWidget.resize(370, 636)
         self.horizontalLayout = QHBoxLayout(settingsWidget)
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.leftBar = QWidget(settingsWidget)
@@ -48,16 +51,10 @@ class Ui_settingsWidget(object):
         self.emissionsModifiersPathContainer.setObjectName(
             "emissionsModifiersPathContainer"
         )
-        self.horizontalLayout_6 = QHBoxLayout(
-            self.emissionsModifiersPathContainer
-        )
+        self.horizontalLayout_6 = QHBoxLayout(self.emissionsModifiersPathContainer)
         self.horizontalLayout_6.setObjectName("horizontalLayout_6")
-        self.emissionsModifiersPathLabel = QLabel(
-            self.emissionsModifiersPathContainer
-        )
-        self.emissionsModifiersPathLabel.setObjectName(
-            "emissionsModifiersPathLabel"
-        )
+        self.emissionsModifiersPathLabel = QLabel(self.emissionsModifiersPathContainer)
+        self.emissionsModifiersPathLabel.setObjectName("emissionsModifiersPathLabel")
 
         self.horizontalLayout_6.addWidget(self.emissionsModifiersPathLabel)
 
@@ -68,9 +65,7 @@ class Ui_settingsWidget(object):
             "emissionsModifiersPathPushButton"
         )
 
-        self.horizontalLayout_6.addWidget(
-            self.emissionsModifiersPathPushButton
-        )
+        self.horizontalLayout_6.addWidget(self.emissionsModifiersPathPushButton)
 
         self.verticalLayout_3.addWidget(
             self.emissionsModifiersPathContainer,
@@ -80,9 +75,7 @@ class Ui_settingsWidget(object):
 
         self.apiKeysContainerWidget = QWidget(self.leftBarMainWidget)
         self.apiKeysContainerWidget.setObjectName("apiKeysContainerWidget")
-        sizePolicy = QSizePolicy(
-            QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed
-        )
+        sizePolicy = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(
@@ -90,9 +83,7 @@ class Ui_settingsWidget(object):
         )
         self.apiKeysContainerWidget.setSizePolicy(sizePolicy)
         self.apiKeysContainerWidget.setMaximumSize(QSize(16777215, 16777215))
-        self.apiKeysContainerWidget.setLayoutDirection(
-            Qt.LayoutDirection.LeftToRight
-        )
+        self.apiKeysContainerWidget.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
         self.horizontalLayout_2 = QHBoxLayout(self.apiKeysContainerWidget)
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.apiKeysLabel = QLabel(self.apiKeysContainerWidget)
@@ -116,6 +107,7 @@ class Ui_settingsWidget(object):
 
         self.ipInfoAPIKeyLineEdit = QLineEdit(self.ipInfoAPIKeyWidget)
         self.ipInfoAPIKeyLineEdit.setObjectName("ipInfoAPIKeyLineEdit")
+        self.ipInfoAPIKeyLineEdit.setStyleSheet("")
 
         self.horizontalLayout_4.addWidget(self.ipInfoAPIKeyLineEdit)
 
@@ -124,27 +116,20 @@ class Ui_settingsWidget(object):
         )
 
         self.openWeatherMapAPIKeyWidget = QWidget(self.leftBarMainWidget)
-        self.openWeatherMapAPIKeyWidget.setObjectName(
-            "openWeatherMapAPIKeyWidget"
-        )
+        self.openWeatherMapAPIKeyWidget.setObjectName("openWeatherMapAPIKeyWidget")
         self.horizontalLayout_5 = QHBoxLayout(self.openWeatherMapAPIKeyWidget)
         self.horizontalLayout_5.setObjectName("horizontalLayout_5")
-        self.openWeatherMapAPIKeyLabel = QLabel(
-            self.openWeatherMapAPIKeyWidget
-        )
-        self.openWeatherMapAPIKeyLabel.setObjectName(
-            "openWeatherMapAPIKeyLabel"
-        )
+        self.openWeatherMapAPIKeyLabel = QLabel(self.openWeatherMapAPIKeyWidget)
+        self.openWeatherMapAPIKeyLabel.setObjectName("openWeatherMapAPIKeyLabel")
 
         self.horizontalLayout_5.addWidget(
             self.openWeatherMapAPIKeyLabel, 0, Qt.AlignmentFlag.AlignLeft
         )
 
-        self.openWeatherMapAPIKeyLineEdit = QLineEdit(
-            self.openWeatherMapAPIKeyWidget
-        )
-        self.openWeatherMapAPIKeyLineEdit.setObjectName(
-            "openWeatherMapAPIKeyLineEdit"
+        self.openWeatherMapAPIKeyLineEdit = QLineEdit(self.openWeatherMapAPIKeyWidget)
+        self.openWeatherMapAPIKeyLineEdit.setObjectName("openWeatherMapAPIKeyLineEdit")
+        self.openWeatherMapAPIKeyLineEdit.setStyleSheet(
+            "* { lineedit-password-character: 9679 }"
         )
         self.openWeatherMapAPIKeyLineEdit.setFrame(True)
         self.openWeatherMapAPIKeyLineEdit.setClearButtonEnabled(False)
@@ -156,9 +141,7 @@ class Ui_settingsWidget(object):
         )
 
         self.preferencesContainerWidget = QWidget(self.leftBarMainWidget)
-        self.preferencesContainerWidget.setObjectName(
-            "preferencesContainerWidget"
-        )
+        self.preferencesContainerWidget.setObjectName("preferencesContainerWidget")
         self.verticalLayout_4 = QVBoxLayout(self.preferencesContainerWidget)
         self.verticalLayout_4.setObjectName("verticalLayout_4")
         self.preferencesLabel = QLabel(self.preferencesContainerWidget)
@@ -175,9 +158,7 @@ class Ui_settingsWidget(object):
             self.preferencesContainerWidget, 0, Qt.AlignmentFlag.AlignHCenter
         )
 
-        self.preferredTemperatureMeasurementWidget = QWidget(
-            self.leftBarMainWidget
-        )
+        self.preferredTemperatureMeasurementWidget = QWidget(self.leftBarMainWidget)
         self.preferredTemperatureMeasurementWidget.setObjectName(
             "preferredTemperatureMeasurementWidget"
         )
@@ -214,9 +195,7 @@ class Ui_settingsWidget(object):
             "preferredTemperatureMeasurementComboBox"
         )
 
-        self.horizontalLayout_7.addWidget(
-            self.preferredTemperatureMeasurementComboBox
-        )
+        self.horizontalLayout_7.addWidget(self.preferredTemperatureMeasurementComboBox)
 
         self.verticalLayout_3.addWidget(
             self.preferredTemperatureMeasurementWidget,
@@ -228,9 +207,7 @@ class Ui_settingsWidget(object):
         self.preferredUnitOfMeasurementWidget.setObjectName(
             "preferredUnitOfMeasurementWidget"
         )
-        self.horizontalLayout_8 = QHBoxLayout(
-            self.preferredUnitOfMeasurementWidget
-        )
+        self.horizontalLayout_8 = QHBoxLayout(self.preferredUnitOfMeasurementWidget)
         self.horizontalLayout_8.setObjectName("horizontalLayout_8")
         self.preferredUnitOfMeasurementLabel = QLabel(
             self.preferredUnitOfMeasurementWidget
@@ -251,9 +228,7 @@ class Ui_settingsWidget(object):
         )
         self.preferredUnitOfMeasurementComboBox.setAutoFillBackground(False)
 
-        self.horizontalLayout_8.addWidget(
-            self.preferredUnitOfMeasurementComboBox
-        )
+        self.horizontalLayout_8.addWidget(self.preferredUnitOfMeasurementComboBox)
 
         self.verticalLayout_3.addWidget(
             self.preferredUnitOfMeasurementWidget,
@@ -301,17 +276,62 @@ class Ui_settingsWidget(object):
             self.themeContainerWidget, 0, Qt.AlignmentFlag.AlignRight
         )
 
+        self.preferredUserIDContainerWidget = QWidget(self.leftBarMainWidget)
+        self.preferredUserIDContainerWidget.setObjectName(
+            "preferredUserIDContainerWidget"
+        )
+        self.horizontalLayout_12 = QHBoxLayout(self.preferredUserIDContainerWidget)
+        self.horizontalLayout_12.setObjectName("horizontalLayout_12")
+        self.preferredUserIDLabel = QLabel(self.preferredUserIDContainerWidget)
+        self.preferredUserIDLabel.setObjectName("preferredUserIDLabel")
+
+        self.horizontalLayout_12.addWidget(self.preferredUserIDLabel)
+
+        self.preferredUserIDSpinBox = QSpinBox(self.preferredUserIDContainerWidget)
+        self.preferredUserIDSpinBox.setObjectName("preferredUserIDSpinBox")
+
+        self.horizontalLayout_12.addWidget(self.preferredUserIDSpinBox)
+
+        self.verticalLayout_3.addWidget(
+            self.preferredUserIDContainerWidget, 0, Qt.AlignmentFlag.AlignRight
+        )
+
+        self.fetchLocalTemperaturesOnStartupContainerWIdget = QWidget(
+            self.leftBarMainWidget
+        )
+        self.fetchLocalTemperaturesOnStartupContainerWIdget.setObjectName(
+            "fetchLocalTemperaturesOnStartupContainerWIdget"
+        )
+        self.horizontalLayout_3 = QHBoxLayout(
+            self.fetchLocalTemperaturesOnStartupContainerWIdget
+        )
+        self.horizontalLayout_3.setObjectName("horizontalLayout_3")
+        self.fetchLocalTemperaturesOnStartupCheckBox = QCheckBox(
+            self.fetchLocalTemperaturesOnStartupContainerWIdget
+        )
+        self.fetchLocalTemperaturesOnStartupCheckBox.setObjectName(
+            "fetchLocalTemperaturesOnStartupCheckBox"
+        )
+
+        self.horizontalLayout_3.addWidget(
+            self.fetchLocalTemperaturesOnStartupCheckBox,
+            0,
+            Qt.AlignmentFlag.AlignRight,
+        )
+
+        self.verticalLayout_3.addWidget(
+            self.fetchLocalTemperaturesOnStartupContainerWIdget,
+            0,
+            Qt.AlignmentFlag.AlignRight,
+        )
+
         self.temperatureUseContainerWidget = QWidget(self.leftBarMainWidget)
         self.temperatureUseContainerWidget.setObjectName(
             "temperatureUseContainerWidget"
         )
-        self.horizontalLayout_11 = QHBoxLayout(
-            self.temperatureUseContainerWidget
-        )
+        self.horizontalLayout_11 = QHBoxLayout(self.temperatureUseContainerWidget)
         self.horizontalLayout_11.setObjectName("horizontalLayout_11")
-        self.temperatureUseCheckBox = QCheckBox(
-            self.temperatureUseContainerWidget
-        )
+        self.temperatureUseCheckBox = QCheckBox(self.temperatureUseContainerWidget)
         self.temperatureUseCheckBox.setObjectName("temperatureUseCheckBox")
         self.temperatureUseCheckBox.setChecked(False)
 
@@ -360,24 +380,16 @@ class Ui_settingsWidget(object):
             )
         )
         self.ipInfoAPIKeyLabel.setText(
-            QCoreApplication.translate(
-                "settingsWidget", "IPinfo API key", None
-            )
+            QCoreApplication.translate("settingsWidget", "IPinfo API key", None)
         )
         self.ipInfoAPIKeyLineEdit.setPlaceholderText(
-            QCoreApplication.translate(
-                "settingsWidget", "add key here...", None
-            )
+            QCoreApplication.translate("settingsWidget", "add key here...", None)
         )
         self.openWeatherMapAPIKeyLabel.setText(
-            QCoreApplication.translate(
-                "settingsWidget", "OpenWeatherAPI key:", None
-            )
+            QCoreApplication.translate("settingsWidget", "OpenWeatherAPI key:", None)
         )
         self.openWeatherMapAPIKeyLineEdit.setPlaceholderText(
-            QCoreApplication.translate(
-                "settingsWidget", "add key here...", None
-            )
+            QCoreApplication.translate("settingsWidget", "add key here...", None)
         )
         self.preferencesLabel.setText(
             QCoreApplication.translate(
@@ -401,6 +413,14 @@ class Ui_settingsWidget(object):
         )
         self.themeLabel.setText(
             QCoreApplication.translate("settingsWidget", "Theme:", None)
+        )
+        self.preferredUserIDLabel.setText(
+            QCoreApplication.translate("settingsWidget", "Preferred User ID", None)
+        )
+        self.fetchLocalTemperaturesOnStartupCheckBox.setText(
+            QCoreApplication.translate(
+                "settingsWidget", "Fetch local temperatures on startup", None
+            )
         )
         self.temperatureUseCheckBox.setText(
             QCoreApplication.translate(

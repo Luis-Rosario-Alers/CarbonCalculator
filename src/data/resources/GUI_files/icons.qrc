@@ -1,6 +1,5 @@
 <RCC>
   <qresource prefix="icons">
-    <file>svgs/solid/settings.svg</file>
     <file>svgs/solid/0.svg</file>
     <file>svgs/solid/1.svg</file>
     <file>svgs/solid/2.svg</file>
@@ -1379,6 +1378,30 @@
     <file>svgs/solid/web-awesome.svg</file>
     <file>svgs/solid/weight-hanging.svg</file>
     <file>svgs/solid/weight-scale.svg</file>
+    <file>svgs/solid/wheat-awn.svg</file>
+    <file>svgs/solid/wheat-awn-circle-exclamation.svg</file>
+    <file>svgs/solid/wheelchair.svg</file>
+    <file>svgs/solid/wheelchair-move.svg</file>
+    <file>svgs/solid/whiskey-glass.svg</file>
+    <file>svgs/solid/wifi.svg</file>
+    <file>svgs/solid/wind.svg</file>
+    <file>svgs/solid/window-maximize.svg</file>
+    <file>svgs/solid/window-minimize.svg</file>
+    <file>svgs/solid/window-restore.svg</file>
+    <file>svgs/solid/wine-bottle.svg</file>
+    <file>svgs/solid/wine-glass.svg</file>
+    <file>svgs/solid/wine-glass-empty.svg</file>
+    <file>svgs/solid/won-sign.svg</file>
+    <file>svgs/solid/worm.svg</file>
+    <file>svgs/solid/wrench.svg</file>
+    <file>svgs/solid/x.svg</file>
+    <file>svgs/solid/xmark.svg</file>
+    <file>svgs/solid/xmarks-lines.svg</file>
+    <file>svgs/solid/x-ray.svg</file>
+    <file>svgs/solid/y.svg</file>
+    <file>svgs/solid/yen-sign.svg</file>
+    <file>svgs/solid/yin-yang.svg</file>
+    <file>svgs/solid/z.svg</file>
     <file>svgs/regular/address-book.svg</file>
     <file>svgs/regular/address-card.svg</file>
     <file>svgs/regular/bell.svg</file>
@@ -2037,29 +2060,5 @@
     <file>svgs/brands/yoast.svg</file>
     <file>svgs/brands/youtube.svg</file>
     <file>svgs/brands/zhihu.svg</file>
-    <file>svgs/solid/wheat-awn.svg</file>
-    <file>svgs/solid/wheat-awn-circle-exclamation.svg</file>
-    <file>svgs/solid/wheelchair.svg</file>
-    <file>svgs/solid/wheelchair-move.svg</file>
-    <file>svgs/solid/whiskey-glass.svg</file>
-    <file>svgs/solid/wifi.svg</file>
-    <file>svgs/solid/wind.svg</file>
-    <file>svgs/solid/window-maximize.svg</file>
-    <file>svgs/solid/window-minimize.svg</file>
-    <file>svgs/solid/window-restore.svg</file>
-    <file>svgs/solid/wine-bottle.svg</file>
-    <file>svgs/solid/wine-glass.svg</file>
-    <file>svgs/solid/wine-glass-empty.svg</file>
-    <file>svgs/solid/won-sign.svg</file>
-    <file>svgs/solid/worm.svg</file>
-    <file>svgs/solid/wrench.svg</file>
-    <file>svgs/solid/x.svg</file>
-    <file>svgs/solid/xmark.svg</file>
-    <file>svgs/solid/xmarks-lines.svg</file>
-    <file>svgs/solid/x-ray.svg</file>
-    <file>svgs/solid/y.svg</file>
-    <file>svgs/solid/yen-sign.svg</file>
-    <file>svgs/solid/yin-yang.svg</file>
-    <file>svgs/solid/z.svg</file>
   </qresource>
 </RCC>

@@ -20,7 +20,7 @@
       <item>
        <widget class="PlotWidget" name="chartPlotWidget">
         <property name="frameShape">
-         <enum>QFrame::Shape::WinPanel</enum>
+         <enum>QFrame::Shape::NoFrame</enum>
         </property>
         <property name="frameShadow">
          <enum>QFrame::Shadow::Plain</enum>

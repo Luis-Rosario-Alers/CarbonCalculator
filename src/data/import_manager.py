@@ -6,31 +6,53 @@ import sqlite3
 from typing import List
 
 import chardet
+from PySide6.QtCore import QObject, Signal
 
-from data.database import databases_folder
+from data.database_model import databases_folder
 
 logger = logging.getLogger("data")
 
 
-class ImportManager:
-    def __init__(self, input_path):
-        self.input_path = input_path
+class ImportManager(QObject):
+
+    import_completed = Signal()
+
+    def __init__(self):
+        super().__init__()
+        self.controller = None
+        logger.debug("ImportManager.__init__: Initialized.")
+
+    def set_controller(self, controller):
+        self.controller = controller
 
     @staticmethod
-    def insert_data(data):
+    def insert_data(data: List[tuple]):
+        logger.info(
+            f"ImportManager.insert_data: Inserting {len(data)} records into database"
+        )
         db_path = os.path.join(databases_folder, "emissions.db")
         conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
-        cursor.executemany(
-            "INSERT INTO emissions VALUES (?,?,?,?,?,?,?,?)", data
-        )
+        cursor.executemany("INSERT INTO emissions VALUES (?,?,?,?,?,?,?,?)", data)
         conn.commit()
         conn.close()
+        logger.debug("ImportManager.insert_data: Database insertion completed")
 
-    def import_from_json(self):
-        with open(self.input_path, "r") as f:
+    def import_from_json(self, input_path: str) -> None:
+        logger.info(
+            f"ImportManager.import_from_json: Importing data from JSON file: {input_path}"
+        )
+
+        if input_path is None:
+            logger.error("ImportManager.import_from_json: Input path is not set")
+            raise ValueError("Input path is not set")
+
+        with open(input_path, "r") as f:
             data_dicts = json.load(f)
 
+        logger.debug(
+            f"ImportManager.import_from_json: Loaded {len(data_dicts)} entries from JSON"
+        )
         required_keys = {
             "user_id",
             "fuel_type",
@@ -47,11 +69,15 @@ class ImportManager:
             # assigns the difference of those 2 values to missing keys.
             missing_keys = required_keys - entry.keys()
             if len(missing_keys) > 0:
-                logger.error(f"Missing required keys: {missing_keys}")
+                logger.error(
+                    f"ImportManager.import_from_json: Missing required keys: {missing_keys}"
+                )
                 raise ValueError(f"Missing required keys: {missing_keys}")
             for key in required_keys:
                 if key not in entry or entry[key] is None or entry[key] == "":
-                    logger.error(f"Missing value for key: {key}")
+                    logger.error(
+                        f"ImportManager.import_from_json: Missing value for key: {key}"
+                    )
                     raise ValueError(f"Missing value for key: {key}")
 
         # Convert data to a list of tuples
@@ -70,30 +96,44 @@ class ImportManager:
         ]
 
         self.insert_data(data)
-        logger.info(f"Data imported successfully from {self.input_path}")
-        return data
+        logger.info(
+            f"ImportManager.import_from_json: Data imported successfully from {input_path}"
+        )
+        self.import_completed.emit()
 
-    def import_from_csv(self) -> List[tuple]:
+    def import_from_csv(self, input_path: str) -> None:
+        logger.info(
+            f"ImportManager.import_from_csv: Importing data from CSV file: {input_path}"
+        )
+        # Add input path
+        input_path = os.path.abspath(input_path)
+
+        if input_path is None:
+            logger.error("ImportManager.import_from_csv: Input path is not set")
+            raise ValueError("Input path is not set")
+
         # Initialize encoding to None before detection attempt
         encoding = None
 
         # Detect the file encoding
         try:
-            with open(self.input_path, "rb") as file:
+            with open(input_path, "rb") as file:
                 raw_data = file.read()
                 detected = chardet.detect(raw_data)
                 encoding = detected["encoding"]
                 confidence = detected["confidence"]
                 logger.info(
-                    f"Detected encoding: {encoding} with confidence: {confidence:.2%}"
+                    f"ImportManager.import_from_csv: Detected encoding: {encoding} with confidence: {confidence:.2%}"
                 )
 
                 if confidence < 0.6:
                     logger.warning(
-                        f"Low confidence in encoding detection: {confidence:.2%}"
+                        f"ImportManager.import_from_csv: Low confidence in encoding detection: {confidence:.2%}"
                     )
         except Exception as e:
-            logger.error(f"Error detecting file encoding: {str(e)}")
+            logger.error(
+                f"ImportManager.import_from_csv: Error detecting file encoding: {str(e)}"
+            )
             encoding = None
 
         # Fallback encodings to try if detection fails
@@ -105,12 +145,15 @@ class ImportManager:
 
         for enc in encodings_to_try:
             try:  # Tries to read with detected encoding, fall back to common encodings if it fails
-                with open(
-                    self.input_path, mode="r", encoding=enc, newline=""
-                ) as csv_file:
+                with open(input_path, mode="r", encoding=enc, newline="") as csv_file:
                     reader = csv.DictReader(csv_file)
                     data_dicts = [row for row in reader]
-                    logger.info(f"Successfully read file with encoding: {enc}")
+                    logger.info(
+                        f"ImportManager.import_from_csv: Successfully read file with encoding: {enc}"
+                    )
+                    logger.debug(
+                        f"ImportManager.import_from_csv: Loaded {len(data_dicts)} entries from CSV"
+                    )
 
                     required_keys = {
                         "user_id",
@@ -127,21 +170,15 @@ class ImportManager:
                         missing_keys = required_keys - row.keys()
                         if len(missing_keys) > 0:
                             logger.error(
-                                f"Missing required keys: {missing_keys}"
+                                f"ImportManager.import_from_csv: Missing required keys: {missing_keys}"
                             )
-                            raise ValueError(
-                                f"Missing required keys: {missing_keys}"
-                            )
+                            raise ValueError(f"Missing required keys: {missing_keys}")
                         for key in required_keys:
-                            if (
-                                key not in row
-                                or row[key] is None
-                                or row[key] == ""
-                            ):
-                                logger.error(f"Missing value for key: {key}")
-                                raise ValueError(
-                                    f"Missing value for key: {key}"
+                            if key not in row or row[key] is None or row[key] == "":
+                                logger.error(
+                                    f"ImportManager.import_from_csv: Missing value for key: {key}"
                                 )
+                                raise ValueError(f"Missing value for key: {key}")
 
                     # Convert data to a list of tuples
                     data = [
@@ -151,7 +188,7 @@ class ImportManager:
                             row["fuel_used"],
                             row["emissions"],
                             row["emissions_unit"],
-                            float(row["temperature"]),
+                            row["temperature"],
                             row["farming_technique"],
                             row["timestamp"],
                         )
@@ -160,12 +197,14 @@ class ImportManager:
 
                     self.insert_data(data)
                     logger.info(
-                        f"Data imported successfully from {self.input_path}"
+                        f"ImportManager.import_from_csv: Data imported successfully from {input_path}"
                     )
-                    return data
+                    self.import_completed.emit()
 
             except UnicodeDecodeError:
-                logger.warning(f"Failed to read with encoding: {enc}")
+                logger.warning(
+                    f"ImportManager.import_from_csv: Failed to read with encoding: {enc}"
+                )
                 continue
 
         raise ValueError(

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>351</width>
-    <height>546</height>
+    <width>370</width>
+    <height>636</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -108,6 +108,9 @@
             </item>
             <item>
              <widget class="QLineEdit" name="ipInfoAPIKeyLineEdit">
+              <property name="styleSheet">
+               <string notr="true"/>
+              </property>
               <property name="placeholderText">
                <string>add key here...</string>
               </property>
@@ -128,6 +131,9 @@
             </item>
             <item>
              <widget class="QLineEdit" name="openWeatherMapAPIKeyLineEdit">
+              <property name="styleSheet">
+               <string notr="true">* { lineedit-password-character: 9679 }</string>
+              </property>
               <property name="frame">
                <bool>true</bool>
               </property>
@@ -234,6 +240,35 @@
             </item>
             <item>
              <widget class="QComboBox" name="themeComboBox"/>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item alignment="Qt::AlignmentFlag::AlignRight">
+          <widget class="QWidget" name="preferredUserIDContainerWidget" native="true">
+           <layout class="QHBoxLayout" name="horizontalLayout_12">
+            <item>
+             <widget class="QLabel" name="preferredUserIDLabel">
+              <property name="text">
+               <string>Preferred User ID</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QSpinBox" name="preferredUserIDSpinBox"/>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item alignment="Qt::AlignmentFlag::AlignRight">
+          <widget class="QWidget" name="fetchLocalTemperaturesOnStartupContainerWIdget" native="true">
+           <layout class="QHBoxLayout" name="horizontalLayout_3">
+            <item alignment="Qt::AlignmentFlag::AlignRight">
+             <widget class="QCheckBox" name="fetchLocalTemperaturesOnStartupCheckBox">
+              <property name="text">
+               <string>Fetch local temperatures on startup</string>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>

@@ -1,16 +1,21 @@
 import logging
+import os
 import sys
 
-from PySide6.QtCore import QObject, Signal
+from PySide6.QtCore import QObject, QTranslator, Signal
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget
 
-from src.core.emissions_calculator import calculationModel
-from src.data.database import databasesModel
-from src.ui.GeneralTabWidget import GeneralTabWidget
-from src.ui.generated_python_ui.ui_main_window import Ui_MainWindow
-from src.ui.VisualizationTabWidget import VisualizationTabWidget
+from core.emissions_calculator import calculationModel
+from data.database_model import application_path, databasesModel
+from data.export_manager import ExportManager
+from data.import_manager import ImportManager
+from data.settings_model import SettingsModel
 from ui.FeedbackTabWidget import FeedbackTabWidget
+from ui.GeneralTabWidget import GeneralTabWidget
+from ui.generated_python_ui.ui_main_window import Ui_MainWindow
 from ui.HelpTabWidget import HelpTabWidget
+from ui.VisualizationTabWidget import VisualizationTabWidget
 
 logger = logging.getLogger("ui")
 
@@ -20,13 +25,19 @@ class MainWindowController(QObject):
     initialization = Signal()
     application_closed = Signal()
     tab_changed = Signal(int)
+    theme_changed = Signal(bool)  # True if light mode, False if dark mode
+    progress_updated = Signal(int, str)
+    progress_complete = Signal()
+    language_changed = Signal(str)
 
     def __init__(self, model, view):
         super().__init__()
         self.model = model
         self.view = view
+        self.translator = None
 
     def connect_signals(self):
+        self.update_progress(70, "Connecting Signals")
         logger.debug(
             "Main Window Controller: Connecting signals in MainWindowController"
         )
@@ -38,20 +49,182 @@ class MainWindowController(QObject):
         self.model.calculation_model.calculation_result.connect(
             self.model.databases_model.log_transaction
         )
+        self.model.settings_model.theme_changed.connect(self.handle_theme_changed)
+
+        self.language_changed.connect(self.retranslate_all_ui)
+
+    # Yes, I know it's not the BEST solution, but we will get to it at some point.
+    def update_progress(self, percentage, message):
+        """
+        Updates General Tab View progress bar
+        :param percentage: percentage of progress
+        :param message: message to display on progress bar.
+        :return: Nothing
+        """
+        logger.debug(f"Progress update: {percentage}% - {message}")
+        self.progress_updated.emit(percentage, message)
+        if percentage >= 100:
+            self.progress_complete.emit()
 
     def send_initialization_signal(self):
         logger.debug("Main Window Controller: emitting initialization signal")
         self.initialization.emit()  # this starts the initialization sequence
 
     def handle_main_window_closed(self):
-        logger.debug(
-            "Main Window Controller: emitting application closed signal"
-        )
+        logger.debug("Main Window Controller: emitting application closed signal")
         self.application_closed.emit()
+
+    def initialize_theme(self):
+        logger.debug("Main Window Controller: initializing theme")
+        theme = self.model.settings_model.get_setting("Preferences", "Theme")
+        if theme == "Light":
+            self.handle_theme_changed(True)
+        else:
+            self.handle_theme_changed(False)
 
     def handle_tab_changed(self, index):
         logger.debug(f"Tab changed to index {index}")
         self.tab_changed.emit(index)
+
+    def handle_theme_changed(self, is_light_mode: bool) -> None:
+        """
+        Handles theme change by applying the appropriate stylesheet
+
+        :param is_light_mode: True if light mode, False if dark mode
+        :return: None
+        """
+        theme_name = "light_theme.qss" if is_light_mode else "dark_theme.qss"
+        stylesheet_path = os.path.join(
+            application_path, "resources", "GUI_files", "styles", theme_name
+        )
+
+        with open(stylesheet_path, "r", encoding="utf-8") as f:
+            stylesheet = f.read()
+            QApplication.instance().setStyleSheet(stylesheet)
+            self.theme_changed.emit(is_light_mode)
+
+    def initialize_language(self):
+        """Initialize application language based on stored preference"""
+        logger.debug("Main Window Controller: initializing language")
+        language = self.model.settings_model.get_setting("Preferences", "Language")
+        self.set_application_language(language)
+
+    def set_application_language(self, language):
+        """
+        Set the application language by loading the appropriate translation file
+
+        :param language: The language to set (e.g., "English", "Spanish")
+        """
+        logger.debug(f"Setting application language to: {language}")
+
+        app = QApplication.instance()
+
+        if self.translator is not None:
+            app.removeTranslator(self.translator)
+            self.translator = None
+
+        if language.lower() == "english":
+            logger.debug("Setting language to English (default)")
+            self.retranslate_all_ui()
+            self.language_changed.emit(language)
+            return
+
+        # Handle other languages: Load and install translator
+        self.translator = QTranslator()
+
+        language_code_map = {
+            "english": "en",
+            "spanish": "es",
+        }
+        language_code = language_code_map.get(language.lower(), "en")
+
+        translation_path = os.path.join(
+            application_path,
+            "resources",
+            "GUI_files",
+            "translations",
+            f"{language_code}.qm",
+        )
+
+        # Fallback path check
+        if not os.path.exists(translation_path):
+            logger.warning(
+                f"Translation file not found at primary path: {translation_path}"
+            )
+            alternative_path = os.path.join(
+                application_path, "resources", "translations", f"{language_code}.qm"
+            )
+            if os.path.exists(alternative_path):
+                translation_path = alternative_path
+                logger.info(
+                    f"Using translation file from fallback path: {translation_path}"
+                )
+            else:
+                logger.error(
+                    f"No translation file found for {language} in primary or fallback paths."
+                )
+                self.translator = None
+
+        if self.translator is not None:
+            if self.translator.load(translation_path):
+                app.installTranslator(self.translator)
+                logger.info(
+                    f"Successfully loaded and installed translation for {language}"
+                )
+            else:
+                logger.error(f"Failed to load translation file: {translation_path}")
+                self.translator = None
+
+        self.retranslate_all_ui()
+
+        # Emit the signal after retranslating
+        self.language_changed.emit(language)
+
+    def retranslate_all_ui(self):
+        """Helper method to call retranslateUi on all relevant UI components."""
+        logger.debug("Retranslating all UI components.")
+
+        if hasattr(self.view, "retranslateUi"):
+            self.view.retranslateUi(self.view)
+
+        if hasattr(self.view, "GeneralTabWidget") and hasattr(
+            self.view.GeneralTabWidget.view, "retranslateUi"
+        ):
+            self.view.GeneralTabWidget.view.retranslateUi(
+                self.view.GeneralTabWidget.view
+            )
+
+        if hasattr(self.view, "VisualizationTabWidget") and hasattr(
+            self.view.VisualizationTabWidget.view, "retranslateUi"
+        ):
+            self.view.VisualizationTabWidget.view.retranslateUi(
+                self.view.VisualizationTabWidget.view
+            )
+
+        if hasattr(self.view, "HelpTabWidget") and hasattr(
+            self.view.HelpTabWidget.view, "retranslateUi"
+        ):
+            self.view.HelpTabWidget.view.retranslateUi(self.view.HelpTabWidget.view)
+
+        if hasattr(self.view, "FeedbackTabWidget") and hasattr(
+            self.view.FeedbackTabWidget.view, "retranslateUi"
+        ):
+            self.view.FeedbackTabWidget.view.retranslateUi(
+                self.view.FeedbackTabWidget.view
+            )
+
+        if hasattr(self.view, "GeneralTabWidget") and hasattr(
+            self.view.GeneralTabWidget.controller, "settingsWidget"
+        ):
+            settings_widget_instance = (
+                self.view.GeneralTabWidget.controller.settingsWidget
+            )
+            if settings_widget_instance and hasattr(
+                settings_widget_instance.view, "retranslateUi"
+            ):
+                settings_widget_instance.view.retranslateUi(
+                    settings_widget_instance.view
+                )
 
 
 # Model: The app model handles APPLICATION WIDE STATE.
@@ -60,31 +233,66 @@ class AppModel(QObject):
         super().__init__()
         self.databases_model = databasesModel()
         self.calculation_model = calculationModel()
+        self.settings_model = SettingsModel()
+        self.import_manager = ImportManager()
+        self.export_manager = ExportManager()
 
     def setup_models(self, main_window_controller):
         logger.debug("Main Window Model: Setting up models in AppModel")
+        main_window_controller.update_progress(30, "Setting up database models...")
         self.databases_model.set_controller(main_window_controller)
+
+        main_window_controller.update_progress(45, "Setting up calculation models...")
         self.calculation_model.set_controller(main_window_controller)
+
+        main_window_controller.update_progress(50, "Loading settings...")
+        self.settings_model.set_controller(main_window_controller)
+
+        main_window_controller.update_progress(60, "Setting up import manager...")
+        self.import_manager.set_controller(main_window_controller)
+
+        main_window_controller.update_progress(75, "Setting up export manager...")
+        self.export_manager.set_controller(main_window_controller)
 
 
 # View: controls the UI for the Main Window
 class MainWindowView(QMainWindow, Ui_MainWindow):
     main_window_closed = Signal()
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
-        self.FeedbackTabWidget = None
-        self.HelpTabWidget = None
-        self.GeneralTabWidget = None
-        self.VisualizationTabWidget = None
         self.setupUi(self)
 
+    def setup_icon(self):
+        if sys.platform.startswith("win"):  # windows
+            icon_file = "icon.ico"
+        elif sys.platform.startswith("darwin"):  # macOS
+            icon_file = "icon.icns"
+        else:  # Linux and other Unix-like systems
+            icon_file = "icon.png"
+
+        icon_path = os.path.join(application_path, "resources", "assets", icon_file)
+
+        if not os.path.exists(icon_path):
+            icon_path = os.path.join(
+                application_path, "resources", "assets", "icon.png"
+            )
+
+        if os.path.exists(icon_path):
+            self.setWindowIcon(QIcon(icon_path))
+        else:
+            logger.warning(f"Icon file not found at {icon_path}")
+
     def setup_tabs(self, model, controller):
-        logger.debug("Main Window View: Setting up tabs in MainWindowView")
+        # ui elements are defined in UI and referenced in code through
+        # a pythonic way of object names with dot-attributes.
+        # self.stackedWidget was named that in Qt Designer.
+
+        # Reference objects directly by their object name
         self.GeneralTabWidget = GeneralTabWidget(model, controller)
         self.VisualizationTabWidget = VisualizationTabWidget(model, controller)
-        self.HelpTabWidget = HelpTabWidget(controller, model)
-        self.FeedbackTabWidget = FeedbackTabWidget(controller, model)
+        self.HelpTabWidget = HelpTabWidget(model, controller)
+        self.FeedbackTabWidget = FeedbackTabWidget(model, controller)
 
         self.stackedWidget.insertWidget(0, self.GeneralTabWidget.view)
         self.stackedWidget.insertWidget(1, self.VisualizationTabWidget.view)
@@ -96,9 +304,7 @@ class MainWindowView(QMainWindow, Ui_MainWindow):
         self.stackedWidget.setCurrentWidget(self.GeneralTabWidget.view)
 
         self.menuGeneral.addAction("General").triggered.connect(
-            lambda: self.stackedWidget.setCurrentWidget(
-                self.GeneralTabWidget.view
-            )
+            lambda: self.stackedWidget.setCurrentWidget(self.GeneralTabWidget.view)
         )
         self.menuVisualization.addAction("Visualization").triggered.connect(
             lambda: self.stackedWidget.setCurrentWidget(
@@ -109,14 +315,10 @@ class MainWindowView(QMainWindow, Ui_MainWindow):
             lambda: self.stackedWidget.setCurrentWidget(QWidget())
         )
         self.menuHelp.addAction("Help").triggered.connect(
-            lambda: self.stackedWidget.setCurrentWidget(
-                self.HelpTabWidget.view
-            )
+            lambda: self.stackedWidget.setCurrentWidget(self.HelpTabWidget.view)
         )
         self.menuFeedback.addAction("Feedback").triggered.connect(
-            lambda: self.stackedWidget.setCurrentWidget(
-                self.FeedbackTabWidget.view
-            )
+            lambda: self.stackedWidget.setCurrentWidget(self.FeedbackTabWidget.view)
         )
 
     def closeEvent(self, event):
@@ -130,35 +332,45 @@ class MainWindowWidget(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        # Create model and controller
+        # These comments are here so that I don't get stripped up lol.
+
+        # Initialize all components
         self.model = AppModel()
         self.view = MainWindowView()
         self.controller = MainWindowController(self.model, self.view)
-        self.model.setup_models(
-            self.controller
-        )  # setups up application wide models
-        self.view.setup_tabs(
-            self.model, self.controller
-        )  # setups up all tabs for application
+        # Step 1: Starting application
+        self.controller.update_progress(0, "Starting application...")
+
+        # Step 2: Setting up user interface
+        self.controller.update_progress(15, "Setting up user interface...")
+        self.view.setup_tabs(self.model, self.controller)
+
+        # Step 3: Setting up backend models
+        self.controller.update_progress(25, "Setting up backend models...")
+
+        # Steps 4-6: Setting up models (database, calculation, settings)
+        self.model.setup_models(self.controller)
+
+        # Step 7: Connecting components
         self.controller.connect_signals()
-        self.controller.send_initialization_signal()  # send signal to initialize all models
+
+        # Step 8: Applying theme
+        self.controller.update_progress(85, "Applying theme...")
+        self.controller.initialize_theme()
+
+        # Step 8.5: Initialize language
+        self.controller.update_progress(90, "Setting application language...")
+        self.controller.initialize_language()
+
+        # Step 9: Sending initialization signal
+        self.controller.update_progress(95, "Sending initialization signal...")
+        self.controller.send_initialization_signal()
+
+        # Step 10: Ready - final step
+        self.controller.update_progress(100, "Ready")
+        self.controller.progress_complete.emit()
+
         self.view.show()
-
-    """
-    def setup_tab_widgets(self):
-        # Replace mainBody placeholder with stacked widget
-        self.stacked_widget = QStackedWidget()
-        self.horizontalLayout.replaceWidget(self.mainBody, self.stacked_widget)
-
-        # Create tab widgets and add to stack
-        self.GeneralTabWidget = GeneralTabWidget(self.model, self.controller)
-        self.VisualizationTabWidget = VisualizationTabWidget(self.model, self.controller)
-        self.ai_chat_tab = AIChatTabWidget(self.model, self.controller)
-
-        self.stacked_widget.addWidget(self.GeneralTabWidget)
-        self.stacked_widget.addWidget(self.VisualizationTabWidget)
-        self.stacked_widget.addWidget(self.ai_chat_tab)
-    """
 
 
 if __name__ == "__main__":

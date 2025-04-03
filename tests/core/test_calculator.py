@@ -17,9 +17,7 @@ class TestCalculator:
         )
 
         # Act
-        fuel_type, fuel_used, emissions = await calculate_emissions(
-            1, "gasoline", 10.0
-        )
+        fuel_type, fuel_used, emissions = await calculate_emissions(1, "gasoline", 10.0)
 
         # Assert
         assert emissions == 25.0
@@ -58,10 +56,8 @@ class TestCalculator:
             expected_emissions = fuel_used * adjusted_factor
 
             # Act
-            fuel_type, actual_fuel_used, actual_emissions = (
-                await calculate_emissions(
-                    1, "gasoline", fuel_used, temperature, temp_type
-                )
+            fuel_type, actual_fuel_used, actual_emissions = await calculate_emissions(
+                1, "gasoline", fuel_used, temperature, temp_type
             )
 
             # Assert
@@ -70,9 +66,7 @@ class TestCalculator:
             ), f"Failed for {temperature}° (type {temp_type}): expected {expected_emissions:.2f}, got {actual_emissions:.2f}"
 
     @pytest.mark.asyncio
-    async def test_calculate_emissions_with_invalid_temperature_type(
-        self, mocker
-    ):
+    async def test_calculate_emissions_with_invalid_temperature_type(self, mocker):
         # Arrange
         mock_db_path = "fuel_type_conversions.db"
         mocker.patch("os.path.join", return_value=mock_db_path)
@@ -96,9 +90,7 @@ class TestCalculator:
         # Act/Assert
         for temp_type, temperature in enumerate(invalid_temperatures):
             with pytest.raises(ValueError):
-                await calculate_emissions(
-                    1, "gasoline", 10.0, temperature, temp_type
-                )
+                await calculate_emissions(1, "gasoline", 10.0, temperature, temp_type)
 
     @pytest.mark.asyncio
     async def test_calculate_emissions_uses_data_validator_validate_emissions_with_no_temperature_data(

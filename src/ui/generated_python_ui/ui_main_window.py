@@ -1,19 +1,25 @@
-from PySide6.QtCore import QCoreApplication, QMetaObject, QRect
+from PySide6.QtCore import QCoreApplication, QMetaObject, QRect, QSize
 from PySide6.QtWidgets import (
     QHBoxLayout,
     QMenu,
     QMenuBar,
     QStackedWidget,
     QStatusBar,
+    QTabWidget,
     QWidget,
 )
+
+from ui.generated_python_ui import icons_rc  # noqa: F401
 
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1222, 755)
+        MainWindow.resize(737, 507)
+        MainWindow.setStyleSheet("")
+        MainWindow.setIconSize(QSize(24, 24))
+        MainWindow.setTabShape(QTabWidget.TabShape.Rounded)
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.centralwidget.setAutoFillBackground(False)
@@ -33,7 +39,7 @@ class Ui_MainWindow(object):
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName("menubar")
-        self.menubar.setGeometry(QRect(0, 0, 1222, 33))
+        self.menubar.setGeometry(QRect(0, 0, 737, 33))
         self.menuGeneral = QMenu(self.menubar)
         self.menuGeneral.setObjectName("menuGeneral")
         self.menuVisualization = QMenu(self.menubar)
@@ -74,9 +80,7 @@ class Ui_MainWindow(object):
         self.menuAI_chat.setTitle(
             QCoreApplication.translate("MainWindow", "AI chat", None)
         )
-        self.menuHelp.setTitle(
-            QCoreApplication.translate("MainWindow", "Help", None)
-        )
+        self.menuHelp.setTitle(QCoreApplication.translate("MainWindow", "Help", None))
         self.menuFeedback.setTitle(
             QCoreApplication.translate("MainWindow", "Feedback", None)
         )

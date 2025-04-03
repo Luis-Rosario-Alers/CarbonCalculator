@@ -2,7 +2,9 @@ from PySide6.QtCore import QCoreApplication, QMetaObject, QSize, Qt
 from PySide6.QtGui import QPixmap
 from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel, QVBoxLayout, QWidget
 
-import src.ui.generated_python_ui.icons_rc  # noqa
+from ui.generated_python_ui import icons_rc  # noqa: F401
+
+
 
 
 class Ui_helpTabWidget(object):
@@ -17,18 +19,14 @@ class Ui_helpTabWidget(object):
         self.verticalLayout = QVBoxLayout(self.helpTabContainerWidget)
         self.verticalLayout.setObjectName("verticalLayout")
         self.githubLogoContainerWidget = QWidget(self.helpTabContainerWidget)
-        self.githubLogoContainerWidget.setObjectName(
-            "githubLogoContainerWidget"
-        )
+        self.githubLogoContainerWidget.setObjectName("githubLogoContainerWidget")
         self.verticalLayout_2 = QVBoxLayout(self.githubLogoContainerWidget)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.githubLogoLabel = QLabel(self.githubLogoContainerWidget)
         self.githubLogoLabel.setObjectName("githubLogoLabel")
         self.githubLogoLabel.setMinimumSize(QSize(200, 450))
         self.githubLogoLabel.setFrameShape(QFrame.Shape.NoFrame)
-        self.githubLogoLabel.setPixmap(
-            QPixmap(":/icons/svgs/brands/square-github.svg")
-        )
+        self.githubLogoLabel.setPixmap(QPixmap(":/icons/svgs/brands/square-github.svg"))
         self.githubLogoLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.verticalLayout_2.addWidget(

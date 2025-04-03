@@ -12,20 +12,22 @@ from PySide6.QtWidgets import (
     QProgressBar,
     QPushButton,
     QSizePolicy,
+    QSpinBox,
     QTableView,
     QVBoxLayout,
     QWidget,
 )
 
-import src.ui.generated_python_ui.icons_rc  # noqa
+from ui.generated_python_ui import icons_rc  # noqa: F401
 
 
 class Ui_GeneralWidget(object):
     def setupUi(self, GeneralWidget):
         if not GeneralWidget.objectName():
             GeneralWidget.setObjectName("GeneralWidget")
-        GeneralWidget.resize(962, 755)
-        GeneralWidget.setAutoFillBackground(True)
+        GeneralWidget.setWindowModality(Qt.WindowModality.NonModal)
+        GeneralWidget.resize(1179, 663)
+        GeneralWidget.setAutoFillBackground(False)
         GeneralWidget.setStyleSheet("")
         self.horizontalLayout = QHBoxLayout(GeneralWidget)
         self.horizontalLayout.setObjectName("horizontalLayout")
@@ -36,11 +38,10 @@ class Ui_GeneralWidget(object):
         )
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(
-            self.leftBar.sizePolicy().hasHeightForWidth()
-        )
+        sizePolicy.setHeightForWidth(self.leftBar.sizePolicy().hasHeightForWidth())
         self.leftBar.setSizePolicy(sizePolicy)
         self.leftBar.setMaximumSize(QSize(16777215, 16777215))
+        self.leftBar.setStyleSheet("")
         self.verticalLayout_2 = QVBoxLayout(self.leftBar)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.farmingVariablesWidget = QWidget(self.leftBar)
@@ -67,7 +68,9 @@ class Ui_GeneralWidget(object):
         )
         self.farmingVariablesLabel.setSizePolicy(sizePolicy)
         font = QFont()
-        font.setPointSize(10)
+        font.setFamilies(["Segoe UI"])
+        font.setPointSize(12)
+        font.setBold(True)
         self.farmingVariablesLabel.setFont(font)
         self.farmingVariablesLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
@@ -116,21 +119,18 @@ class Ui_GeneralWidget(object):
             self.amountOfFuelUsedLabel, 0, Qt.AlignmentFlag.AlignRight
         )
 
-        self.amountOfFuelUsedDoubleSpinBox = QDoubleSpinBox(
-            self.amountOfFuelUsedWidget
-        )
+        self.amountOfFuelUsedDoubleSpinBox = QDoubleSpinBox(self.amountOfFuelUsedWidget)
         self.amountOfFuelUsedDoubleSpinBox.setObjectName(
             "amountOfFuelUsedDoubleSpinBox"
         )
-        sizePolicy2 = QSizePolicy(
-            QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed
-        )
+        sizePolicy2 = QSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         sizePolicy2.setHorizontalStretch(0)
         sizePolicy2.setVerticalStretch(0)
         sizePolicy2.setHeightForWidth(
             self.amountOfFuelUsedDoubleSpinBox.sizePolicy().hasHeightForWidth()
         )
         self.amountOfFuelUsedDoubleSpinBox.setSizePolicy(sizePolicy2)
+        self.amountOfFuelUsedDoubleSpinBox.setStyleSheet("")
         self.amountOfFuelUsedDoubleSpinBox.setAccelerated(True)
         self.amountOfFuelUsedDoubleSpinBox.setMinimum(-1000.000000000000000)
         self.amountOfFuelUsedDoubleSpinBox.setMaximum(1000.000000000000000)
@@ -158,9 +158,7 @@ class Ui_GeneralWidget(object):
             self.fuelTypeComboBox, 0, Qt.AlignmentFlag.AlignLeft
         )
 
-        self.fuelUnitOfMeasurementComboBox = QComboBox(
-            self.amountOfFuelUsedWidget
-        )
+        self.fuelUnitOfMeasurementComboBox = QComboBox(self.amountOfFuelUsedWidget)
         self.fuelUnitOfMeasurementComboBox.setObjectName(
             "fuelUnitOfMeasurementComboBox"
         )
@@ -183,15 +181,11 @@ class Ui_GeneralWidget(object):
         self.label = QLabel(self.widget)
         self.label.setObjectName("label")
 
-        self.horizontalLayout_9.addWidget(
-            self.label, 0, Qt.AlignmentFlag.AlignLeft
-        )
+        self.horizontalLayout_9.addWidget(self.label, 0, Qt.AlignmentFlag.AlignLeft)
 
         self.temperatureDoubleSpinBox = QDoubleSpinBox(self.widget)
         self.temperatureDoubleSpinBox.setObjectName("temperatureDoubleSpinBox")
-        sizePolicy4 = QSizePolicy(
-            QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed
-        )
+        sizePolicy4 = QSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
         sizePolicy4.setHorizontalStretch(0)
         sizePolicy4.setVerticalStretch(0)
         sizePolicy4.setHeightForWidth(
@@ -220,8 +214,26 @@ class Ui_GeneralWidget(object):
             self.temperatureTypesComboBox, 0, Qt.AlignmentFlag.AlignLeft
         )
 
+        self.verticalLayout_3.addWidget(self.widget, 0, Qt.AlignmentFlag.AlignLeft)
+
+        self.userIDContainerWidget = QWidget(self.farmingVariablesWidget)
+        self.userIDContainerWidget.setObjectName("userIDContainerWidget")
+        self.horizontalLayout_5 = QHBoxLayout(self.userIDContainerWidget)
+        self.horizontalLayout_5.setObjectName("horizontalLayout_5")
+        self.userIDLabel = QLabel(self.userIDContainerWidget)
+        self.userIDLabel.setObjectName("userIDLabel")
+
+        self.horizontalLayout_5.addWidget(
+            self.userIDLabel, 0, Qt.AlignmentFlag.AlignLeft
+        )
+
+        self.userIDSpinBox = QSpinBox(self.userIDContainerWidget)
+        self.userIDSpinBox.setObjectName("userIDSpinBox")
+
+        self.horizontalLayout_5.addWidget(self.userIDSpinBox)
+
         self.verticalLayout_3.addWidget(
-            self.widget, 0, Qt.AlignmentFlag.AlignLeft
+            self.userIDContainerWidget, 0, Qt.AlignmentFlag.AlignLeft
         )
 
         self.verticalLayout_2.addWidget(self.farmingVariablesWidget)
@@ -239,21 +251,29 @@ class Ui_GeneralWidget(object):
         self.calculateContainerWidget.setSizePolicy(sizePolicy5)
         self.horizontalLayout_6 = QHBoxLayout(self.calculateContainerWidget)
         self.horizontalLayout_6.setObjectName("horizontalLayout_6")
-        self.calculateContainerCheckBox = QCheckBox(
+        self.realTimeTemperaturesControlContainerWidget = QWidget(
             self.calculateContainerWidget
         )
-        self.calculateContainerCheckBox.setObjectName(
-            "calculateContainerCheckBox"
+        self.realTimeTemperaturesControlContainerWidget.setObjectName(
+            "realTimeTemperaturesControlContainerWidget"
+        )
+        self.verticalLayout_7 = QVBoxLayout(
+            self.realTimeTemperaturesControlContainerWidget
+        )
+        self.verticalLayout_7.setObjectName("verticalLayout_7")
+        self.realTimeTemperatureCheckBox = QCheckBox(
+            self.realTimeTemperaturesControlContainerWidget
+        )
+        self.realTimeTemperatureCheckBox.setObjectName("realTimeTemperatureCheckBox")
+
+        self.verticalLayout_7.addWidget(self.realTimeTemperatureCheckBox)
+
+        self.horizontalLayout_6.addWidget(
+            self.realTimeTemperaturesControlContainerWidget
         )
 
-        self.horizontalLayout_6.addWidget(self.calculateContainerCheckBox)
-
-        self.calculateContainerPushButton = QPushButton(
-            self.calculateContainerWidget
-        )
-        self.calculateContainerPushButton.setObjectName(
-            "calculateContainerPushButton"
-        )
+        self.calculateContainerPushButton = QPushButton(self.calculateContainerWidget)
+        self.calculateContainerPushButton.setObjectName("calculateContainerPushButton")
 
         self.horizontalLayout_6.addWidget(self.calculateContainerPushButton)
 
@@ -353,6 +373,8 @@ class Ui_GeneralWidget(object):
         self.mainBody.setObjectName("mainBody")
         self.mainBody.setSizeIncrement(QSize(10, 0))
         font1 = QFont()
+        font1.setFamilies(["Segoe UI"])
+        font1.setPointSize(10)
         font1.setUnderline(False)
         font1.setStrikeOut(False)
         self.mainBody.setFont(font1)
@@ -361,20 +383,22 @@ class Ui_GeneralWidget(object):
         self.mainBodyPlaceholderLabel = QLabel(self.mainBody)
         self.mainBodyPlaceholderLabel.setObjectName("mainBodyPlaceholderLabel")
         font2 = QFont()
+        font2.setFamilies(["Segoe UI"])
+        font2.setPointSize(10)
         font2.setUnderline(False)
         font2.setStrikeOut(False)
         font2.setKerning(False)
         self.mainBodyPlaceholderLabel.setFont(font2)
         self.mainBodyPlaceholderLabel.setFrameShape(QFrame.Shape.NoFrame)
-        self.mainBodyPlaceholderLabel.setAlignment(
-            Qt.AlignmentFlag.AlignCenter
-        )
+        self.mainBodyPlaceholderLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.verticalLayout_6.addWidget(self.mainBodyPlaceholderLabel)
 
         self.madeByCreditsLabel = QLabel(self.mainBody)
         self.madeByCreditsLabel.setObjectName("madeByCreditsLabel")
         font3 = QFont()
+        font3.setFamilies(["Segoe UI"])
+        font3.setPointSize(9)
         font3.setBold(True)
         font3.setItalic(True)
         font3.setUnderline(False)
@@ -396,19 +420,13 @@ class Ui_GeneralWidget(object):
         self.recentTransactionsHeaderWidget.setObjectName(
             "recentTransactionsHeaderWidget"
         )
-        self.horizontalLayout_3 = QHBoxLayout(
-            self.recentTransactionsHeaderWidget
-        )
+        self.horizontalLayout_3 = QHBoxLayout(self.recentTransactionsHeaderWidget)
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
-        self.recentTransactionsHeaderLabel = QLabel(
-            self.recentTransactionsHeaderWidget
-        )
+        self.recentTransactionsHeaderLabel = QLabel(self.recentTransactionsHeaderWidget)
         self.recentTransactionsHeaderLabel.setObjectName(
             "recentTransactionsHeaderLabel"
         )
-        font4 = QFont()
-        font4.setPointSize(15)
-        self.recentTransactionsHeaderLabel.setFont(font4)
+        self.recentTransactionsHeaderLabel.setFont(font)
         self.recentTransactionsHeaderLabel.setAlignment(
             Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignHCenter
         )
@@ -435,9 +453,7 @@ class Ui_GeneralWidget(object):
         self.sqlTableView.setMinimumSize(QSize(300, 0))
         self.sqlTableView.setMaximumSize(QSize(16777215, 900))
         self.sqlTableView.setSizeIncrement(QSize(0, 0))
-        self.sqlTableView.setSelectionMode(
-            QAbstractItemView.SelectionMode.NoSelection
-        )
+        self.sqlTableView.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
 
         self.verticalLayout.addWidget(self.sqlTableView)
 
@@ -460,9 +476,7 @@ class Ui_GeneralWidget(object):
         )
         sizePolicy7.setHorizontalStretch(0)
         sizePolicy7.setVerticalStretch(0)
-        sizePolicy7.setHeightForWidth(
-            self.progressBar.sizePolicy().hasHeightForWidth()
-        )
+        sizePolicy7.setHeightForWidth(self.progressBar.sizePolicy().hasHeightForWidth())
         self.progressBar.setSizePolicy(sizePolicy7)
         self.progressBar.setValue(0)
 
@@ -491,29 +505,26 @@ class Ui_GeneralWidget(object):
             QCoreApplication.translate("GeneralWidget", "General", None)
         )
         self.farmingVariablesLabel.setText(
-            QCoreApplication.translate(
-                "GeneralWidget", "Farming Variables", None
-            )
+            QCoreApplication.translate("GeneralWidget", "Farming Variables", None)
         )
         self.farmingTechniqueLabel.setText(
-            QCoreApplication.translate(
-                "GeneralWidget", "Farming Technique:", None
-            )
+            QCoreApplication.translate("GeneralWidget", "Farming Technique:", None)
         )
         self.amountOfFuelUsedLabel.setText(
             QCoreApplication.translate("GeneralWidget", "Fuel Amount:", None)
         )
         self.label.setText(
-            QCoreApplication.translate("GeneralWidget", "Temperature", None)
+            QCoreApplication.translate("GeneralWidget", "Temperature:", None)
         )
         self.temperatureDoubleSpinBox.setPrefix("")
         self.temperatureDoubleSpinBox.setSuffix(
             QCoreApplication.translate("GeneralWidget", "\u00b0", None)
         )
-        self.calculateContainerCheckBox.setText(
-            QCoreApplication.translate(
-                "GeneralWidget", "Real-Time temperatures", None
-            )
+        self.userIDLabel.setText(
+            QCoreApplication.translate("GeneralWidget", "User ID:", None)
+        )
+        self.realTimeTemperatureCheckBox.setText(
+            QCoreApplication.translate("GeneralWidget", "Real-Time temperatures", None)
         )
         self.calculateContainerPushButton.setText(
             QCoreApplication.translate("GeneralWidget", "Calculate", None)
@@ -541,14 +552,10 @@ class Ui_GeneralWidget(object):
             )
         )
         self.recentTransactionsHeaderLabel.setText(
-            QCoreApplication.translate(
-                "GeneralWidget", "Recent Transactions", None
-            )
+            QCoreApplication.translate("GeneralWidget", "Recent Transactions", None)
         )
         self.progressLabel.setText(
-            QCoreApplication.translate(
-                "GeneralWidget", "nothing is happening", None
-            )
+            QCoreApplication.translate("GeneralWidget", "nothing is happening", None)
         )
 
     # retranslateUi

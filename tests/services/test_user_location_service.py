@@ -6,9 +6,7 @@ from src.services.user_location_service import UserLocationService
 class TestUserLocationService:
     # Returns tuple of latitude and longitude when ipinfo API call succeeds
     @pytest.mark.asyncio
-    async def test_get_user_location_returns_coordinates_on_success(
-        self, mocker
-    ):
+    async def test_get_user_location_returns_coordinates_on_success(self, mocker):
         # Arrange
         mock_details = mocker.Mock()
         mock_details.latitude = 51.5074

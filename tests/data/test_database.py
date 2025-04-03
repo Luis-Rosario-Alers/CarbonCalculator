@@ -7,7 +7,7 @@ from unittest.mock import patch
 import aiosqlite
 import pytest
 
-from src.data.database import (
+from src.data.database_model import (
     create_fuel_type_database,
     database_initialization,
     determine_application_path,
@@ -47,12 +47,8 @@ class TestDatabase:
         mock_dirname.assert_called_once()
         mock_join.assert_called_once_with("/tests/data", "databases")
         mock_logger.info.assert_any_call("Running as a script")
-        mock_logger.info.assert_any_call(
-            f"Application path set to: {app_path}"
-        )
-        mock_logger.info.assert_any_call(
-            f"Databases folder set to: {db_folder}"
-        )
+        mock_logger.info.assert_any_call(f"Application path set to: {app_path}")
+        mock_logger.info.assert_any_call(f"Databases folder set to: {db_folder}")
 
     def test_determine_path_with_frozen_and_meipass(self, mocker):
         # Arrange
@@ -75,30 +71,22 @@ class TestDatabase:
         mock_join.assert_called_once()
         mock_join.assert_called_once_with("/tests/data", "databases")
         mock_logger.info.assert_any_call("Running as a PyInstaller bundle")
-        mock_logger.info.assert_any_call(
-            f"Application path set to: {app_path}"
-        )
-        mock_logger.info.assert_any_call(
-            f"Databases folder set to: {db_folder}"
-        )
+        mock_logger.info.assert_any_call(f"Application path set to: {app_path}")
+        mock_logger.info.assert_any_call(f"Databases folder set to: {db_folder}")
 
     # Handle a case when databases_folder path doesn't exist
     @pytest.mark.asyncio
     async def test_handles_nonexistent_database_folder(self, mocker):
         # Arrange
         mock_logger = mocker.patch("src.data.database.logger")
-        mocker.patch(
-            "os.path.join", return_value="/nonexistent/path/emissions.db"
-        )
+        mocker.patch("os.path.join", return_value="/nonexistent/path/emissions.db")
 
         # Act
         result = await initialize_emissions_database()
 
         # Assert
         assert result == 0
-        mock_logger.error.assert_called_with(
-            "Emissions database not initialized"
-        )
+        mock_logger.error.assert_called_with("Emissions database not initialized")
 
     # Successfully creates emission table when a database doesn't exist
     @pytest.mark.asyncio
@@ -130,9 +118,7 @@ class TestDatabase:
 
     # Successfully creates users' table when a database doesn't exist
     @pytest.mark.asyncio
-    async def test_creates_users_table_when_db_not_exists(
-        self, mocker, caplog
-    ):
+    async def test_creates_users_table_when_db_not_exists(self, mocker, caplog):
         # Arrange
         caplog.set_level(logging.DEBUG)
         mock_db_path = "user_data.db"
@@ -175,9 +161,7 @@ class TestDatabase:
         assert result == 0
 
         # Assert that the logger is called with the correct message
-        mock_logger.error.assert_called_with(
-            "User data database not initialized"
-        )
+        mock_logger.error.assert_called_with("User data database not initialized")
 
     # Database connection is established successfully and table is created
     @pytest.mark.asyncio
@@ -227,9 +211,7 @@ class TestDatabase:
         mock_cursor.__aexit__.return_value = None
 
         # Act
-        result = await create_fuel_type_database(
-            "test/path/emissions_variables.json"
-        )
+        result = await create_fuel_type_database("test/path/emissions_variables.json")
 
         # Assert
         assert result is mock_conn
@@ -245,9 +227,7 @@ class TestDatabase:
         mock_setup.return_value = mocker.AsyncMock()
         mock_load_settings = mocker.patch("src.data.database.load_settings")
         mock_load_fuel = mocker.patch("src.data.database.load_fuel_data")
-        mock_create_db = mocker.patch(
-            "src.data.database.create_fuel_type_database"
-        )
+        mock_create_db = mocker.patch("src.data.database.create_fuel_type_database")
         mock_create_db.return_value = mocker.AsyncMock()
         mock_insert = mocker.patch("src.data.database.insert_fuel_data")
         mock_os_path_exists = mocker.patch("os.path.exists")
@@ -284,9 +264,7 @@ class TestDatabase:
         mock_load_settings = mocker.patch("src.data.database.load_settings")
         mock_load_settings.return_value = None
         mock_load_fuel = mocker.patch("src.data.database.load_fuel_data")
-        mock_create_db = mocker.patch(
-            "src.data.database.create_fuel_type_database"
-        )
+        mock_create_db = mocker.patch("src.data.database.create_fuel_type_database")
         mock_insert = mocker.patch("src.data.database.insert_fuel_data")
 
         # Act
@@ -311,9 +289,7 @@ class TestDatabase:
         mock_load_settings.return_value = "test/path/settings.json"
         mock_load_fuel = mocker.patch("src.data.database.load_fuel_data")
         mock_load_fuel.return_value = None
-        mock_create_db = mocker.patch(
-            "src.data.database.create_fuel_type_database"
-        )
+        mock_create_db = mocker.patch("src.data.database.create_fuel_type_database")
         mock_insert = mocker.patch("src.data.database.insert_fuel_data")
 
         # Act
@@ -340,9 +316,7 @@ class TestDatabase:
         mock_load_fuel.return_value = [
             {"fuel_type": "gasoline", "emissions_factor": 2.31}
         ]
-        mock_create_db = mocker.patch(
-            "src.data.database.create_fuel_type_database"
-        )
+        mock_create_db = mocker.patch("src.data.database.create_fuel_type_database")
         mock_create_db.return_value = None
         mock_insert = mocker.patch("src.data.database.insert_fuel_data")
 
@@ -385,9 +359,7 @@ class TestDatabase:
         mock_load_settings = mocker.patch("src.data.database.load_settings")
         mock_load_settings.return_value = None
         mock_load_fuel = mocker.patch("src.data.database.load_fuel_data")
-        mock_create_db = mocker.patch(
-            "src.data.database.create_fuel_type_database"
-        )
+        mock_create_db = mocker.patch("src.data.database.create_fuel_type_database")
         mock_insert = mocker.patch("src.data.database.insert_fuel_data")
 
         # Act
@@ -468,9 +440,7 @@ class TestDatabase:
 
         # Assert
         assert result == mock_json_data
-        mock_aiofiles.assert_called_once_with(
-            "test/path/emissions_variables.json", "r"
-        )
+        mock_aiofiles.assert_called_once_with("test/path/emissions_variables.json", "r")
 
     @pytest.mark.asyncio
     async def test_load_fuel_data_handles_invalid_fuel_data(self, mocker):
@@ -497,9 +467,7 @@ class TestDatabase:
         mock_aiofiles.side_effect = FileNotFoundError()
 
         # Act
-        result = await load_fuel_data(
-            "nonexistent/path/emissions_variables.json"
-        )
+        result = await load_fuel_data("nonexistent/path/emissions_variables.json")
 
         # Assert
         assert result is None
@@ -512,9 +480,7 @@ class TestDatabase:
         mock_file_path = "test/path/emissions_variables.json"
         mock_logger = mocker.patch("src.data.database.logger")
         mock_aiofiles = mocker.patch("aiofiles.open")
-        mock_aiofiles.side_effect = json.JSONDecodeError(
-            "Invalid JSON", "doc", 0
-        )
+        mock_aiofiles.side_effect = json.JSONDecodeError("Invalid JSON", "doc", 0)
 
         # Act
         result = await load_fuel_data(mock_file_path)
@@ -543,9 +509,7 @@ class TestDatabase:
 
         # Assert
         assert result == ["gasoline", "diesel"]
-        mock_cursor.execute.assert_called_once_with(
-            "SELECT fuel_type FROM fuel_types"
-        )
+        mock_cursor.execute.assert_called_once_with("SELECT fuel_type FROM fuel_types")
 
     # Handles case when a database file does not exist
     @pytest.mark.asyncio
@@ -629,9 +593,7 @@ class TestDatabase:
         mocker.patch("aiosqlite.connect", return_value=mock_conn)
 
         # Act
-        result = await log_calculation(
-            user_id, fuel_type, fuel_used, emissions
-        )
+        result = await log_calculation(user_id, fuel_type, fuel_used, emissions)
 
         # Assert | Be careful as this test can fail if the text of this assertion changes
         assert result == expected_log
@@ -673,9 +635,7 @@ class TestDatabase:
         )
 
         # Act
-        result = await log_calculation(
-            user_id, fuel_type, fuel_used, emissions
-        )
+        result = await log_calculation(user_id, fuel_type, fuel_used, emissions)
 
         # Assert
         assert result is None
@@ -738,9 +698,7 @@ class TestDatabase:
 
     def test_setup_databases_folder_when_folder_exists(self, mocker):
         # Arrange
-        mock_databases_folder_exists = mocker.patch(
-            "os.path.exists", return_value=True
-        )
+        mock_databases_folder_exists = mocker.patch("os.path.exists", return_value=True)
 
         # Act
         database_folder = setup_databases_folder()
