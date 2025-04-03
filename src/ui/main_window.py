@@ -34,7 +34,6 @@ class MainWindowController(QObject):
         super().__init__()
         self.model = model
         self.view = view
-        self.translator = None
 
     def connect_signals(self):
         self.update_progress(70, "Connecting Signals")
@@ -119,10 +118,6 @@ class MainWindowController(QObject):
 
         app = QApplication.instance()
 
-        if self.translator is not None:
-            app.removeTranslator(self.translator)
-            self.translator = None
-
         if language.lower() == "english":
             logger.debug("Setting language to English (default)")
             self.retranslate_all_ui()
@@ -130,7 +125,7 @@ class MainWindowController(QObject):
             return
 
         # Handle other languages: Load and install translator
-        self.translator = QTranslator()
+        translator = QTranslator()
 
         language_code_map = {
             "english": "en",
@@ -148,32 +143,17 @@ class MainWindowController(QObject):
 
         # Fallback path check
         if not os.path.exists(translation_path):
-            logger.warning(
-                f"Translation file not found at primary path: {translation_path}"
-            )
-            alternative_path = os.path.join(
-                application_path, "resources", "translations", f"{language_code}.qm"
-            )
-            if os.path.exists(alternative_path):
-                translation_path = alternative_path
-                logger.info(
-                    f"Using translation file from fallback path: {translation_path}"
-                )
-            else:
-                logger.error(
-                    f"No translation file found for {language} in primary or fallback paths."
-                )
-                self.translator = None
+            logger.warning(f"Translation file not found at path: {translation_path}")
+            return
 
-        if self.translator is not None:
-            if self.translator.load(translation_path):
-                app.installTranslator(self.translator)
+        if translator is not None:
+            if translator.load(translation_path):
+                app.installTranslator(translator)
                 logger.info(
                     f"Successfully loaded and installed translation for {language}"
                 )
             else:
                 logger.error(f"Failed to load translation file: {translation_path}")
-                self.translator = None
 
         self.retranslate_all_ui()
 
