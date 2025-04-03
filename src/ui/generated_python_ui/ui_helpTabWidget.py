@@ -5,6 +5,8 @@ from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel, QVBoxLayout, QWidget
 from ui.generated_python_ui import icons_rc  # noqa: F401
 
 
+
+
 class Ui_helpTabWidget(object):
     def setupUi(self, helpTabWidget):
         if not helpTabWidget.objectName():
