@@ -22,9 +22,7 @@ class WeatherService:
             response = requests.get(url, timeout=5)
             weather_data = response.json()
             if weather_data.get("cod") != 200:
-                logger.error(
-                    f"API Error: {weather_data.get('message', 'Unknown error')}"
-                )
+                logger.error("API Error: Unable to retrieve weather data")
                 logger.error("Weather data not retrieved")
                 return None
 
