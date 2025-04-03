@@ -58,6 +58,9 @@ class SettingsController(QObject):
         self.view.preferredUserIDSpinBox.valueChanged.connect(
             self.handle_user_id_changed
         )
+        self.application_controller.language_changed.connect(
+            lambda language: self.view.retranslateUi(self.view)
+        )
 
     def handle_initialization_of_settings(self, combobox_information) -> None:
 
@@ -114,6 +117,7 @@ class SettingsController(QObject):
 
     def handle_language_changed(self, text):
         self.model.settings_model.update_settings(**{"Preferences": {"Language": text}})
+        self.application_controller.set_application_language(text)
 
     def handle_theme_changed(self, text):
         self.model.settings_model.update_theme(**{"Preferences": {"Theme": text}})

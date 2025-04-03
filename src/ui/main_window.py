@@ -2,7 +2,7 @@ import logging
 import os
 import sys
 
-from PySide6.QtCore import QObject, Signal
+from PySide6.QtCore import QObject, QTranslator, Signal
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QApplication, QMainWindow, QWidget
 
@@ -28,11 +28,13 @@ class MainWindowController(QObject):
     theme_changed = Signal(bool)  # True if light mode, False if dark mode
     progress_updated = Signal(int, str)
     progress_complete = Signal()
+    language_changed = Signal(str)
 
     def __init__(self, model, view):
         super().__init__()
         self.model = model
         self.view = view
+        self.translator = None
 
     def connect_signals(self):
         self.update_progress(70, "Connecting Signals")
@@ -48,6 +50,8 @@ class MainWindowController(QObject):
             self.model.databases_model.log_transaction
         )
         self.model.settings_model.theme_changed.connect(self.handle_theme_changed)
+
+        self.language_changed.connect(self.retranslate_all_ui)
 
     # Yes, I know it's not the BEST solution, but we will get to it at some point.
     def update_progress(self, percentage, message):
@@ -83,6 +87,12 @@ class MainWindowController(QObject):
         self.tab_changed.emit(index)
 
     def handle_theme_changed(self, is_light_mode: bool) -> None:
+        """
+        Handles theme change by applying the appropriate stylesheet
+
+        :param is_light_mode: True if light mode, False if dark mode
+        :return: None
+        """
         theme_name = "light_theme.qss" if is_light_mode else "dark_theme.qss"
         stylesheet_path = os.path.join(
             application_path, "resources", "GUI_files", "styles", theme_name
@@ -92,6 +102,129 @@ class MainWindowController(QObject):
             stylesheet = f.read()
             QApplication.instance().setStyleSheet(stylesheet)
             self.theme_changed.emit(is_light_mode)
+
+    def initialize_language(self):
+        """Initialize application language based on stored preference"""
+        logger.debug("Main Window Controller: initializing language")
+        language = self.model.settings_model.get_setting("Preferences", "Language")
+        self.set_application_language(language)
+
+    def set_application_language(self, language):
+        """
+        Set the application language by loading the appropriate translation file
+
+        :param language: The language to set (e.g., "English", "Spanish")
+        """
+        logger.debug(f"Setting application language to: {language}")
+
+        app = QApplication.instance()
+
+        if self.translator is not None:
+            app.removeTranslator(self.translator)
+            self.translator = None
+
+        if language.lower() == "english":
+            logger.debug("Setting language to English (default)")
+            self.retranslate_all_ui()
+            self.language_changed.emit(language)
+            return
+
+        # Handle other languages: Load and install translator
+        self.translator = QTranslator()
+
+        language_code_map = {
+            "english": "en",
+            "spanish": "es",
+        }
+        language_code = language_code_map.get(language.lower(), "en")
+
+        translation_path = os.path.join(
+            application_path,
+            "resources",
+            "GUI_files",
+            "translations",
+            f"{language_code}.qm",
+        )
+
+        # Fallback path check
+        if not os.path.exists(translation_path):
+            logger.warning(
+                f"Translation file not found at primary path: {translation_path}"
+            )
+            alternative_path = os.path.join(
+                application_path, "resources", "translations", f"{language_code}.qm"
+            )
+            if os.path.exists(alternative_path):
+                translation_path = alternative_path
+                logger.info(
+                    f"Using translation file from fallback path: {translation_path}"
+                )
+            else:
+                logger.error(
+                    f"No translation file found for {language} in primary or fallback paths."
+                )
+                self.translator = None
+
+        if self.translator is not None:
+            if self.translator.load(translation_path):
+                app.installTranslator(self.translator)
+                logger.info(
+                    f"Successfully loaded and installed translation for {language}"
+                )
+            else:
+                logger.error(f"Failed to load translation file: {translation_path}")
+                self.translator = None
+
+        self.retranslate_all_ui()
+
+        # Emit the signal after retranslating
+        self.language_changed.emit(language)
+
+    def retranslate_all_ui(self):
+        """Helper method to call retranslateUi on all relevant UI components."""
+        logger.debug("Retranslating all UI components.")
+
+        if hasattr(self.view, "retranslateUi"):
+            self.view.retranslateUi(self.view)
+
+        if hasattr(self.view, "GeneralTabWidget") and hasattr(
+            self.view.GeneralTabWidget.view, "retranslateUi"
+        ):
+            self.view.GeneralTabWidget.view.retranslateUi(
+                self.view.GeneralTabWidget.view
+            )
+
+        if hasattr(self.view, "VisualizationTabWidget") and hasattr(
+            self.view.VisualizationTabWidget.view, "retranslateUi"
+        ):
+            self.view.VisualizationTabWidget.view.retranslateUi(
+                self.view.VisualizationTabWidget.view
+            )
+
+        if hasattr(self.view, "HelpTabWidget") and hasattr(
+            self.view.HelpTabWidget.view, "retranslateUi"
+        ):
+            self.view.HelpTabWidget.view.retranslateUi(self.view.HelpTabWidget.view)
+
+        if hasattr(self.view, "FeedbackTabWidget") and hasattr(
+            self.view.FeedbackTabWidget.view, "retranslateUi"
+        ):
+            self.view.FeedbackTabWidget.view.retranslateUi(
+                self.view.FeedbackTabWidget.view
+            )
+
+        if hasattr(self.view, "GeneralTabWidget") and hasattr(
+            self.view.GeneralTabWidget.controller, "settingsWidget"
+        ):
+            settings_widget_instance = (
+                self.view.GeneralTabWidget.controller.settingsWidget
+            )
+            if settings_widget_instance and hasattr(
+                settings_widget_instance.view, "retranslateUi"
+            ):
+                settings_widget_instance.view.retranslateUi(
+                    settings_widget_instance.view
+                )
 
 
 # Model: The app model handles APPLICATION WIDE STATE.
@@ -126,14 +259,9 @@ class AppModel(QObject):
 class MainWindowView(QMainWindow, Ui_MainWindow):
     main_window_closed = Signal()
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
-        self.FeedbackTabWidget = None
-        self.HelpTabWidget = None
-        self.GeneralTabWidget = None
-        self.VisualizationTabWidget = None
         self.setupUi(self)
-        self.setup_icon()
 
     def setup_icon(self):
         if sys.platform.startswith("win"):  # windows
@@ -156,11 +284,15 @@ class MainWindowView(QMainWindow, Ui_MainWindow):
             logger.warning(f"Icon file not found at {icon_path}")
 
     def setup_tabs(self, model, controller):
-        logger.debug("Main Window View: Setting up tabs in MainWindowView")
+        # ui elements are defined in UI and referenced in code through
+        # a pythonic way of object names with dot-attributes.
+        # self.stackedWidget was named that in Qt Designer.
+
+        # Reference objects directly by their object name
         self.GeneralTabWidget = GeneralTabWidget(model, controller)
         self.VisualizationTabWidget = VisualizationTabWidget(model, controller)
-        self.HelpTabWidget = HelpTabWidget(controller, model)
-        self.FeedbackTabWidget = FeedbackTabWidget(controller, model)
+        self.HelpTabWidget = HelpTabWidget(model, controller)
+        self.FeedbackTabWidget = FeedbackTabWidget(model, controller)
 
         self.stackedWidget.insertWidget(0, self.GeneralTabWidget.view)
         self.stackedWidget.insertWidget(1, self.VisualizationTabWidget.view)
@@ -225,6 +357,10 @@ class MainWindowWidget(QMainWindow):
         # Step 8: Applying theme
         self.controller.update_progress(85, "Applying theme...")
         self.controller.initialize_theme()
+
+        # Step 8.5: Initialize language
+        self.controller.update_progress(90, "Setting application language...")
+        self.controller.initialize_language()
 
         # Step 9: Sending initialization signal
         self.controller.update_progress(95, "Sending initialization signal...")

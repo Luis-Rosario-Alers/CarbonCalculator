@@ -64,6 +64,10 @@ class VisualizationTabController(QObject):
             self._handle_pending_update
         )
 
+        self.application_controller.language_changed.connect(
+            lambda language: self.view.retranslateUi(self.view)
+        )
+
         # NOTE: Please keep the order of these signals because they rely on the sequence in which they are connected.
         # and im not gonna lie I really dont know why but IT WILL GET FIXED.. I promise.
         self.view.emissionsUnitComboBox.currentIndexChanged.connect(

@@ -8,21 +8,27 @@ class FeedbackTabController:
         self.model = model
         self.view = view
         self.application_controller = application_controller
+        self.__connect_signals()
+
+    def __connect_signals(self):
+        self.application_controller.language_changed.connect(
+            lambda language: self.view.retranslateUi(self.view)
+        )
 
 
 class FeedbackTabModel:
-    def __init__(self, application_model):
+    def __init__(self, application_model) -> None:
         self.model = application_model
 
 
 class FeedbackTabView(QWidget, Ui_feedbackTabWidget):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.setupUi(self)
 
 
 class FeedbackTabWidget(QWidget):
-    def __init__(self, application_controller, application_model):
+    def __init__(self, application_model, application_controller) -> None:
         super().__init__()
         self.application_controller = application_controller
         self.application_model = application_model

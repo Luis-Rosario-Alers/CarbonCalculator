@@ -1,6 +1,10 @@
+import logging
+
 from PySide6.QtWidgets import QWidget
 
 from ui.generated_python_ui.ui_helpTabWidget import Ui_helpTabWidget
+
+logger = logging.getLogger("ui")
 
 
 class HelpTabController:
@@ -16,13 +20,13 @@ class HelpTabModel:
 
 
 class HelpTabView(QWidget, Ui_helpTabWidget):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.setupUi(self)
 
 
 class HelpTabWidget(QWidget):
-    def __init__(self, application_controller, application_model):
+    def __init__(self, application_model, application_controller) -> None:
         super().__init__()
         self.application_controller = application_controller
         self.application_model = application_model
