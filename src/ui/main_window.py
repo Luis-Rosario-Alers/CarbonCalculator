@@ -50,8 +50,6 @@ class MainWindowController(QObject):
         )
         self.model.settings_model.theme_changed.connect(self.handle_theme_changed)
 
-        self.language_changed.connect(self.retranslate_all_ui)
-
     # Yes, I know it's not the BEST solution, but we will get to it at some point.
     def update_progress(self, percentage, message):
         """
@@ -165,32 +163,53 @@ class MainWindowController(QObject):
         logger.debug("Retranslating all UI components.")
 
         if hasattr(self.view, "retranslateUi"):
+            logger.debug("Calling retranslateUi on main view")
             self.view.retranslateUi(self.view)
+        else:
+            logger.warning("Main view does not have retranslateUi method")
 
         if hasattr(self.view, "GeneralTabWidget") and hasattr(
             self.view.GeneralTabWidget.view, "retranslateUi"
         ):
+            logger.debug("Calling retranslateUi on GeneralTabWidget")
             self.view.GeneralTabWidget.view.retranslateUi(
                 self.view.GeneralTabWidget.view
+            )
+        else:
+            logger.warning(
+                "GeneralTabWidget view missing or lacks retranslateUi method"
             )
 
         if hasattr(self.view, "VisualizationTabWidget") and hasattr(
             self.view.VisualizationTabWidget.view, "retranslateUi"
         ):
+            logger.debug("Calling retranslateUi on VisualizationTabWidget")
             self.view.VisualizationTabWidget.view.retranslateUi(
                 self.view.VisualizationTabWidget.view
+            )
+        else:
+            logger.warning(
+                "VisualizationTabWidget view missing or lacks retranslateUi method"
             )
 
         if hasattr(self.view, "HelpTabWidget") and hasattr(
             self.view.HelpTabWidget.view, "retranslateUi"
         ):
+            logger.debug("Calling retranslateUi on HelpTabWidget")
             self.view.HelpTabWidget.view.retranslateUi(self.view.HelpTabWidget.view)
+        else:
+            logger.warning("HelpTabWidget view missing or lacks retranslateUi method")
 
         if hasattr(self.view, "FeedbackTabWidget") and hasattr(
             self.view.FeedbackTabWidget.view, "retranslateUi"
         ):
+            logger.debug("Calling retranslateUi on FeedbackTabWidget")
             self.view.FeedbackTabWidget.view.retranslateUi(
                 self.view.FeedbackTabWidget.view
+            )
+        else:
+            logger.warning(
+                "FeedbackTabWidget view missing or lacks retranslateUi method"
             )
 
         if hasattr(self.view, "GeneralTabWidget") and hasattr(
@@ -202,9 +221,18 @@ class MainWindowController(QObject):
             if settings_widget_instance and hasattr(
                 settings_widget_instance.view, "retranslateUi"
             ):
+                logger.debug("Calling retranslateUi on settings widget")
                 settings_widget_instance.view.retranslateUi(
                     settings_widget_instance.view
                 )
+            else:
+                logger.warning(
+                    "Settings widget view missing or lacks retranslateUi method"
+                )
+        else:
+            logger.warning(
+                "GeneralTabWidget controller missing or lacks settingsWidget"
+            )
 
 
 # Model: The app model handles APPLICATION WIDE STATE.

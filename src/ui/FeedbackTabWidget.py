@@ -11,9 +11,7 @@ class FeedbackTabController:
         self.__connect_signals()
 
     def __connect_signals(self):
-        self.application_controller.language_changed.connect(
-            lambda language: self.view.retranslateUi(self.view)
-        )
+        pass
 
 
 class FeedbackTabModel:

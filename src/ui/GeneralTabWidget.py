@@ -66,9 +66,6 @@ class GeneralTabController(QObject):
         self.application_controller.progress_complete.connect(
             self.handle_progress_complete
         )
-        self.application_controller.language_changed.connect(
-            lambda language: self.view.retranslateUi(self.view)
-        )
 
         connect_threaded(
             self.application_controller,

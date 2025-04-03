@@ -58,9 +58,6 @@ class SettingsController(QObject):
         self.view.preferredUserIDSpinBox.valueChanged.connect(
             self.handle_user_id_changed
         )
-        self.application_controller.language_changed.connect(
-            lambda language: self.view.retranslateUi(self.view)
-        )
 
     def handle_initialization_of_settings(self, combobox_information) -> None:
 
