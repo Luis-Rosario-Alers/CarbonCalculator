@@ -271,6 +271,7 @@ class MainWindowView(QMainWindow, Ui_MainWindow):
     def __init__(self) -> None:
         super().__init__()
         self.setupUi(self)
+        self.setup_icon()
 
     def setup_icon(self):
         if sys.platform.startswith("win"):  # windows
