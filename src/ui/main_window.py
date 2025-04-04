@@ -118,12 +118,13 @@ class MainWindowController(QObject):
 
         if language.lower() == "english":
             logger.debug("Setting language to English (default)")
+            self._translator = None
             self.retranslate_all_ui()
             self.language_changed.emit(language)
             return
 
         # Handle other languages: Load and install translator
-        translator = QTranslator()
+        self._translator = QTranslator()
 
         language_code_map = {
             "english": "en",
@@ -144,9 +145,9 @@ class MainWindowController(QObject):
             logger.warning(f"Translation file not found at path: {translation_path}")
             return
 
-        if translator is not None:
-            if translator.load(translation_path):
-                app.installTranslator(translator)
+        if self._translator is not None:
+            if self._translator.load(translation_path):
+                app.installTranslator(self._translator)
                 logger.info(
                     f"Successfully loaded and installed translation for {language}"
                 )

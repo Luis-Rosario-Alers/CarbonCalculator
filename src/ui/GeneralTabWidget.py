@@ -34,7 +34,7 @@ class GeneralTabController(QObject):
         self.model: "GeneralTabModel" = model
         self.view: "GeneralTabView" = view
         self.application_controller = application_controller
-        self.settingsWidget: SettingsWidget = None
+        self.settingsWidget = None
         self.__connect_signals()
 
     def __connect_signals(self) -> None:
@@ -67,15 +67,16 @@ class GeneralTabController(QObject):
             self.handle_progress_complete
         )
 
+        self.model.databases_model.databases_initialized.connect(
+            self.model.populate_combobox_dataclass
+        )
+        self.model.databases_model.databases_initialized.connect(
+            self.handle_comboboxes_initialization
+        )
         connect_threaded(
             self.application_controller,
             "initialization",
             self.handle_real_time_temperatures_api_call,
-        )
-        connect_threaded(
-            self.model.databases_model,
-            "databases_initialized",
-            self.handle_comboboxes_initialization,
         )
         connect_threaded(
             self.application_controller,
@@ -307,8 +308,9 @@ class GeneralTabModel:
         self.calculation_model = self.application_model.calculation_model
         self.settings_model = self.application_model.settings_model
         self.real_time_temp_data = None
-
         self.combobox_data = self.ComboBoxData()
+
+    def populate_combobox_dataclass(self):
         try:
             self.combobox_data.fuel_types = self.databases_model.get_fuel_types()
             self.combobox_data.farming_techniques = (

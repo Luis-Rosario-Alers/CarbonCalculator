@@ -65,7 +65,7 @@ class VisualizationTabController(QObject):
         )
 
         # NOTE: Please keep the order of these signals because they rely on the sequence in which they are connected.
-        # and im not gonna lie I really dont know why but IT WILL GET FIXED.. I promise.
+        # and I'm not gonna lie I really don't know why but IT WILL GET FIXED.. I promise.
         self.view.emissionsUnitComboBox.currentIndexChanged.connect(
             self._handle_unit_changed
         )

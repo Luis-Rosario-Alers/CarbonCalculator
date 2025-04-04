@@ -628,4 +628,3 @@ class databasesModel(QObject):
 
     # function to test initialization of all databases
     # database_initialization()
-    get_emissions_history
