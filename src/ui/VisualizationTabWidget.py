@@ -64,12 +64,8 @@ class VisualizationTabController(QObject):
             self._handle_pending_update
         )
 
-        self.application_controller.language_changed.connect(
-            lambda language: self.view.retranslateUi(self.view)
-        )
-
         # NOTE: Please keep the order of these signals because they rely on the sequence in which they are connected.
-        # and im not gonna lie I really dont know why but IT WILL GET FIXED.. I promise.
+        # and I'm not gonna lie I really don't know why but IT WILL GET FIXED.. I promise.
         self.view.emissionsUnitComboBox.currentIndexChanged.connect(
             self._handle_unit_changed
         )
@@ -87,6 +83,9 @@ class VisualizationTabController(QObject):
         self.view.endTimeFrameDataTimeEdit.dateTimeChanged.connect(
             self._handle_time_changed
         )
+
+    def _handle_translate_widget(self):
+        self.view.apply_translation()
 
     def _handle_update_plot(self):
         """
@@ -669,6 +668,9 @@ class VisualizationTabView(QWidget, Ui_visualizationTab):
         self.emissionsUnitComboBox.blockSignals(True)
         self.emissionsUnitComboBox.setCurrentText(preferred_calc_unit)
         self.emissionsUnitComboBox.blockSignals(False)
+
+    def apply_translation(self):
+        self.retranslateUi(self)
 
 
 class VisualizationTabWidget(QWidget):

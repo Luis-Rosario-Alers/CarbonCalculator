@@ -200,6 +200,7 @@ class ImportManager(QObject):
                         f"ImportManager.import_from_csv: Data imported successfully from {input_path}"
                     )
                     self.import_completed.emit()
+                    return
 
             except UnicodeDecodeError:
                 logger.warning(

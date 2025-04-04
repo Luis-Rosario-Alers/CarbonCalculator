@@ -107,7 +107,7 @@
     <message>
         <location filename="ui_generalTabWidget.py" line="522"/>
         <source>u00b0</source>
-        <translation type="unfinished"></translation>
+        <translation>u00b0</translation>
     </message>
 </context>
 <context>
