@@ -20,4 +20,4 @@ pytest-xvfb
 python-dotenv
 qasync
 requests
-setuptools~=78.0.1
+setuptools~=80.7.1
