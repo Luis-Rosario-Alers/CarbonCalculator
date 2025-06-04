@@ -1,5 +1,5 @@
 aiofiles
-aiohttp~=3.11.13
+aiohttp~=3.12.6
 aiosqlite~=0.21.0
 asyncio
 black
@@ -12,7 +12,7 @@ psutil
 pyinstaller
 pyqtgraph~=0.13.7
 PySide6~=6.9.0
-pytest~=8.3.5
+pytest~=8.4.0
 pytest-asyncio
 pytest-cov
 pytest-mock
@@ -20,4 +20,4 @@ pytest-xvfb
 python-dotenv
 qasync
 requests
-setuptools~=78.0.1
+setuptools~=80.9.0
