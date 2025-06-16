@@ -1,5 +1,5 @@
 aiofiles
-aiohttp~=3.12.6
+aiohttp~=3.12.13
 aiosqlite~=0.21.0
 asyncio
 black
